@@ -1,7 +1,8 @@
 # AGENTS.md
 
 Coletor de dados climáticos do CIIAGRO para os **17 municípios do Litoral Sul
-Paulista**. Python 3.12, **só stdlib**. O plano completo está em `PLANO.md`.
+Paulista**. Python 3.12, **só stdlib**. Planos em `.planning/` — comece por
+`.planning/PLANO.md`.
 
 ## Comandos
 
@@ -58,3 +59,35 @@ só como HTML estático gerado por comando.
 
 Nova fonte = um módulo em `fontes/` com `FONTE`, `pontos()` e `fatos(desde, ate)`.
 Nada mais. INMET e NASA POWER ficam para depois da auditoria da série do CIIAGRO.
+
+## Documentação — obrigatório
+
+Todo plano, tarefa e catálogo de teste mora em `.planning/`. Não criar `PLANO.md`
+na raiz nem pasta `docs/`:
+
+```
+.planning/PLANO.md        índice, decisões, cobertura, revisão do material antigo
+.planning/tarefas/NN-*.md uma tarefa por arquivo: objetivo, subtarefas, aceite
+.planning/testes.md       um ID e um "o que garante" por teste
+.planning/arquivo/        material de terceiros (ignorado pelo git)
+```
+
+**Toda função tem docstring no formato Google**, com uma linha de resumo no
+imperativo e as seções que se aplicarem — `Args:`, `Returns:`, `Raises:`,
+`Efeitos:`, `Nota:`. Função privada também (`_get`, `_v`), porque é onde o
+`porquê` costuma sumir. Ver `coletor.coletar` e `fontes.ciiagro.linhas` como
+modelo.
+
+**Todo teste tem docstring dizendo o que ele garante** — não o que ele faz. Se
+não der para escrever essa frase, o teste não protege nada e deve sair. Cada
+teste novo entra também em `.planning/testes.md` com um ID (`T03.4`).
+
+Tarefa nova = arquivo novo em `.planning/tarefas/` + linha no índice do
+`.planning/PLANO.md`. Tarefa concluída muda o próprio status, não é apagada.
+
+## Git
+
+Histórico linear em `main`, commits em português com prefixo
+(`feat(ciiagro):`, `docs:`, `test:`, `chore:`). `dados/` e `__pycache__/` são
+ignorados — o banco não é versionado.
+
