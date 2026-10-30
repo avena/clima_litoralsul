@@ -15,6 +15,19 @@ const fmt = (v, casas = 1) =>
 
 const mesLongo = (m) => NOMES[m] ?? m;
 
+/**
+ * Quantos anos fechados a estação tem, em texto corrido.
+ *
+ * Args:
+ *   n: `anos_completos` da estação no `dados.json`.
+ *
+ * Returns:
+ *   `(29 anos)`, `(1 ano)` ou `(sem ano fechado)`. O parêntese já vem junto
+ *   porque acompanha o nome da estação na lista, sem virar frase.
+ */
+const anosFechados = (n) =>
+  n ? `(${n} ${n === 1 ? "ano" : "anos"})` : "(sem ano fechado)";
+
 // Séries do climatograma; a legenda é o filtro. `alto` só muda o formato do
 // quadradinho (barra) contra o traço das linhas.
 const SERIES = [
@@ -113,8 +126,9 @@ function Sazonal({ estacao }) {
  * O que os números desta estação permitem decidir no calendário agrícola.
  *
  * O texto chega pronto do `dados.json` — cada item cita o número que o sustenta.
- * O bloco recolhido é o que vale para qualquer município: é onde entra o que não
- * depende da série, como "média não é previsão".
+ * O segundo bloco é o que vale para qualquer município: é onde entra o que não
+ * depende da série, como "média não é previsão". Ele fica aberto: conselho
+ * escondido atrás de um clique ninguém lê, e a ATER imprime a página.
  */
 function Uso({ estacao, regiao }) {
   return (
@@ -133,10 +147,8 @@ function Uso({ estacao, regiao }) {
           </li>
         ))}
       </ul>
-      <details className="mt-3 border-t border-borda pt-2">
-        <summary className="cursor-pointer text-xs font-medium text-fraco hover:text-texto">
-          Vale para qualquer município da região
-        </summary>
+      <div className="mt-3 border-t border-borda pt-2">
+        <h3 className="text-sm font-semibold">Vale para qualquer município da região</h3>
         <ul className="mt-2 space-y-2 text-sm">
           {regiao.map((item) => (
             <li key={item.titulo}>
@@ -145,7 +157,7 @@ function Uso({ estacao, regiao }) {
             </li>
           ))}
         </ul>
-      </details>
+      </div>
     </section>
   );
 }
@@ -317,6 +329,11 @@ export default function App({ dados }) {
                     }`}
                   >
                     {e.nome}
+                    {!e.semEstacao && (
+                      <span className="tabular ml-1.5 text-[0.7rem] font-normal text-fraco">
+                        {anosFechados(e.anos_completos)}
+                      </span>
+                    )}
                   </span>
                   <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
                     {e.semEstacao ? "sem estação no CIIAGRO" : `${e.inicio} → ${e.fim}`}
@@ -420,9 +437,20 @@ export default function App({ dados }) {
 
           <div className="mt-4 rounded-xl border border-borda bg-painel p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-base font-semibold">
-                Climatograma — {titulo}
-              </h2>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h2 className="text-base font-semibold">
+                  Climatograma — {titulo}
+                </h2>
+                <a
+                  href={`fichas/${estacao.slug}.pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Abrir a ficha desta estação em PDF, uma página A4 para imprimir"
+                  className="rounded-md border border-borda px-2 py-0.5 text-xs font-medium text-med transition-colors hover:border-med hover:bg-painel-alto"
+                >
+                  ficha em PDF
+                </a>
+              </div>
               <div className="flex flex-wrap gap-1 text-xs">
                 {SERIES.map(({ campo, rotulo, cor, alto }) => {
                   const ligada = rotular === campo;

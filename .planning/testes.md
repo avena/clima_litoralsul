@@ -60,6 +60,8 @@ quebram, e é isso que se quer.
 | ID | Teste | O que garante |
 |---|---|---|
 | T06.1 | `site/check.jsx` (`npm --prefix site run check`) | o SPA renderiza com o `dados.json` real fora do navegador: climatograma com envelope, KPI em pt-BR, aviso de município sem estação e nenhum `NaN`/`undefined` no HTML |
+| T06.2 | `site/check.jsx` | a lista de estações mostra `(29 anos)` ao lado do nome — quem escolhe a estação vê de imediato quantos anos fechados existem ali, sem abrir a ficha |
+| T06.3 | `site/check.jsx` | o climatograma linka `fichas/<slug>.pdf` da **estação** aberta: `#/registro-unesp` não pode apontar para o PDF de `registro` |
 
 ## T07 — Sazonal, solstícios e uso no planejamento
 
@@ -76,7 +78,7 @@ dá 39,8%).
 | T07.3 | `test_uso_local_cita_numero_e_nao_deixa_valor_ausente` | o texto de planejamento sai com título, texto e sem `None`/`NaN` — é o que vai para a ATER |
 | T07.4 | `test_inicio_das_chuvas_e_o_mes_depois_do_seco_nao_janeiro` | a volta das chuvas é o mês seguinte ao mais seco; pegar o primeiro mês úmido do ano civil mandava aplicar calcário em janeiro |
 | T07.5 | `test_regiao_leva_orientacao_geral_no_json` | a orientação que vale para todo município (`regiao.uso`) vai no topo do `dados.json` |
-| T07.6 | `site/check.jsx` | o card de uso, a média sazonal vinda do JSON e os acumulados de solstício aparecem no HTML renderizado, uma vez só |
+| T07.6 | `site/check.jsx` | o card de uso, a média sazonal vinda do JSON e os acumulados de solstício aparecem no HTML renderizado, uma vez só; o bloco regional **não** está dentro de `<details>` — conselho escondido atrás de um clique não é lido |
 
 ## O que não está testado, e por quê
 

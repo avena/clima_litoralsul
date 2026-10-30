@@ -45,6 +45,19 @@ const checagens = [
     "um link por estação",
   ],
   [(registro.match(/aria-disabled="true"/g) || []).length === 4, "os 4 municípios sem estação ficam desativados"],
+  [
+    registro.includes("(29 anos)") && registro.includes("(14 anos)"),
+    "lista de estações mostra quantos anos fechados cada uma tem",
+  ],
+  [
+    registro.includes('href="fichas/registro.pdf"'),
+    "climatograma linka a ficha em PDF da própria estação",
+  ],
+  [
+    unesp.includes('href="fichas/registro-unesp.pdf"') &&
+      !unesp.includes('href="fichas/registro.pdf"'),
+    "link do PDF segue o slug da estação, não o do município",
+  ],
   [registro.includes('href="#/registro-unesp"'), "segunda estação de Registro tem card e URL própria"],
   [unesp.includes("Registro Unesp") && /109/.test(unesp), "URL #/registro-unesp abre a estação 109"],
   [registro.includes("github.com/avena/clima_litoralsul"), "rodapé linka o repositório"],
@@ -64,6 +77,10 @@ const checagens = [
   [registro.includes("antes do solstício de inverno (21/06)"), "solstício de inverno datado"],
   [registro.includes("Uso no planejamento"), "card de uso agronômico presente"],
   [registro.includes("Vale para qualquer município da região"), "orientação geral separada da local"],
+  [
+    !registro.includes("<details") && registro.includes("Média não é previsão"),
+    "orientação geral visível sem clique: nada recolhido em <details>",
+  ],
   [registro.includes("Calagem em cobertura"), "orientação local cita a janela de calagem"],
   [
     (registro.match(/Uso no planejamento/g) || []).length === 1,
