@@ -12,7 +12,8 @@ apresentada como medição.
 | `tarefas/02-extrator.md` | HTML do CIIAGRO → 8 colunas canônicas |
 | `tarefas/03-coletor.md` | série histórica, UPSERT, invariante mês/dia |
 | `tarefas/04-auditoria.md` | cobertura e valores suspeitos |
-| `tarefas/05-relatorio.md` | saída por município (HTML, `start.sh`) |
+| `tarefas/05-relatorio.md` | agregação e export `dados.json` |
+| `tarefas/06-painel-react.md` | SPA React + Tailwind, deploy Netlify/Vercel |
 | `testes.md` | catálogo de cada teste e o que ele garante |
 | `arquivo/PLANOSDEEPSEEK/` | material descartado, guardado como evidência |
 
@@ -22,7 +23,8 @@ apresentada como medição.
 | 02 | Extrator | — | **feito** |
 | 03 | Coletor | 01, 02 | **feito** |
 | 04 | Auditoria | 03 | **feito** |
-| 05 | Relatório | 04 | **feito** (HTML) |
+| 05 | Relatório | 04 | **feito** (JSON) |
+| 06 | Painel React | 05 | **feito** |
 
 ---
 
@@ -125,13 +127,18 @@ relatório declara a série real de cada município, ou entra INMET/NASA POWER.
 
 ```
 coletor.py          CLI + SQLite (schema, upsert, invariante, auditoria)
-relatorio.py        lê o banco e escreve relatorios/*.html
-start.sh            relatorio.py + http.server numa porta livre
+relatorio.py        lê o banco e escreve site/public/dados.json
 fontes/ciiagro.py   FONTE, pontos(), fatos() — não conhece o banco
 municipios.py       os 17 municípios + casamento de nome de estação
 municipios.csv      dados, não código
-tests/              23 testes contra HTML real em tests/fixtures/
+site/               SPA React + Tailwind v4 (Vite) sobre dados.json
+start.sh            export + build + http.server numa porta livre
+tests/              25 testes contra HTML real em tests/fixtures/
 ```
+
+A camada de cálculo e a de render são separadas de propósito: o número é
+produzido em Python (com teste) e o React não recalcula nada. `site/` é o único
+lugar do repositório que precisa de Node.
 
 Contrato de uma fonte: `FONTE`, `pontos() -> list[dict]`, `fatos(desde, ate) ->
 Iterator[dict]`. Duas funções. A fonte devolve **o nome da estação**; o banco
@@ -161,8 +168,9 @@ fato(ponto_id TEXT, data TEXT, tmin REAL, tmed REAL, tmax REAL,
 | Web | **só CGI**. Phusion Passenger removido de todos os planos |
 | Deploy | repo bare + hook `post-receive`, sem SFTP |
 
-Logo: coleta por **cron** no shell, relatório é **HTML estático** gerado por
-comando. `Flask`, `web/`, `passenger_wsgi.py` e `requirements.txt` não entram.
+Logo: coleta por **cron** no shell, painel é **build estático** (Netlify/Vercel) a
+partir de `site/public/dados.json`. `Flask`, `web/`, `passenger_wsgi.py` e
+`requirements.txt` não entram.
 
 ## 6. Revisão do material `arquivo/PLANOSDEEPSEEK/`
 

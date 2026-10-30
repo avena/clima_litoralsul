@@ -49,8 +49,16 @@ quebram, e é isso que se quer.
 | T05.2 | `test_menos_de_30_anos_nunca_diz_normal` | 2 anos de dado não produzem "normal climatológica" |
 | T05.3 | `test_serie_pre_2000_nao_vira_normal_mesmo_com_30_anos` | 34 anos com origem desconhecida continuam "médias do período … não validada" |
 | T05.4 | `test_valor_impossivel_sai_da_media_e_e_contado` | `tmed = 873,35` não entra na média e o rodapé conta o descarte |
-| T05.5 | `test_municipio_sem_estacao_avisa_em_vez_de_tabela_vazia` | município sem estação ganha aviso, não tabela de zeros |
-| T05.6 | `test_mes_sem_dado_sai_como_travessao` | buraco de série é `—`, não `0` |
+| T05.5 | `test_municipio_sem_estacao_entra_com_lista_vazia` | município sem estação aparece no JSON com `estacoes: []`, em vez de sumir da lista |
+| T05.6 | `test_mes_sem_dado_vira_null` | buraco de série é `null` no JSON, não `0` |
+| T05.7 | `test_sazonal_soma_a_chuva_anual` | as quatro estações fecham exatamente com a chuva anual do card; o percentual não distribui água inexistente |
+| T05.8 | `test_json_exportado_e_serializavel` | o `dados.json` sai do disco íntegro, com 12 linhas e chuva anual — sem isso o SPA abriria vazio sem erro |
+
+## T06 — Painel (React)
+
+| ID | Teste | O que garante |
+|---|---|---|
+| T06.1 | `site/check.jsx` (`npm --prefix site run check`) | o SPA renderiza com o `dados.json` real fora do navegador: climatograma com envelope, KPI em pt-BR, aviso de município sem estação e nenhum `NaN`/`undefined` no HTML |
 
 ## O que não está testado, e por quê
 
@@ -60,6 +68,6 @@ quebram, e é isso que se quer.
 - **`auditar`.** É formatação sobre `SELECT`; os alertas são verificados rodando
   o comando contra o banco real e conferindo os casos conhecidos (Registro antes
   de 2005, Itariri em 1969). Tarefa 04, seção "Verificação".
-- **O HTML inteiro do relatório.** Os testes cobrem `slug`, `agregado`,
-  `rotulo`, `_fmt` e `gerar`; o layout em si é conferido abrindo `./start.sh`.
-  Comparar HTML byte a byte quebraria a cada ajuste de CSS sem proteger dado.
+- **Aparência do painel.** O `check.jsx` garante que o HTML é gerado com os
+  números certos; se ficou bonito, só abrindo `./start.sh`. Comparar markup byte
+  a byte quebraria a cada ajuste de classe Tailwind sem proteger dado.

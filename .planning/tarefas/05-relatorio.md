@@ -1,33 +1,33 @@
 # Tarefa 05 — Relatório por município
 
-**Status:** feito (só HTML)
+**Status:** feito; a renderização migrou para a tarefa 06 (SPA React)
 **Depende de:** 04
 **Arquivos:** `relatorio.py`, `start.sh`
-**Testes:** T05.1 a T05.6 em `.planning/testes.md`
+**Testes:** T05.1 a T05.8 em `.planning/testes.md`
 
 ## Objetivo
 
-Gerar, por comando, `relatorios/<municipio>.html` e um índice, com chuva,
-temperatura e a série real de cada município — declarando fonte, período e
-quantidade de anos em cada linha.
+Gerar, por comando, `site/public/dados.json` com chuva, temperatura e a série
+real de cada município — declarando fonte, período e quantidade de anos por
+estação. O cálculo que exige honestidade fica em Python; o painel só desenha.
 
 ## Como ver
 
 ```bash
-./start.sh                  # gera e serve em http://localhost:8000
-python3 relatorio.py        # só gera, em relatorios/
-PORT=9000 ./start.sh        # outra porta
+python3 relatorio.py        # escreve site/public/dados.json
+./start.sh                  # exporta, builda e serve em porta aleatória
 ```
 
-`start.sh` é `relatorio.py` + `python3 -m http.server --directory relatorios`.
-Nada de Flask: no DreamHost Shared o HTML gerado é copiado, o servidor local é
-só para inspeção.
+`dados.json` é versionado porque o deploy (Netlify/Vercel) não tem acesso ao
+banco, que é gitignorado. Coletou de novo? Rode `relatorio.py` e commite o JSON.
 
 ## Formato de saída
 
-Um HTML por município, com uma seção por estação (Registro e Pariquera-Açu têm
-duas). Sem `.md`: o mesmo conteúdo gerado em HTML serve para ler e publicar; se
-alguém precisar de Markdown, é a mesma função de tabela com outro rodapé.
+Um JSON com `municipios`, e por município `slug`, `nome` e `estacoes`. Cada
+estação traz `meses` (12 entradas), `resumo` achatado no objeto (chuva anual,
+mês mais/menos chuvoso, amplitude, UR, `sazonal`), `rotulo`, `normal`, `aviso` e
+`aviso_descarte` — nulos quando não há o que avisar. Município sem estação entra
+com `estacoes: []`: sumir com ele transformaria "não há dado" em "não existe".
 
 ## Subtarefas
 
@@ -75,8 +75,8 @@ Extremos não entraram: sem os 30 anos validados, "recorde" também não se sust
 
 ### 05.5 — Lacunas explícitas
 
-Mês sem dado aparece como `—`, não como `0`. Série com buraco é diferente de
-série seca.
+Mês sem dado vira `null` no JSON, não `0`; na tela, travessão. Série com buraco é
+diferente de série seca.
 
 ### 05.6 — Faixa de sanidade na média
 
@@ -88,24 +88,25 @@ Achado na execução: sem isso o relatório de Miracatu publicava `55,9 °C` com
 temperatura média de março, e Cananéia `52,6 °C` em setembro. O banco preserva o
 valor; o relatório é seletivo e diz o que descartou.
 
-### 05.7 — Renderização HTML
+### 05.7 — Renderização (migrada)
 
-Uma função de tabela, `str.join`, CSS embutido. Sem Jinja, sem template engine.
-Barra de chuva proporcional ao maior mês, em CSS puro.
-
-`start.sh` = `relatorio.py` + `python3 -m http.server --directory relatorios`.
+A primeira versão gerava um HTML por município com CSS embutido e SVG escrito em
+Python. Funcionava offline, mas trocar de cidade era trocar de arquivo — o
+mockup pedia um painel único. A tarefa 06 substituiu essa camada por um SPA
+React sobre o mesmo `dados.json`; `relatorio.py` ficou só com a agregação.
 
 ### 05.8 — Nota de proveniência
 
-Rodapé obrigatório: fonte, estação, código, período, anos com os 12 meses,
-descartes, e o aviso de série pré-automação quando `primeiro_fato < inicio_auto`.
+Toda página do painel carrega: fonte, estação, código, período, anos com os 12
+meses, contagem de descartes e o aviso de série pré-automação quando
+`primeiro_fato < inicio_auto`.
 
 ## Critério de aceite
 
-- [x] Um arquivo por município, com nome sem acento (`pariquera-acu.html`)
+- [x] Um JSON com todos os municípios, `slug` sem acento (`pariquera-acu`)
 - [x] Nenhum `0` onde a resposta correta é "sem dado"
-- [x] Os 4 municípios sem estação aparecem com aviso, não com tabela vazia
-- [x] Rodapé sempre presente, com os anos calculados do banco
+- [x] Os 4 municípios sem estação aparecem com `estacoes: []`, não somem
+- [x] Nota de proveniência sempre presente, com os anos calculados do banco
 - [x] `n_anos < 30` nunca produz a palavra "normal climatológica"
 - [x] Valor impossível não entra na média e aparece como descarte
 
