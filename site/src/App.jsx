@@ -448,7 +448,7 @@ export default function App({ dados }) {
                   title="Abrir a ficha desta estação em PDF, uma página A4 para imprimir"
                   className="rounded-md border border-borda px-2 py-0.5 text-xs font-medium text-med transition-colors hover:border-med hover:bg-painel-alto"
                 >
-                  ficha em PDF
+                  PDF
                 </a>
               </div>
               <div className="flex flex-wrap gap-1 text-xs">
