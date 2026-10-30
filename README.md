@@ -66,11 +66,13 @@ O script imprime a URL de `localhost` e a do IP do WSL; escuta em `0.0.0.0`,
 então o navegador do Windows alcança. Precisa de Node 20+ só para o `site/`; a
 coleta continua sem dependência nenhuma.
 
-O painel tem: cards de KPI (chuva anual, temperatura média, amplitude sazonal,
-UR), climatograma de eixo duplo (chuva em barras, T mín/méd/máx em linhas, faixa
-térmica sombreada), distribuição sazonal da chuva e a matriz mensal com
-micro-barras. A troca de município é estado do React (`#/registro`), sem reload e
-sem piscar.
+O painel abre com os 17 municípios em cards (nome, número de estações e
+período): clicar troca a cidade sem recarregar e sem piscar, e a URL guarda a
+escolha (`#/registro`) para poder ser compartilhada. Abaixo vêm os cards de KPI
+(chuva anual, temperatura média, amplitude sazonal, UR), o climatograma de eixo
+duplo (chuva em barras, T mín/méd/máx em linhas, faixa térmica sombreada), a
+distribuição sazonal da chuva e a matriz mensal com micro-barras. Layout de uma
+coluna no celular; no gráfico, o toque fixa o mês que o hover mostra no desktop.
 
 No rodapé ficam a data de sincronização do `dados.json`, o período coberto, o
 hash do build e do commit inicial, o link do repositório e o resumo do ambiente.

@@ -21,6 +21,8 @@ const checagens = [
   [registro.includes("Janeiro (248,4 mm)"), "mês do pico traduzido"],
   [itanhaem.includes("Nenhuma estação do CIIAGRO"), "município sem estação avisa"],
   [pariquera.includes("Pariquera-Açu") && pariquera.includes("55"), "segunda estação de Pariquera listada"],
+  [(registro.match(/href="#\//g) || []).length === dados.municipios.length, "um card com link por município"],
+  [registro.includes('href="#/registro"'), "card do município aponta para o hash"],
   [registro.includes("github.com/avena/clima_litoralsul"), "rodapé linka o repositório"],
   [registro.includes("Dados sincronizados em"), "rodapé mostra a data dos dados"],
   [/NaN|undefined|Infinity/.test(registro) === false, "sem NaN/undefined no HTML"],

@@ -24,7 +24,7 @@ const BUILD = typeof __BUILD__ === "string" ? __BUILD__ : "—";
 function Card({ titulo, valor, unidade, cor = "text-texto", detalhes = [], barra }) {
   return (
     <div className="rounded-xl border border-borda bg-painel p-4">
-      <p className="text-[0.68rem] uppercase tracking-wider text-fraco">{titulo}</p>
+      <p className="text-xs uppercase tracking-wider text-fraco sm:text-[0.68rem]">{titulo}</p>
       <p className={`tabular mt-1 text-3xl font-bold leading-tight ${cor}`}>
         {valor}
         <span className="ml-1 text-xs font-normal text-fraco">{unidade}</span>
@@ -78,10 +78,10 @@ function Tabela({ estacao }) {
     <div className="mt-3 overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="text-[0.68rem] uppercase tracking-wider text-fraco">
+          <tr className="text-xs uppercase tracking-wider text-fraco sm:text-[0.68rem]">
             <th className="border-b border-borda px-2 py-2 text-left">mês</th>
             <th className="border-b border-borda px-2 py-2 text-right">chuva (mm)</th>
-            <th className="border-b border-borda px-2 py-2 text-left">perfil</th>
+            <th className="hidden border-b border-borda px-2 py-2 text-left sm:table-cell">perfil</th>
             <th className="border-b border-borda px-2 py-2 text-right">t mín</th>
             <th className="border-b border-borda px-2 py-2 text-right">t méd</th>
             <th className="border-b border-borda px-2 py-2 text-right">t máx</th>
@@ -94,7 +94,7 @@ function Tabela({ estacao }) {
             <tr key={m.mes} className="border-b border-borda/60">
               <td className="px-2 py-1.5">{m.mes}</td>
               <td className="px-2 py-1.5 text-right text-chuva">{fmt(m.chuva)}</td>
-              <td className="px-2 py-1.5">
+              <td className="hidden px-2 py-1.5 sm:table-cell">
                 <div className="h-1.5 w-24 overflow-hidden rounded-full bg-painel-alto">
                   <div
                     className="h-full rounded-full bg-chuva"
@@ -114,7 +114,7 @@ function Tabela({ estacao }) {
           <tr className="border-t border-borda font-semibold">
             <td className="px-2 py-2">ano</td>
             <td className="px-2 py-2 text-right text-chuva">{fmt(estacao.chuva_ano, 0)}</td>
-            <td className="px-2 py-2 text-[0.7rem] text-fraco">
+            <td className="hidden px-2 py-2 text-xs text-fraco sm:table-cell">
               {estacao.anos_completos} anos fechados
             </td>
             <td className="px-2 py-2 text-right text-fraco">—</td>
@@ -152,51 +152,78 @@ export default function App({ dados }) {
     return () => removeEventListener("hashchange", aoTrocar);
   }, []);
 
-  const escolher = (novo) => {
-    setSlug(novo);
-    setI(0);
-    setFoco(null);
-    location.hash = `/${novo}`;
-  };
-
   const estacao = municipio.estacoes[Math.min(i, municipio.estacoes.length - 1)] ?? null;
   const cardChuva = estacao ? ((estacao.chuva_ano ?? 0) / 2000) * 100 : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[0.72rem] uppercase tracking-widest text-fraco">
+          <p className="text-xs uppercase tracking-widest text-fraco sm:text-[0.72rem]">
             Litoral Sul Paulista · CIIAGRO
           </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
             Climatologia das estações
           </h1>
-          <p className="mt-1 text-sm text-fraco">
+          <p className="mt-1 text-base text-fraco sm:text-sm">
             Série mensal medida pelo CIIAGRO, sem interpolação e sem estimativa.
           </p>
         </div>
         <p className="tabular text-xs text-fraco">exportado em {dados.gerado}</p>
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-borda bg-painel p-2">
-        <label className="sr-only" htmlFor="municipio">
-          Município
-        </label>
-        <select
-          id="municipio"
-          value={municipio.slug}
-          onChange={(e) => escolher(e.target.value)}
-          className="rounded-lg bg-painel-alto px-3 py-2 text-sm text-texto outline-none"
-        >
-          {municipios.map((m) => (
-            <option key={m.slug} value={m.slug}>
-              {m.nome}
-              {m.estacoes.length ? ` · ${m.estacoes.length} estação(ões)` : " · sem estação"}
-            </option>
-          ))}
-        </select>
+      <section className="mt-6 rounded-xl border border-borda bg-painel p-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 px-1">
+          <h2 className="text-sm font-semibold">Escolha o município</h2>
+          <span className="tabular text-xs text-fraco">
+            {municipios.length} municípios · {estacoes} estações
+          </span>
+        </div>
+        <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {municipios.map((m) => {
+            const ativo = m.slug === municipio.slug;
+            const primeira = m.estacoes[0];
+            return (
+              <li key={m.slug}>
+                <a
+                  href={`#/${m.slug}`}
+                  aria-current={ativo ? "page" : undefined}
+                  onClick={() => {
+                    setI(0);
+                    setFoco(null);
+                  }}
+                  className={`block rounded-lg border px-3 py-2 transition-colors ${
+                    ativo
+                      ? "border-med bg-painel-alto"
+                      : "border-borda/60 hover:border-borda hover:bg-painel-alto"
+                  }`}
+                >
+                  <span
+                    className={`block text-base leading-snug ${
+                      ativo ? "font-semibold text-med" : "text-texto"
+                    }`}
+                  >
+                    {m.nome}
+                  </span>
+                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
+                    {primeira
+                      ? `${m.estacoes.length} ${m.estacoes.length > 1 ? "estações" : "estação"}`
+                      : "sem estação"}
+                    {primeira && (
+                      <span className="hidden sm:inline">
+                        {" · "}
+                        {primeira.inicio} → {primeira.fim}
+                      </span>
+                    )}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         {municipio.estacoes.length > 1 &&
           municipio.estacoes.map((e, indice) => (
             <button
@@ -209,7 +236,7 @@ export default function App({ dados }) {
               className={`rounded-lg px-3 py-2 text-sm transition-colors ${
                 indice === i
                   ? "bg-med font-semibold text-fundo"
-                  : "text-fraco hover:bg-painel-alto hover:text-texto"
+                  : "border border-borda text-fraco hover:bg-painel-alto hover:text-texto"
               }`}
             >
               {e.nome} · {e.id}
@@ -217,7 +244,7 @@ export default function App({ dados }) {
           ))}
 
         {estacao && (
-          <span className="ml-auto rounded-full bg-painel-alto px-3 py-1 text-xs text-fraco">
+          <span className="tabular ml-auto rounded-full bg-painel-alto px-3 py-1 text-xs text-fraco">
             {estacao.inicio} → {estacao.fim} · {estacao.total_meses} meses
           </span>
         )}

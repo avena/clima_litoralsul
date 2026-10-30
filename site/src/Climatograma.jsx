@@ -87,10 +87,10 @@ export default function Climatograma({ meses, foco, setFoco }) {
         return (
           <g key={i}>
             <line x1={dl} x2={dr} y1={y} y2={y} stroke="#1d2740" strokeDasharray="3 5" />
-            <text x={dl - 8} y={y + 4} textAnchor="end" fontSize="10" fill="#4cd7f6">
+            <text x={dl - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#4cd7f6">
               {Math.round(topoChuva * frac)}
             </text>
-            <text x={dr + 8} y={y + 4} textAnchor="start" fontSize="10" fill="#ffb690">
+            <text x={dr + 8} y={y + 4} textAnchor="start" fontSize="12" fill="#ffb690">
               {Math.round(baseT + (topoT - baseT) * frac)}°
             </text>
           </g>
@@ -113,7 +113,7 @@ export default function Climatograma({ meses, foco, setFoco }) {
               fill="url(#chuva)"
             />
           )}
-          <text x={x(i)} y={db + 20} textAnchor="middle" fontSize="10" fill="#8d90a0">
+          <text x={x(i)} y={db + 20} textAnchor="middle" fontSize="12" fill="#8d90a0">
             {m.mes}
           </text>
           <rect
@@ -125,6 +125,7 @@ export default function Climatograma({ meses, foco, setFoco }) {
             className="cursor-crosshair"
             onMouseEnter={() => setFoco(i)}
             onMouseLeave={() => setFoco(null)}
+            onClick={() => setFoco(foco === i ? null : i)}
           />
           {foco === i && (
             <line x1={x(i)} x2={x(i)} y1={dt} y2={db} stroke="#93a0bd" strokeOpacity="0.35" />
