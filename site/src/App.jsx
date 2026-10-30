@@ -56,50 +56,97 @@ function Card({ titulo, valor, unidade, cor = "text-texto", detalhes = [], barra
 }
 
 /** Meses civis de cada estação do ano no hemisfério sul. */
-const MESES_DA_ESTACAO = {
-  Verão: ["dez", "jan", "fev"],
-  Outono: ["mar", "abr", "mai"],
-  Inverno: ["jun", "jul", "ago"],
-  Primavera: ["set", "out", "nov"],
-};
-
 /**
  * Distribuição sazonal da chuva em barras horizontais, em mm e em %.
  *
- * Sob cada estação vão também o maior, o menor e a média dos meses que a
- * compõem — o total esconde que um verão chuvoso pode ser um mês extremo.
+ * Total, média/mês e os meses maior e menor vêm prontos do `dados.json`: quem
+ * calcula é o `relatorio.py`, para o site e a ficha em LaTeX não divergirem.
+ * Embaixo vão os acumulados que antecedem os solstícios — a água que a estação
+ * já recebeu quando o dia vira.
  */
 function Sazonal({ estacao }) {
-  const total = estacao.sazonal.reduce((soma, s) => soma + (s.mm ?? 0), 0) || 1;
   return (
-    <div className="mt-3 space-y-3">
-      {estacao.sazonal.map((s) => {
-        const meses = (MESES_DA_ESTACAO[s.nome] ?? [])
-          .map((mes) => estacao.meses.find((m) => m.mes === mes)?.chuva)
-          .filter((v) => v !== null && v !== undefined);
-        const media = meses.length ? meses.reduce((a, b) => a + b, 0) / meses.length : null;
-        return (
+    <>
+      <div className="mt-3 space-y-3">
+        {estacao.sazonal.map((s) => (
           <div key={s.nome}>
             <div className="flex justify-between text-xs">
               <span>{s.nome}</span>
               <span className="tabular text-chuva">
-                {fmt(s.mm)} mm · {fmt(((s.mm ?? 0) / total) * 100, 0)}%
+                {fmt(s.mm)} mm · {fmt(s.pct, 0)}%
               </span>
             </div>
             <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-painel-alto">
               <div
                 className="h-full rounded-full bg-chuva"
-                style={{ width: `${((s.mm ?? 0) / total) * 100}%` }}
+                style={{ width: `${s.pct ?? 0}%` }}
               />
             </div>
             <p className="tabular mt-1 text-[0.7rem] text-fraco">
-              máx {fmt(meses.length ? Math.max(...meses) : null, 0)} · mín{" "}
-              {fmt(meses.length ? Math.min(...meses) : null, 0)} · média {fmt(media, 0)} mm/mês
+              {`média ${fmt(s.media, 0)} mm/mês · maior ${fmt(s.max, 0)} (${s.max_mes}) ` +
+                `· menor ${fmt(s.min, 0)} (${s.min_mes})`}
             </p>
           </div>
-        );
-      })}
-    </div>
+        ))}
+      </div>
+      <div className="mt-3 border-t border-borda pt-2 text-[0.7rem]">
+        <p className="font-medium">Antes dos solstícios</p>
+        <ul className="mt-1 space-y-0.5 text-fraco">
+          {estacao.solsticios.map((s) => (
+            <li key={s.nome}>
+              <span className="tabular text-texto">{`${fmt(s.mm)} mm (${fmt(s.pct, 0)}%)`}</span>
+              {` — ${s.de} a ${s.ate}, antes do solstício de ${s.nome} ` +
+                `(${s.solsticio === "junho" ? "21/06" : "21/12"})`}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-1 text-fraco">
+          Dezembro fica depois do solstício de verão e entra no total anual, não nestes
+          acumulados.
+        </p>
+      </div>
+    </>
+  );
+}
+
+/**
+ * O que os números desta estação permitem decidir no calendário agrícola.
+ *
+ * O texto chega pronto do `dados.json` — cada item cita o número que o sustenta.
+ * O bloco recolhido é o que vale para qualquer município: é onde entra o que não
+ * depende da série, como "média não é previsão".
+ */
+function Uso({ estacao, regiao }) {
+  return (
+    <section className="mt-4 rounded-xl border border-borda bg-painel p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-base font-semibold">Uso no planejamento</h2>
+        <span className="text-xs text-fraco">
+          escrito a partir dos números desta estação
+        </span>
+      </div>
+      <ul className="mt-3 space-y-2 text-sm">
+        {estacao.uso.map((item) => (
+          <li key={item.titulo}>
+            <strong className="font-semibold">{item.titulo}:</strong>{" "}
+            <span className="text-fraco">{item.texto}</span>
+          </li>
+        ))}
+      </ul>
+      <details className="mt-3 border-t border-borda pt-2">
+        <summary className="cursor-pointer text-xs font-medium text-fraco hover:text-texto">
+          Vale para qualquer município da região
+        </summary>
+        <ul className="mt-2 space-y-2 text-sm">
+          {regiao.map((item) => (
+            <li key={item.titulo}>
+              <strong className="font-semibold">{item.titulo}:</strong>{" "}
+              <span className="text-fraco">{item.texto}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </section>
   );
 }
 
@@ -480,6 +527,8 @@ export default function App({ dados }) {
               ajuste por período — série curta continua sendo série curta.
             </p>
           </section>
+
+          <Uso estacao={estacao} regiao={dados.regiao.uso} />
 
           <p className="mt-4 text-xs text-fraco">
             {estacao.aviso_descarte ??

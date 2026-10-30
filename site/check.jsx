@@ -59,6 +59,16 @@ const checagens = [
   ],
   [fixado.includes('stroke-width="1.6"'), "mês clicado fica fixado no gráfico"],
   [registro.includes("mm/mês"), "sazonal mostra máx, mín e média"],
+  [registro.includes("média 206 mm/mês"), "média mensal da estação vem do dados.json"],
+  [registro.includes("Antes dos solstícios"), "acumulado antes dos solstícios presente"],
+  [registro.includes("antes do solstício de inverno (21/06)"), "solstício de inverno datado"],
+  [registro.includes("Uso no planejamento"), "card de uso agronômico presente"],
+  [registro.includes("Vale para qualquer município da região"), "orientação geral separada da local"],
+  [registro.includes("Calagem em cobertura"), "orientação local cita a janela de calagem"],
+  [
+    (registro.match(/Uso no planejamento/g) || []).length === 1,
+    "card de uso aparece uma vez, não por estação vizinha",
+  ],
   [registro.includes("Chuva anual por estação"), "ranking de chuva anual presente"],
   [/NaN|undefined|Infinity/.test(registro) === false, "sem NaN/undefined no HTML"],
 ];
