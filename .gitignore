@@ -3,5 +3,9 @@ __pycache__/
 dados/
 relatorios/
 
+# build do SPA: node_modules e dist saem do npm; dados.json é versionado
+site/node_modules/
+site/dist/
+
 # material de terceiros, guardado só como evidência da revisão em .planning/PLANO.md
 .planning/arquivo/

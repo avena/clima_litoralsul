@@ -1,0 +1,15 @@
+[build]
+  base = "site"
+  command = "npm run build"
+  publish = "dist"
+
+# SPA com rota em hash (#/registro): nada de rewrite de rota no servidor.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/dados.json"
+  [headers.values]
+    Cache-Control = "public, max-age=300"

@@ -1,0 +1,29 @@
+name: Deploy estático (Netlify/Vercel)
+
+# Dispara o build da plataforma quando `site/public/dados.json` ou o código do
+# `site/` mudam. Sem cron: a coleta do CIIAGRO é manual e roda no shell.
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", "netlify.toml", "vercel.json", ".github/workflows/deploy.yml"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Netlify
+        if: ${{ secrets.NETLIFY_DEPLOY_HOOK_URL != '' }}
+        uses: lwojcik/github-action-deploy-static-site@v1
+        with:
+          platform: netlify
+          netlify_deploy_hook_url: ${{ secrets.NETLIFY_DEPLOY_HOOK_URL }}
+          always_deploy: true
+
+      - name: Vercel
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' }}
+        uses: lwojcik/github-action-deploy-static-site@v1
+        with:
+          platform: vercel
+          vercel_deploy_hook_url: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          always_deploy: true
