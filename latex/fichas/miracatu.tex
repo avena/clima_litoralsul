@@ -2,51 +2,66 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[brazilian]{babel}
-\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage[a4paper,margin=1.5cm]{geometry}
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{3pt}
-\definecolor{chuva}{HTML}{1B7F9E}
-\definecolor{cinza}{HTML}{666666}
-\newcommand{\barra}[1]{\textcolor{chuva}{\rule{#1mm}{2.4pt}}}
+\setlength{\parskip}{2pt}
+% Paleta monocromática: só a escala gray do xcolor, para impressão em toner.
+\definecolor{cinza}{gray}{0.35}
+\definecolor{cinzaclaro}{gray}{0.94}
+\definecolor{borda}{gray}{0.75}
+\definecolor{fundocard}{gray}{0.98}
+\definecolor{barras}{gray}{0.15}
+\newcommand{\barra}[1]{\textcolor{barras}{\rule{#1mm}{2.4pt}}}
+% Cartão de indicador: rótulo, número em destaque e rodapé de contexto.
+\newcommand{\kpicard}[3]{%
+  \fcolorbox{borda}{fundocard}{%
+    \begin{minipage}[c][1.4cm][c]{\dimexpr0.32\textwidth-2\fboxsep-2\fboxrule\relax}
+      \centering
+      {\scriptsize\bfseries\color{cinza} #1}\\[2pt]
+      {\Large\bfseries #2}\\[1.5pt]
+      {\tiny\color{cinza} #3}%
+    \end{minipage}%
+  }%
+}
 \begin{document}
 
-{\Large\bfseries Miracatu --- climatologia das médias}\\[1pt]
-{\small Estação CIIAGRO/IAC 43 \,\textbullet\, 323 meses
-medidos (1990-01 a 2026-10) \,\textbullet\, \textbf{25 anos com os 12 meses fechados}}
+{\Large\bfseries Miracatu --- climatologia das médias}\\[2pt]
+{\small Estação CIIAGRO/IAC 43 \,\textbullet\,
+323 meses medidos (1990-01 a 2026-10)}\\[1pt]
+{\footnotesize \textbf{25 anos com os 12 meses fechados} --- médias do período medido, não previsão do tempo.}
 
-\vspace{3pt}
-\colorbox{cinza!8}{\parbox{\dimexpr\textwidth-2\fboxsep}{\small
+\vspace{4pt}
+\colorbox{cinzaclaro}{%
+\parbox{\dimexpr\textwidth-2\fboxsep}{%
+\footnotesize
 \textbf{Leia antes de usar:} os números abaixo são \textbf{médias de vários anos},
-calculadas a partir das medições mensais do CIIAGRO. \textbf{Não é previsão do tempo}
-para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
-calendário agrícola, manejo de solo e planejamento da propriedade.}}
+obtidas das medições mensais do CIIAGRO. \textbf{Não é previsão meteorológica} para
+os próximos dias nem para esta safra.\par\vspace{2pt}
+\textbf{Aplicação prática:} este é o comportamento médio esperado da estação ---
+base técnica para o calendário agrícola, as janelas de calagem, o preparo do solo e
+o manejo conservacionista.%
+}}
 
-\vspace{5pt}
-\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
-\textbf{Chuva anual média} & \textbf{Mês mais chuvoso} & \textbf{Mês mais seco} \\
-{\LARGE 1.316} mm/ano &
-{\LARGE 221} mm & {\LARGE 47} mm \\
-{\small em todo o ano} & {\small em janeiro} &
-{\small em agosto} \\
-\end{tabular}
+\vspace{4pt}
+\noindent
+\kpicard{Chuva anual média}{1.316 mm/ano}{em todo o ano}\hfill
+\kpicard{Mês mais chuvoso}{221 mm}{em janeiro}\hfill
+\kpicard{Mês mais seco}{47 mm}{em agosto}
 
-\vspace{3pt}
-\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
-\textbf{Temperatura média} & \textbf{Mês mais quente} & \textbf{Mês mais frio} \\
-{\LARGE 22,8} °C & 26,7 °C &
-18,8 °C \\
-{\small em todo o ano} & {\small em fevereiro} &
-{\small em julho} \\
-\end{tabular}
+\vspace{2pt}
+\noindent
+\kpicard{Temperatura média}{22,8 \textdegree{}C}{média dos 12 meses}\hfill
+\kpicard{Mês mais quente}{26,7 \textdegree{}C}{em fevereiro}\hfill
+\kpicard{Mês mais frio}{18,8 \textdegree{}C}{em julho}
 
-\vspace{6pt}
-{\bfseries Chuva média por mês do ano}
-\vspace{1pt}
+\vspace{4pt}
+\begin{center}
+{\bfseries\small Tabela 1: Chuva média por mês do ano}\\[2pt]
 {\small
 \begin{tabular}{@{}l r l r r r@{}}
 \toprule
@@ -68,10 +83,10 @@ dezembro   &   151 & \barra{17.8}   & 20,1 & 25,7 & 31,3 \\
 ano & 1.316 & & & 22,8 & \\
 \bottomrule
 \end{tabular}}
+\end{center}
 
-\vspace{5pt}
-{\bfseries Chuva por estação do ano}
-\vspace{1pt}
+\begin{center}
+{\bfseries\small Tabela 2: Chuva por estação do ano}\\[2pt]
 {\small
 \begin{tabular}{@{}l l r r r l l@{}}
 \toprule
@@ -83,42 +98,42 @@ Inverno    & jun--ago &   173 &  13\% &   58 & 64 (jun) & 47 (ago) \\
 Primavera  & set--nov &   291 &  22\% &   97 & 107 (nov) & 88 (set) \\
 \bottomrule
 \end{tabular}}
+\end{center}
 
-\vspace{3pt}
-{\small\textbf{Antes dos solstícios} (acumulado desde janeiro)}
-
-{\small
-inverno: janeiro a maio somam 694 mm (53\% do ano) \quad\textbullet\quad
-verão: junho a novembro somam 464 mm (35\% do ano)
-\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
-acumulados acima.}
-
-\vspace{5pt}
-{\bfseries Como usar no planejamento nesta estação}
-\small\begin{itemize}\setlength{\itemsep}{1pt}
-  \item \textbf{Amostragem de solo e preparo mecânico}: Em abril, maio, junho, julho, agosto, setembro e outubro a chuva média fica entre 47 e 97 mm/mês — é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência.
-  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de dezembro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
-  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 552 mm, 42\% da chuva do ano — favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
-  \item \textbf{Excesso de chuva e conservação}: janeiro passa de 200 mm em média (221 mm): canteiros altos, drenagem limpa e cobertura morta antes da temporada, para não perder solo e adubo no escoamento.
-  \item \textbf{Calor, frio e fitossanidade}: fevereiro tem a maior média (26,7 °C) e julho a menor (18,8 °C, com mínima média de 13,1 °C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
-\end{itemize}
+\vspace{1pt}
+{\footnotesize\textbf{Antes dos solstícios} (acumulado desde janeiro):
+inverno: janeiro a maio somam 694 mm (53\% do ano) \,\textbullet\, verão: junho a novembro somam 464 mm (35\% do ano). Dezembro fica depois do solstício de verão e entra só no total
+anual.}
 
 \vspace{2pt}
-{\bfseries Vale para qualquer município da região}
-\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+{\bfseries\small Como usar no planejamento nesta estação}
+
+\footnotesize\begin{itemize}\setlength{\itemsep}{0.5pt}
+  \item \textbf{Amostragem de solo e preparo mecânico}: Em abril, maio, junho, julho, agosto, setembro e outubro a chuva média fica entre 47 e 97 mm/mês \textemdash{} é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência.
+  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de dezembro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
+  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 552 mm, 42\% da chuva do ano \textemdash{} favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
+  \item \textbf{Excesso de chuva e conservação}: janeiro passa de 200 mm em média (221 mm): canteiros altos, drenagem limpa e cobertura morta antes da temporada, para não perder solo e adubo no escoamento.
+  \item \textbf{Calor, frio e fitossanidade}: fevereiro tem a maior média (26,7 \textdegree{}C) e julho a menor (18,8 \textdegree{}C, com mínima média de 13,1 \textdegree{}C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
+\end{itemize}
+
+\vspace{1pt}
+{\bfseries\small Vale para qualquer município da região}
+
+\scriptsize\begin{itemize}\setlength{\itemsep}{0.5pt}
   \item \textbf{Média não é previsão}: Descrevem o padrão de vários anos, não o tempo deste ano: use para escolher a janela de cada operação, e decida no campo.
   \item \textbf{Corrija antes de precisar}: Calcário reage em meses; aplicado na janela seca, chega ao plantio já reagido.
   \item \textbf{Chuva em mm não é água no solo}: Textura, declive e cobertura morta decidem quanto do que cai chega à raiz.
   \item \textbf{Série curta é pista, não padrão}: Poucos anos fechados oscilam muito: compare com a estação vizinha antes de fixar calendário.
 \end{itemize}
 
-\vspace{2pt}
-{\footnotesize\color{cinza}
-Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
-Painel interativo:
-\href{https://climalitoralsul.netlify.app/\#miracatu}{\texttt{climalitoralsul.netlify.app/\#miracatu}}\\
-Umidade relativa ficou fora: a fonte usa \texttt{0} para ``sem sensor'', o que tornaria a média enganosa. Rótulo do painel: médias do período 1990–2026 (26.9 anos de dado; parte da série não validada).
-3 leitura(s) fora da faixa de sanidade excluída(s) da média (tmed 2, tmax 1); o banco as preserva.
+\vspace{1pt}
+{\tiny\color{cinza}
+Fonte: CIIAGRO/IAC (\href{http://ciiagro.org.br}{ciiagro.org.br}), série mensal
+medida; chuva é o total do mês. Painel:
+\href{https://climalitoralsul.netlify.app/\#miracatu}%
+{\texttt{climalitoralsul.netlify.app/\#miracatu}}.
+Umidade relativa omitida: a fonte usa \texttt{0} para ``sem sensor''.
+médias do período 1990\textendash{}2026 (26.9 anos de dado; parte da série não validada). 3 leitura(s) fora da faixa de sanidade excluída(s) da média (tmed 2, tmax 1); o banco as preserva.
 Gerado a partir de \texttt{dados.json} de 2026-10-30.}
 
 \end{document}

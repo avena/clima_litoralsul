@@ -14,13 +14,20 @@ Compilar exige LaTeX (pdfLaTeX ou tectonic); este script só escreve o `.tex`.
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
+import os
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 DADOS = RAIZ / "site" / "public" / "dados.json"
 SAIDA = Path(__file__).resolve().parent / "fichas"
+# O site serve isto: `public/` vai cru para o `dist` do Vite, então o link
+# "ficha em PDF" do painel aponta para `fichas/<slug>.pdf` sem rewrite nenhum.
+PUBLICO = RAIZ / "site" / "public" / "fichas"
 
 MESES_LONGOS = {
     "jan": "janeiro", "fev": "fevereiro", "mar": "março", "abr": "abril",
@@ -60,11 +67,21 @@ def tex(texto: str) -> str:
         texto: trecho vindo do JSON (nome de estação, texto de planejamento).
 
     Returns:
-        O mesmo texto com `& % $ # _ { } ~ ^ \\` escapados.
+        O mesmo texto com `& % $ # _ { } ~ ^ \\` escapados, e os travessões e o
+        grau trocados pelos comandos que existem em T1.
+
+    Nota:
+        O `—`, o `–` e o `°` viram `\\textemdash{}`, `\\textendash{}` e
+        `\\textdegree{}` porque o caractere literal só está no lugar certo em
+        pdfLaTeX: o XeTeX (tectonic) manda o Unicode cru para a fonte `ec-lmr`,
+        e o resultado é pior que um aviso — o `°` sai impresso como `¤`, sem
+        erro nenhum. Descobri isso rasterizando a página.
     """
     mapa = {"&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_",
             "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}",
-            "^": r"\textasciicircum{}", "\\": r"\textbackslash{}"}
+            "^": r"\textasciicircum{}", "\\": r"\textbackslash{}",
+            "\u2014": r"\textemdash{}", "\u2013": r"\textendash{}",
+            "\u00b0": r"\textdegree{}"}
     return "".join(mapa.get(c, c) for c in texto)
 
 
@@ -132,7 +149,7 @@ def _solsticios(est: dict) -> str:
         est: estação do JSON, com `solsticios` calculados.
 
     Returns:
-        Duas linhas de texto em LaTeX, uma por solstício.
+        O acumulado de cada solstício separado por bolinha, em LaTeX.
 
     Nota:
         O acumulado vai de janeiro até o mês que antecede o solstício, e usa a
@@ -144,7 +161,7 @@ def _solsticios(est: dict) -> str:
         partes.append(
             f'{s["nome"]}: {s["de"]} a {s["ate"]} somam {num(s["mm"])} mm '
             f'({num(s["pct"])}\\% do ano)')
-    return " \\quad\\textbullet\\quad\n".join(partes)
+    return " \\,\\textbullet\\, ".join(partes)
 
 
 def _itens(lista: list[dict], tamanho: str = "") -> str:
@@ -152,16 +169,31 @@ def _itens(lista: list[dict], tamanho: str = "") -> str:
 
     Args:
         lista: itens `{"titulo", "texto"}` vindos do `dados.json`.
-        tamanho: comando de tamanho a aplicar (`\\small` ou vazio).
+        tamanho: declaração de tamanho a aplicar (`\\footnotesize` ou vazio).
 
     Returns:
         Bloco `itemize` em LaTeX, com o título em negrito e o número no texto.
+        O `\\itemsep` reduzido é o que faz cinco itens caberem na página.
     """
     corpo = "\n".join(
         f"  \\item \\textbf{{{tex(i['titulo'])}}}: {tex(i['texto'])}" for i in lista)
-    abertura = f"{tamanho}\\begin{{itemize}}\\setlength{{\\itemsep}}{{1pt}}" if tamanho \
-        else "\\begin{itemize}\\setlength{\\itemsep}{1pt}"
+    abertura = (f"{tamanho}\\begin{{itemize}}\\setlength{{\\itemsep}}{{0.5pt}}"
+                if tamanho else "\\begin{itemize}\\setlength{\\itemsep}{0.5pt}")
     return f"{abertura}\n{corpo}\n\\end{{itemize}}"
+
+
+def _kpi(rotulo: str, valor: str, rodape: str) -> str:
+    """Monta um cartão de indicador em três níveis: rótulo, número e contexto.
+
+    Args:
+        rotulo: o que o número mede, ex.: `Chuva anual média`.
+        valor: número já formatado, com unidade, ex.: `1.377 mm/ano`.
+        rodape: quando ou onde esse número vale, ex.: `em janeiro`.
+
+    Returns:
+        Chamada de `\\kpicard` em LaTeX, sem quebra de linha no fim.
+    """
+    return f"\\kpicard{{{tex(rotulo)}}}{{{tex(valor)}}}{{{tex(rodape)}}}"
 
 
 def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
@@ -173,7 +205,13 @@ def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
         regiao: itens de orientação válidos para todas as estações.
 
     Returns:
-        Documento LaTeX completo, pronto para pdfLaTeX ou tectonic.
+        Documento LaTeX completo em preto e branco, para pdfLaTeX ou tectonic.
+
+    Nota:
+        Toda a paleta é a escala `gray` do `xcolor`: a ficha é impressa em toner
+        na ATER. Matiz não sobrevive a impressão P&B — o azul do painel vira
+        cinza médio e some contra a barra. A hierarquia vem de peso de traço e de
+        caixa, não de cor.
     """
     nome = tex(est["nome"])
     municipio = tex(est["municipio"])
@@ -182,64 +220,92 @@ def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
     titulo = nome if nome.startswith(municipio) else f"{municipio} --- {nome}"
     fechados = est["anos_completos"]
     ressalva = (
-        f"série curta: apenas {fechados} anos com os 12 meses fechados --- trate "
-        r"como referência do período medido, não como padrão consolidado"
+        f"\\textbf{{Atenção à série curta:}} apenas {fechados} anos com os 12 meses "
+        f"fechados --- referência do período medido, não padrão consolidado."
         if fechados < SERIE_CURTA else
-        f"{fechados} anos com os 12 meses fechados"
+        f"\\textbf{{{fechados} anos com os 12 meses fechados}} --- médias do período "
+        f"medido, não previsão do tempo."
     )
-    descarte = (f"\n{tex(est['aviso_descarte'])}" if est.get("aviso_descarte") else "")
-    umidade = ("Umidade relativa ficou fora: a fonte usa \\texttt{0} para ``sem "
-               "sensor'', o que tornaria a média enganosa.")
+    descarte = (f" {tex(est['aviso_descarte'])}" if est.get("aviso_descarte") else "")
+
+    chuva = [
+        _kpi("Chuva anual média", f"{num(est['chuva_ano'])} mm/ano", "em todo o ano"),
+        _kpi("Mês mais chuvoso", f"{num(est['chuva_max'])} mm",
+             f"em {MESES_LONGOS.get(est['mes_chuvoso'], '---')}"),
+        _kpi("Mês mais seco", f"{num(est['chuva_min'])} mm",
+             f"em {MESES_LONGOS.get(est['mes_seco'], '---')}"),
+    ]
+    temperatura = [
+        _kpi("Temperatura média", f"{num(est['tmed_media'], 1)} °C",
+             "média dos 12 meses"),
+        _kpi("Mês mais quente", f"{num(est['quente_t'], 1)} °C",
+             f"em {MESES_LONGOS.get(est['quente'], '---')}"),
+        _kpi("Mês mais frio", f"{num(est['frio_t'], 1)} °C",
+             f"em {MESES_LONGOS.get(est['frio'], '---')}"),
+    ]
+    linha_chuva = "\\hfill\n".join(chuva)
+    linha_temperatura = "\\hfill\n".join(temperatura)
 
     return rf"""\documentclass[10pt,a4paper]{{article}}
 \usepackage[T1]{{fontenc}}
 \usepackage[utf8]{{inputenc}}
 \usepackage[brazilian]{{babel}}
-\usepackage[a4paper,margin=1.6cm]{{geometry}}
+\usepackage[a4paper,margin=1.5cm]{{geometry}}
 \usepackage{{booktabs}}
 \usepackage{{xcolor}}
 \usepackage{{microtype}}
 \usepackage[hidelinks]{{hyperref}}
 \pagestyle{{empty}}
 \setlength{{\parindent}}{{0pt}}
-\setlength{{\parskip}}{{3pt}}
-\definecolor{{chuva}}{{HTML}}{{1B7F9E}}
-\definecolor{{cinza}}{{HTML}}{{666666}}
-\newcommand{{\barra}}[1]{{\textcolor{{chuva}}{{\rule{{#1mm}}{{2.4pt}}}}}}
+\setlength{{\parskip}}{{2pt}}
+% Paleta monocromática: só a escala gray do xcolor, para impressão em toner.
+\definecolor{{cinza}}{{gray}}{{0.35}}
+\definecolor{{cinzaclaro}}{{gray}}{{0.94}}
+\definecolor{{borda}}{{gray}}{{0.75}}
+\definecolor{{fundocard}}{{gray}}{{0.98}}
+\definecolor{{barras}}{{gray}}{{0.15}}
+\newcommand{{\barra}}[1]{{\textcolor{{barras}}{{\rule{{#1mm}}{{2.4pt}}}}}}
+% Cartão de indicador: rótulo, número em destaque e rodapé de contexto.
+\newcommand{{\kpicard}}[3]{{%
+  \fcolorbox{{borda}}{{fundocard}}{{%
+    \begin{{minipage}}[c][1.4cm][c]{{\dimexpr0.32\textwidth-2\fboxsep-2\fboxrule\relax}}
+      \centering
+      {{\scriptsize\bfseries\color{{cinza}} #1}}\\[2pt]
+      {{\Large\bfseries #2}}\\[1.5pt]
+      {{\tiny\color{{cinza}} #3}}%
+    \end{{minipage}}%
+  }}%
+}}
 \begin{{document}}
 
-{{\Large\bfseries {titulo} --- climatologia das médias}}\\[1pt]
-{{\small Estação CIIAGRO/IAC {tex(str(est["id"]))} \,\textbullet\, {est["total_meses"]} meses
-medidos ({est["inicio"]} a {est["fim"]}) \,\textbullet\, \textbf{{{ressalva}}}}}
+{{\Large\bfseries {titulo} --- climatologia das médias}}\\[2pt]
+{{\small Estação CIIAGRO/IAC {tex(str(est["id"]))} \,\textbullet\,
+{est["total_meses"]} meses medidos ({est["inicio"]} a {est["fim"]})}}\\[1pt]
+{{\footnotesize {ressalva}}}
 
-\vspace{{3pt}}
-\colorbox{{cinza!8}}{{\parbox{{\dimexpr\textwidth-2\fboxsep}}{{\small
+\vspace{{4pt}}
+\colorbox{{cinzaclaro}}{{%
+\parbox{{\dimexpr\textwidth-2\fboxsep}}{{%
+\footnotesize
 \textbf{{Leia antes de usar:}} os números abaixo são \textbf{{médias de vários anos}},
-calculadas a partir das medições mensais do CIIAGRO. \textbf{{Não é previsão do tempo}}
-para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
-calendário agrícola, manejo de solo e planejamento da propriedade.}}}}
+obtidas das medições mensais do CIIAGRO. \textbf{{Não é previsão meteorológica}} para
+os próximos dias nem para esta safra.\par\vspace{{2pt}}
+\textbf{{Aplicação prática:}} este é o comportamento médio esperado da estação ---
+base técnica para o calendário agrícola, as janelas de calagem, o preparo do solo e
+o manejo conservacionista.%
+}}}}
 
-\vspace{{5pt}}
-\begin{{tabular}}{{@{{}}p{{0.31\textwidth}}p{{0.31\textwidth}}p{{0.31\textwidth}}@{{}}}}
-\textbf{{Chuva anual média}} & \textbf{{Mês mais chuvoso}} & \textbf{{Mês mais seco}} \\
-{{\LARGE {num(est["chuva_ano"])}}} mm/ano &
-{{\LARGE {num(est["chuva_max"])}}} mm & {{\LARGE {num(est["chuva_min"])}}} mm \\
-{{\small em todo o ano}} & {{\small em {MESES_LONGOS.get(est["mes_chuvoso"], "---")}}} &
-{{\small em {MESES_LONGOS.get(est["mes_seco"], "---")}}} \\
-\end{{tabular}}
+\vspace{{4pt}}
+\noindent
+{linha_chuva}
 
-\vspace{{3pt}}
-\begin{{tabular}}{{@{{}}p{{0.31\textwidth}}p{{0.31\textwidth}}p{{0.31\textwidth}}@{{}}}}
-\textbf{{Temperatura média}} & \textbf{{Mês mais quente}} & \textbf{{Mês mais frio}} \\
-{{\LARGE {num(est["tmed_media"], 1)}}} °C & {num(est["quente_t"], 1)} °C &
-{num(est["frio_t"], 1)} °C \\
-{{\small em todo o ano}} & {{\small em {MESES_LONGOS.get(est["quente"], "---")}}} &
-{{\small em {MESES_LONGOS.get(est["frio"], "---")}}} \\
-\end{{tabular}}
+\vspace{{2pt}}
+\noindent
+{linha_temperatura}
 
-\vspace{{6pt}}
-{{\bfseries Chuva média por mês do ano}}
-\vspace{{1pt}}
+\vspace{{4pt}}
+\begin{{center}}
+{{\bfseries\small Tabela 1: Chuva média por mês do ano}}\\[2pt]
 {{\small
 \begin{{tabular}}{{@{{}}l r l r r r@{{}}}}
 \toprule
@@ -250,10 +316,10 @@ mês & chuva (mm) & perfil & t mín & t méd & t máx \\
 ano & {num(est["chuva_ano"])} & & & {num(est["tmed_media"], 1)} & \\
 \bottomrule
 \end{{tabular}}}}
+\end{{center}}
 
-\vspace{{5pt}}
-{{\bfseries Chuva por estação do ano}}
-\vspace{{1pt}}
+\begin{{center}}
+{{\bfseries\small Tabela 2: Chuva por estação do ano}}\\[2pt]
 {{\small
 \begin{{tabular}}{{@{{}}l l r r r l l@{{}}}}
 \toprule
@@ -262,33 +328,75 @@ estação & meses & total (mm) & \% do ano & média/mês & maior mês & menor m�
 {_tabela_sazonal(est)}
 \bottomrule
 \end{{tabular}}}}
+\end{{center}}
 
-\vspace{{3pt}}
-{{\small\textbf{{Antes dos solstícios}} (acumulado desde janeiro)}}
-
-{{\small
-{_solsticios(est)}
-\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
-acumulados acima.}}
-
-\vspace{{5pt}}
-{{\bfseries Como usar no planejamento nesta estação}}
-{_itens(est["uso"], "\\small")}
+\vspace{{1pt}}
+{{\footnotesize\textbf{{Antes dos solstícios}} (acumulado desde janeiro):
+{_solsticios(est)}. Dezembro fica depois do solstício de verão e entra só no total
+anual.}}
 
 \vspace{{2pt}}
-{{\bfseries Vale para qualquer município da região}}
-{_itens(regiao, "\\footnotesize")}
+{{\bfseries\small Como usar no planejamento nesta estação}}
 
-\vspace{{2pt}}
-{{\footnotesize\color{{cinza}}
-Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
-Painel interativo:
-\href{{https://climalitoralsul.netlify.app/\#{est["slug"]}}}{{\texttt{{climalitoralsul.netlify.app/\#{est["slug"]}}}}}\\
-{umidade} Rótulo do painel: {tex(est["rotulo"])}.{descarte}
+{_itens(est["uso"], "\\footnotesize")}
+
+\vspace{{1pt}}
+{{\bfseries\small Vale para qualquer município da região}}
+
+{_itens(regiao, "\\scriptsize")}
+
+\vspace{{1pt}}
+{{\tiny\color{{cinza}}
+Fonte: CIIAGRO/IAC (\href{{http://ciiagro.org.br}}{{ciiagro.org.br}}), série mensal
+medida; chuva é o total do mês. Painel:
+\href{{https://climalitoralsul.netlify.app/\#{est["slug"]}}}%
+{{\texttt{{climalitoralsul.netlify.app/\#{est["slug"]}}}}}.
+Umidade relativa omitida: a fonte usa \texttt{{0}} para ``sem sensor''.
+{tex(est["rotulo"])}.{descarte}
 Gerado a partir de \texttt{{dados.json}} de {gerado}.}}
 
 \end{{document}}
 """
+
+
+def compilar(arquivos: list[Path], destino: Path, gerado: str) -> list[Path]:
+    """Compila cada `.tex` em PDF na pasta pública do site.
+
+    Args:
+        arquivos: caminhos dos `.tex` escritos por `gerar`.
+        destino: diretório onde os PDFs ficam, servido pelo site.
+        gerado: data do `dados.json` (AAAA-MM-DD), usada como carimbo de tempo.
+
+    Returns:
+        Lista dos PDFs gerados, na mesma ordem dos `.tex`.
+
+    Raises:
+        SystemExit: quando o `tectonic` não está instalado.
+
+    Nota:
+        `SOURCE_DATE_EPOCH` fixa o carimbo do PDF na data dos dados. Sem isso o
+        `tectonic` grava a hora da compilação e o PDF muda em todo build — 15
+        arquivos binários sujos no git a cada `deploy.sh`, sem nada ter mudado.
+    """
+    exe = shutil.which("tectonic")
+    if exe is None:
+        raise SystemExit(
+            "tectonic não encontrado; instale com `brew install tectonic` ou "
+            "compile os .tex no Overleaf e deixe os PDFs em " + str(destino))
+    destino.mkdir(parents=True, exist_ok=True)
+    carimbo = 0
+    if gerado:
+        carimbo = int(datetime.datetime.fromisoformat(gerado)
+                      .replace(tzinfo=datetime.timezone.utc).timestamp())
+    ambiente = {**os.environ}
+    if carimbo:
+        ambiente["SOURCE_DATE_EPOCH"] = str(carimbo)
+    pdfs = []
+    for tex in arquivos:
+        subprocess.run([exe, "-X", "compile", "--outdir", str(destino), str(tex)],
+                       check=True, capture_output=True, text=True, env=ambiente)
+        pdfs.append(destino / f"{tex.stem}.pdf")
+    return pdfs
 
 
 def gerar(dados: dict, destino: Path) -> list[Path]:
@@ -328,6 +436,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Gera fichas A4 em LaTeX.")
     parser.add_argument("--dados", type=Path, default=DADOS)
     parser.add_argument("--saida", type=Path, default=SAIDA)
+    parser.add_argument("--pdf", action="store_true",
+                        help="compila com tectonic para site/public/fichas")
+    parser.add_argument("--pdf-em", type=Path, default=PUBLICO,
+                        help="diretório dos PDFs (padrão: site/public/fichas)")
     args = parser.parse_args(argv)
 
     dados = json.loads(args.dados.read_text(encoding="utf-8"))
@@ -339,6 +451,9 @@ def main(argv: list[str] | None = None) -> int:
     if sujos:
         print("valor ausente vazou para o .tex:", ", ".join(sujos), file=sys.stderr)
         return 1
+    if args.pdf:
+        pdfs = compilar(arquivos, args.pdf_em, dados["gerado"])
+        print(f"{len(pdfs)} PDFs em {args.pdf_em}")
     return 0
 
 

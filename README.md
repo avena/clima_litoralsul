@@ -82,6 +82,33 @@ hover mostra no desktop.
 No rodapé ficam a data de sincronização do `dados.json`, o período coberto, o
 hash do build e do commit inicial, o link do repositório e o resumo do ambiente.
 
+## Fichas em PDF (uma página por estação)
+
+```bash
+python3 latex/gerar.py --pdf            # .tex + PDF em site/public/fichas/
+python3 latex/gerar.py                  # só os .tex
+tectonic -X compile latex/fichas/registro.tex    # um PDF avulso
+```
+
+O painel linka a ficha **na mesma linha do título do climatograma** ("ficha em
+PDF"): o link é a rota da estação, não a do município — `#/registro-unesp` abre
+`fichas/registro-unesp.pdf`.
+
+O PDF é versionado em `site/public/fichas/`, porque o Netlify não tem TeX e o
+`vite build` só copia `public/` para `dist/`. `SOURCE_DATE_EPOCH` fixa o carimbo
+do PDF na data do `dados.json`: sem isso cada build geraria 15 binários novos
+sem uma vírgula de diferença.
+
+Cada ficha cabe em **uma folha A4** e é **preto e branco estrito**: a paleta é a
+escala `gray` do `xcolor` (barras `gray 0.15`, contorno `gray 0.75`, fundo de
+cartão `gray 0.98`, caixa de aviso `gray 0.94`, texto secundário `gray 0.35`).
+Matiz não sobrevive à impressão em toner — o azul do painel viraria cinza médio e
+sumiria contra a barra.
+
+O conteúdo vem inteiro do `dados.json`: médias mensais, estações do ano,
+acumulados antes dos solstícios e o texto de uso no planejamento que também
+aparece no painel. A ficha só tipografa, então não tem como discordar do site.
+
 ## Deploy (Netlify ou Vercel)
 
 Build estático, sem backend. `dados.json` é **versionado** justamente porque o
