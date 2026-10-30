@@ -41,7 +41,16 @@ const num = (v, casas = 1) => v.toFixed(casas).replace(".", ",");
  * alguém escolhe uma na legenda. O que muda é `rotular` — a série escolhida
  * ganha o valor de cada mês impresso ao lado da barra ou do ponto.
  */
-export default function Climatograma({ meses, foco, setFoco, rotular = null }) {
+export default function Climatograma({
+  meses,
+  foco,
+  setFoco,
+  fixo = null,
+  setFixo = () => {},
+  rotular = null,
+}) {
+  // Mês fixado pelo clique vence o hover; passar o mouse depois não o solta.
+  const mes = fixo ?? foco;
 
   const maxChuva = maior(meses, "chuva") ?? 0;
   const topoChuva = Math.max(100, Math.ceil(maxChuva / 50) * 50);
@@ -152,10 +161,18 @@ export default function Climatograma({ meses, foco, setFoco, rotular = null }) {
             className="cursor-crosshair"
             onMouseEnter={() => setFoco(i)}
             onMouseLeave={() => setFoco(null)}
-            onClick={() => setFoco(foco === i ? null : i)}
+            onClick={() => setFixo(fixo === i ? null : i)}
           />
-          {foco === i && (
-            <line x1={x(i)} x2={x(i)} y1={dt} y2={db} stroke="#93a0bd" strokeOpacity="0.35" />
+          {mes === i && (
+            <line
+              x1={x(i)}
+              x2={x(i)}
+              y1={dt}
+              y2={db}
+              stroke="#93a0bd"
+              strokeWidth={fixo === i ? 1.6 : 1}
+              strokeOpacity={fixo === i ? 0.7 : 0.35}
+            />
           )}
         </g>
       ))}

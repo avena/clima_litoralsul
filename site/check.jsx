@@ -22,6 +22,10 @@ const soChuva = renderToString(
 const semRotulo = renderToString(
   <Climatograma meses={meses} foco={null} setFoco={() => {}} />,
 );
+// Mês fixado pelo clique: a guia fica mais forte e não some no mouseleave.
+const fixado = renderToString(
+  <Climatograma meses={meses} foco={null} setFoco={() => {}} fixo={6} />,
+);
 const itanhaem = renderar("#/itanhaem");
 const pariquera = renderar("#/pariquera-acu");
 const unesp = renderar("#/registro-unesp");
@@ -53,6 +57,7 @@ const checagens = [
     !semRotulo.includes(">248<") && semRotulo.includes("<polyline"),
     "sem destaque o gráfico fica com as quatro séries e sem números",
   ],
+  [fixado.includes('stroke-width="1.6"'), "mês clicado fica fixado no gráfico"],
   [registro.includes("mm/mês"), "sazonal mostra máx, mín e média"],
   [registro.includes("Chuva anual por estação"), "ranking de chuva anual presente"],
   [/NaN|undefined|Infinity/.test(registro) === false, "sem NaN/undefined no HTML"],

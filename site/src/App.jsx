@@ -202,6 +202,7 @@ export default function App({ dados }) {
   const daHash = () => decodeURIComponent(location.hash.replace(/^#\/?/, ""));
   const [slug, setSlug] = useState(daHash);
   const [foco, setFoco] = useState(null);
+  const [fixo, setFixo] = useState(null);
   // Nenhuma série some do gráfico: `rotular` só diz qual delas mostra os valores.
   const [rotular, setRotular] = useState(null);
 
@@ -217,6 +218,7 @@ export default function App({ dados }) {
   const estacao =
     estacoes.find((e) => e.slug === slug) ?? (semEstacao ? null : estacoes[0]);
   const municipio = estacao ? estacao.municipio : semEstacao?.nome ?? municipios[0].nome;
+  const mes = fixo ?? foco;
   const chave = estacao?.slug ?? semEstacao?.slug;
   // Registro tem "Registro" e "Registro Unesp": o nome da estação precisa aparecer.
   const titulo = estacao
@@ -293,7 +295,10 @@ export default function App({ dados }) {
                   <a
                     href={`#/${e.slug}`}
                     aria-current={ativo ? "page" : undefined}
-                    onClick={() => setFoco(null)}
+                    onClick={() => {
+                      setFoco(null);
+                      setFixo(null);
+                    }}
                     className={`block rounded-lg border px-3 py-2 transition-colors ${caixa}`}
                   >
                     {texto}
@@ -396,21 +401,36 @@ export default function App({ dados }) {
             </div>
 
             <div className="tabular mt-2 flex flex-wrap gap-x-5 gap-y-1 rounded-lg bg-painel-alto px-3 py-2 text-xs text-fraco">
-              {foco === null ? (
-                <span>Passe o cursor sobre um mês para ver os valores.</span>
+              {mes === null ? (
+                <span>Clique num mês para fixar os valores; passe o cursor para só espiar.</span>
               ) : (
-                [
-                  ["Chuva", `${fmt(estacao.meses[foco].chuva)} mm`, "text-chuva"],
-                  ["mín", `${fmt(estacao.meses[foco].tmin)} °C`, "text-chuva"],
-                  ["méd", `${fmt(estacao.meses[foco].tmed)} °C`, "text-med"],
-                  ["máx", `${fmt(estacao.meses[foco].tmax)} °C`, "text-quente"],
-                  ["UR", `${fmt(estacao.meses[foco].urmed, 0)} %`, "text-texto"],
-                  ["n", `${estacao.meses[foco].n} anos`, "text-texto"],
-                ].map(([rotulo, texto, cor]) => (
-                  <span key={rotulo}>
-                    {rotulo}: <strong className={cor}>{texto}</strong>
+                <>
+                  <span className="text-texto">
+                    <strong>{mesLongo(estacao.meses[mes].mes)}</strong>
+                    {fixo === null ? "" : " · fixado"}
                   </span>
-                ))
+                  {[
+                    ["Chuva", `${fmt(estacao.meses[mes].chuva)} mm`, "text-chuva"],
+                    ["mín", `${fmt(estacao.meses[mes].tmin)} °C`, "text-chuva"],
+                    ["méd", `${fmt(estacao.meses[mes].tmed)} °C`, "text-med"],
+                    ["máx", `${fmt(estacao.meses[mes].tmax)} °C`, "text-quente"],
+                    ["UR", `${fmt(estacao.meses[mes].urmed, 0)} %`, "text-texto"],
+                    ["n", `${estacao.meses[mes].n} anos`, "text-texto"],
+                  ].map(([rotulo, texto, cor]) => (
+                    <span key={rotulo}>
+                      {rotulo}: <strong className={cor}>{texto}</strong>
+                    </span>
+                  ))}
+                  {fixo !== null && (
+                    <button
+                      type="button"
+                      onClick={() => setFixo(null)}
+                      className="text-med underline-offset-2 hover:underline"
+                    >
+                      soltar
+                    </button>
+                  )}
+                </>
               )}
             </div>
 
@@ -419,6 +439,8 @@ export default function App({ dados }) {
                 meses={estacao.meses}
                 foco={foco}
                 setFoco={setFoco}
+                fixo={fixo}
+                setFixo={setFixo}
                 rotular={rotular}
               />
             </div>
