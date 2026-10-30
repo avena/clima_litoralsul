@@ -1,90 +1,113 @@
 # Tarefa 05 — Relatório por município
 
-**Status:** pendente
+**Status:** feito (só HTML)
 **Depende de:** 04
-**Arquivos previstos:** `relatorio.py` (novo)
-**Testes previstos:** T05.1 a T05.6 em `.planning/testes.md`
+**Arquivos:** `relatorio.py`, `start.sh`
+**Testes:** T05.1 a T05.6 em `.planning/testes.md`
 
 ## Objetivo
 
-Gerar, por comando, `relatorios/<municipio>.md` e `.html` com chuva, temperatura
-e a série real de cada município — declarando fonte, período e quantidade de
-anos em cada linha.
+Gerar, por comando, `relatorios/<municipio>.html` e um índice, com chuva,
+temperatura e a série real de cada município — declarando fonte, período e
+quantidade de anos em cada linha.
+
+## Como ver
+
+```bash
+./start.sh                  # gera e serve em http://localhost:8000
+python3 relatorio.py        # só gera, em relatorios/
+PORT=9000 ./start.sh        # outra porta
+```
+
+`start.sh` é `relatorio.py` + `python3 -m http.server --directory relatorios`.
+Nada de Flask: no DreamHost Shared o HTML gerado é copiado, o servidor local é
+só para inspeção.
 
 ## Formato de saída
 
-Comando, não servidor. DreamHost Shared roda só CGI, então a "web" é HTML
-estático gerado aqui e copiado depois.
-
-```
-python3 relatorio.py                 # os 13 municípios com estação
-python3 relatorio.py --municipio Registro
-```
+Um HTML por município, com uma seção por estação (Registro e Pariquera-Açu têm
+duas). Sem `.md`: o mesmo conteúdo gerado em HTML serve para ler e publicar; se
+alguém precisar de Markdown, é a mesma função de tabela com outro rodapé.
 
 ## Subtarefas
 
 ### 05.1 — Série por município
 
-`SELECT` em `fato JOIN ponto WHERE ponto.municipio_id = ?`, ordenado por `data`.
+`relatorio.agregado(conn, ponto_id)` lê `fato` daquela estação e resume por mês do
+ano.
 
-Mês e dia convivem no banco (tarefa 03 garante que nunca no mesmo mês), então a
-consulta precisa normalizar: `GROUP BY substr(data,1,7)` para série mensal e
-`WHERE length(data)=10` para série diária.
+A consulta filtra `length(data) = 7`. Como a invariante da tarefa 03 garante um
+mês **ou** os dias dele, um município pode ter meses e dias misturados (estações
+diferentes); agregar `substr(data,1,7)` sem o filtro somaria o total mensal com
+os dias do mesmo mês.
 
 ### 05.2 — Cobertura declarada antes de qualquer número
 
-Antes da primeira tabela, imprimir:
-
-```
-Registro — estação 63, 2005-10 a 2026-10 (21 anos, 252 meses)
-1 mês descartado por cobertura < 20 dias
-```
-
-Sem isso o leitor não sabe se está vendo 21 anos ou 3 meses com lacunas.
+Linha de metadados acima da tabela: `1992-10 a 2026-10 · 409 meses · normal
+climatológica`. Sem isso o leitor não sabe se está vendo 34 anos ou 3 meses com
+lacunas.
 
 ### 05.3 — Métricas mensais
 
-Por mês do ano (12 colunas): chuva média, dias com chuva ≥ 1 mm, T máx/média/mín
-média, UR média.
+Por mês do ano: chuva média, T mín/média/máx, UR média, e `n` (quantos anos
+contribuíram). Rodapé com a chuva anual média dos anos que têm os 12 meses.
 
-Mês com menos de 20 dias de dado é **descartado do total anual e contado no
-rodapé**. Descartar em silêncio enviesa o total anual para baixo — foi
-exatamente o defeito do material anterior.
+**Duas colunas do plano original saíram:**
+
+- **dias com chuva ≥ 1 mm** exige `--diario`, e o banco é todo mensal. Fica para
+  quando a série diária entrar; publicar a coluna vazia seria pior.
+- **descarte de mês com < 20 dias** só faz sentido em série diária. Em mensal,
+  ou o mês existe, ou não existe — e o `n` da coluna denuncia o buraco.
 
 ### 05.4 — Rótulos derivados de `n_anos`, nunca cravados
 
 | `n_anos` | Rótulo |
 |---|---|
-| ≥ 30 | "normal climatológica" |
-| < 30 | "médias do período AAAA–AAAA (n anos)" |
-| extremos, ≥ 30 | "recorde" |
-| extremos, < 30 | "extremo observado no período" |
+| ≥ 30 **e série validada** | "normal climatológica" |
+| < 30 | "médias do período AAAA–AAAA (n anos de dado)" |
+| ≥ 30, série não validada | "médias do período … (n anos de dado; parte da série não validada)" |
 
-E "Temperatura média simples", nunca "compensada": o CIIAGRO não entrega as
-leituras fixas de 9 h e 21 h que a média compensada do INMET exige.
+A condição extra **e série validada** saiu da execução: Pariquera-Açu tem 34,1
+anos, mas 11 deles anteriores a 2004-06 vieram sem explicação da fonte. Cravar
+"normal climatológica" ali seria afirmar validação que ninguém fez.
+
+Extremos não entraram: sem os 30 anos validados, "recorde" também não se sustenta.
 
 ### 05.5 — Lacunas explícitas
 
 Mês sem dado aparece como `—`, não como `0`. Série com buraco é diferente de
 série seca.
 
-### 05.6 — Renderização Markdown e HTML
+### 05.6 — Faixa de sanidade na média
 
-Um dicionário de resultado, dois renderizadores. Sem Jinja, sem template engine:
-duas funções de `str.join`. O HTML é tabela simples com CSS embutido.
+Leitura fora de `LIMITES` (T em [-20, 50] °C, UR em [0, 100] %, chuva mensal em
+[0, 1000] mm) **não entra na média** e é contada no rodapé — `3 leitura(s) fora
+da faixa de sanidade excluída(s) da média (tmed 2, tmax 1)`.
 
-### 05.7 — Nota de proveniência
+Achado na execução: sem isso o relatório de Miracatu publicava `55,9 °C` como
+temperatura média de março, e Cananéia `52,6 °C` em setembro. O banco preserva o
+valor; o relatório é seletivo e diz o que descartou.
 
-Rodapé obrigatório: fonte, estação, código, período, `n_anos`, e o aviso de
-série pré-automação quando `primeiro_fato < inicio_auto`.
+### 05.7 — Renderização HTML
+
+Uma função de tabela, `str.join`, CSS embutido. Sem Jinja, sem template engine.
+Barra de chuva proporcional ao maior mês, em CSS puro.
+
+`start.sh` = `relatorio.py` + `python3 -m http.server --directory relatorios`.
+
+### 05.8 — Nota de proveniência
+
+Rodapé obrigatório: fonte, estação, código, período, anos com os 12 meses,
+descartes, e o aviso de série pré-automação quando `primeiro_fato < inicio_auto`.
 
 ## Critério de aceite
 
-- [ ] Um arquivo por município, com nome sem acento (`pariquera-acu.md`)
-- [ ] Nenhum `0` onde a resposta correta é "sem dado"
-- [ ] Os 3 municípios sem estação aparecem com aviso, não com tabela vazia
-- [ ] Rodapé sempre presente, com `n_anos` calculado do banco
-- [ ] `n_anos < 30` nunca produz a palavra "normal climatológica"
+- [x] Um arquivo por município, com nome sem acento (`pariquera-acu.html`)
+- [x] Nenhum `0` onde a resposta correta é "sem dado"
+- [x] Os 4 municípios sem estação aparecem com aviso, não com tabela vazia
+- [x] Rodapé sempre presente, com os anos calculados do banco
+- [x] `n_anos < 30` nunca produz a palavra "normal climatológica"
+- [x] Valor impossível não entra na média e aparece como descarte
 
 ## Fora de escopo
 

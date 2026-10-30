@@ -12,7 +12,7 @@ apresentada como medição.
 | `tarefas/02-extrator.md` | HTML do CIIAGRO → 8 colunas canônicas |
 | `tarefas/03-coletor.md` | série histórica, UPSERT, invariante mês/dia |
 | `tarefas/04-auditoria.md` | cobertura e valores suspeitos |
-| `tarefas/05-relatorio.md` | saída por município (pendente) |
+| `tarefas/05-relatorio.md` | saída por município (HTML, `start.sh`) |
 | `testes.md` | catálogo de cada teste e o que ele garante |
 | `arquivo/PLANOSDEEPSEEK/` | material descartado, guardado como evidência |
 
@@ -22,7 +22,7 @@ apresentada como medição.
 | 02 | Extrator | — | **feito** |
 | 03 | Coletor | 01, 02 | **feito** |
 | 04 | Auditoria | 03 | **feito** |
-| 05 | Relatório | 04 | pendente |
+| 05 | Relatório | 04 | **feito** (HTML) |
 
 ---
 
@@ -125,10 +125,12 @@ relatório declara a série real de cada município, ou entra INMET/NASA POWER.
 
 ```
 coletor.py          CLI + SQLite (schema, upsert, invariante, auditoria)
+relatorio.py        lê o banco e escreve relatorios/*.html
+start.sh            relatorio.py + http.server numa porta livre
 fontes/ciiagro.py   FONTE, pontos(), fatos() — não conhece o banco
 municipios.py       os 17 municípios + casamento de nome de estação
 municipios.csv      dados, não código
-tests/              16 testes contra HTML real em tests/fixtures/
+tests/              23 testes contra HTML real em tests/fixtures/
 ```
 
 Contrato de uma fonte: `FONTE`, `pontos() -> list[dict]`, `fatos(desde, ate) ->
@@ -191,21 +193,21 @@ verde com coletor que não coleta.
   removida: escolhia o dia sobre o mês e, com mês parcial, somava só parte do mês.
   A regra certa não é "dia vence" — é "um dos dois existe". A view volta na
   tarefa 07, quando houver uma segunda fonte real para justificar a escolha.
-- **Sem framework de teste.** `unittest` da stdlib, 17 testes, ~0,5 s, sem rede.
+- **Sem framework de teste.** `unittest` da stdlib, 23 testes, ~0,6 s, sem rede.
 - **Git em `main`, histórico linear**, primeiro commit só com `README.md`;
   `dados/` e `__pycache__/` fora do versionamento.
 
 ## 8. Pendências, em ordem
 
-1. **Tarefa 05 — `relatorio.py`.** Única entrega que falta. 13 municípios com
-   estação, 4 com aviso, 6 testes já especificados em `testes.md`.
-2. **Faixa de sanidade em `auditar`** (tarefa 06, a criar). Hoje `tmed = 873,35`
-   de Miracatu em `03/1990` passa limpo: a auditoria só alerta cobertura, `0` de
-   umidade/chuva e início suspeito. Regra: T fora de [-20, 50], chuva mensal >
-   1000, UR > 100 ou < 0.
-3. **Origem do dado pré-2000.** Pariquera-Açu e Registro passam de 30 anos; a
-   palavra "normal climatológica" só entra depois do cruzamento com o INMET.
-4. **Peruíbe**, que só existe em `/ema/index.php?id=56` — outra navegação, outra
+1. **Faixa de sanidade em `auditar`** (tarefa 06, a criar). No relatório já
+   existe (`LIMITES` em `relatorio.py`: T em [-20, 50], chuva mensal ≤ 1000, UR
+   em [0, 100]) e o descarte é contado no rodapé. Falta o mesmo no `auditar`,
+   para `tmed = 873,35` de Miracatu em `03/1990` não passar limpo.
+2. **Origem do dado pré-2000.** Pariquera-Açu e Registro passam de 30 anos; a
+   palavra "normal climatológica" só entra depois do cruzamento com o INMET —
+   hoje o relatório as chama de "médias do período … não validada".
+3. **Peruíbe**, que só existe em `/ema/index.php?id=56` — outra navegação, outra
    tarefa.
-5. **Série diária** (`--diario`), só quando veranico e dias secos forem
-   necessários. O banco já suporta, via `substituir_granularidade`.
+4. **Série diária** (`--diario`), só quando veranico e dias secos forem
+   necessários. O banco já suporta, via `substituir_granularidade`. É também o
+   que destrava a coluna "dias com chuva ≥ 1 mm", hoje fora do relatório.

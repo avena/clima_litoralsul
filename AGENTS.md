@@ -11,12 +11,13 @@ python3 coletor.py catalogo                        # 3 requisições; rode antes
 python3 coletor.py coletar --desde 2000-01 --ate 2026-10           # mensal, ~2 min
 python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-31 --diario
 python3 coletor.py auditar                         # cobertura + suspeitas; nunca escreve
-python3 -m unittest discover -s tests              # 17 testes, ~0,5 s, sem rede
+./start.sh                                         # relatórios em porta aleatória, 0.0.0.0
+python3 -m unittest discover -s tests              # 23 testes, ~0,6 s, sem rede
 python3 -m unittest tests.test_ciiagro.TestBanco.test_upsert_nao_duplica   # um teste só
 ```
 
 `dados/clima.sqlite` é o banco. Não há instalação, não há `pip install` — e não é
-pacote: `coletor.py` é a única entrada executável (`relatorio.py` ainda não existe).
+pacote: `coletor.py` é a única entrada executável (`relatorio.py` só lê o banco).
 
 Três coisas que custam tempo de depuração:
 

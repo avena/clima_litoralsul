@@ -14,6 +14,7 @@ from pathlib import Path
 
 import coletor
 import municipios
+import relatorio
 from fontes import ciiagro
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -245,6 +246,102 @@ class TestBanco(unittest.TestCase):
         coletor.atualizar_primeiro_fato(self.conn)
         self.assertEqual(self.conn.execute("SELECT primeiro_fato FROM ponto").fetchone()[0],
                          "1995-01")
+
+
+class TestRelatorio(unittest.TestCase):
+    """Garante que o relatório não publique número que o dado não sustenta."""
+
+    def setUp(self):
+        """Cria banco temporário com um município e uma estação."""
+        self.tmp = tempfile.TemporaryDirectory()
+        self.conn = coletor.abrir(Path(self.tmp.name) / "r.sqlite")
+        self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Registro','Registro')")
+        self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Itanhaém','Itanhaém')")
+        self.conn.execute(
+            "INSERT INTO ponto(id, fonte, nome, municipio_id) VALUES('63','ciiagro','Registro',1)")
+        self._saida = relatorio.SAIDA
+        relatorio.SAIDA = Path(self.tmp.name) / "saida"
+
+    def tearDown(self):
+        """Restaura o diretório de saída e apaga o temporário."""
+        relatorio.SAIDA = self._saida
+        self.conn.close()
+        self.tmp.cleanup()
+
+    def _mes(self, data, tmed=20.0, chuva=100.0):
+        """Insere um mês de série, com temperatura e chuva."""
+        self.conn.execute(
+            "INSERT INTO fato(ponto_id, data, tmed, chuva) VALUES('63', ?, ?, ?)",
+            (data, tmed, chuva))
+
+    def test_nome_de_arquivo_sem_acento(self):
+        """`Pariquera-Açu` vira `pariquera-acu`, sem `%C3%A7` na URL.
+
+        O HTML é estático e o link tem de funcionar em servidor que não
+        reescreve URL.
+        """
+        self.assertEqual(relatorio.slug("Pariquera-Açu"), "pariquera-acu")
+        self.assertEqual(relatorio.slug("Itanhaém"), "itanhaem")
+
+    def test_menos_de_30_anos_nunca_diz_normal(self):
+        """Série de 2 anos não ganha o rótulo "normal climatológica".
+
+        É a garantia central do projeto: 30 anos é o mínimo da OMM, e um rótulo
+        cravado faria 2 anos de dado parecerem clima.
+        """
+        for mes in range(1, 25):
+            self._mes(f"{2000 + (mes - 1) // 12}-{mes % 12 or 12:02d}")
+        ag = relatorio.agregado(self.conn, "63")
+        self.assertAlmostEqual(ag["anos"], 2.0)
+        self.assertNotIn("normal climatológica", relatorio.rotulo(ag, validada=True))
+        self.assertIn("médias do período", relatorio.rotulo(ag, validada=True))
+
+    def test_serie_pre_2000_nao_vira_normal_mesmo_com_30_anos(self):
+        """34 anos que começam antes do início declarado não são normal.
+
+        Pariquera-Açu tem 34 anos de dado, mas 11 deles anteriores a 2004 vieram
+        sem explicação da fonte. Chamar isso de normal climatológica afirmaria
+        uma validação que ninguém fez.
+        """
+        for mes in range(1, 409):
+            self._mes(f"{1992 + (mes - 1) // 12}-{mes % 12 or 12:02d}")
+        ag = relatorio.agregado(self.conn, "63")
+        self.assertGreaterEqual(ag["anos"], 30)
+        self.assertIn("normal climatológica", relatorio.rotulo(ag, validada=True))
+        self.assertNotIn("normal climatológica", relatorio.rotulo(ag, validada=False))
+        self.assertIn("não validada", relatorio.rotulo(ag, validada=False))
+
+    def test_valor_impossivel_sai_da_media_e_e_contado(self):
+        """`tmed = 873,35` não entra na média, mas aparece no rodapé como descarte.
+
+        Caso real do CIIAGRO em Miracatu 03/1990. Sem o filtro, o relatório
+        publicava 55,9 °C como temperatura média de março; com o filtro em
+        silêncio, o leitor não saberia que a fonte se corrompe.
+        """
+        self._mes("2005-03", tmed=20.0)
+        self._mes("2006-03", tmed=873.35)
+        ag = relatorio.agregado(self.conn, "63")
+        self.assertAlmostEqual(ag["por_mes"][2]["tmed"], 20.0)
+        self.assertEqual(ag["descartes"]["tmed"], 1)
+
+    def test_municipio_sem_estacao_avisa_em_vez_de_tabela_vazia(self):
+        """Itanhaém gera página com aviso, não tabela de zeros.
+
+        Tabela vazia com `0` seria lida como "chuva zero no município", que é
+        falso: o município não tem estação.
+        """
+        relatorio.gerar(self.conn, [])
+        pagina = (Path(self.tmp.name) / "saida" / "itanhaem.html").read_text(encoding="utf-8")
+        self.assertIn("Nenhuma estação", pagina)
+        self.assertNotIn("<table>", pagina)
+
+    def test_mes_sem_dado_sai_como_travessao(self):
+        """Mês ausente é `—`, nunca `0` — buraco de série não é seca."""
+        self.assertEqual(relatorio._fmt(None), "—")
+        self._mes("2005-03", tmed=None, chuva=None)
+        ag = relatorio.agregado(self.conn, "63")
+        self.assertIsNone(ag["por_mes"][2]["chuva"])
+        self.assertIn("—", relatorio._tabela(ag))
 
 
 if __name__ == "__main__":

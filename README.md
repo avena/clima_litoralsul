@@ -18,6 +18,19 @@ python3 coletor.py auditar
 dado efetivamente recebido, número de linhas e alertas (`dado antes do início`,
 `umidade toda 0`, `chuva toda 0`, `início suspeito`).
 
+## Ver os relatórios
+
+```bash
+./start.sh                 # gera relatorios/ e serve numa porta livre
+PORT=8000 ./start.sh       # porta fixa
+./start.sh Registro        # só um município
+```
+
+Escuta em `0.0.0.0`, então funciona do Windows também: use o endereço
+`Windows: http://<ip-do-wsl>:<porta>` que o script imprime (WSL2 normalmente
+aceita `localhost`). O HTML gerado é estático em `relatorios/`, ignorado pelo
+git.
+
 ## O que a fonte entrega
 
 | Endpoint | Conteúdo |
