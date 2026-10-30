@@ -70,20 +70,53 @@ sensor ausente. E período inválido devolve 200 com zero blocos, indistinguíve
 de "estação fora do ar". Por isso: ausente é `NULL`, e a coleta grita quando um
 período inteiro vem vazio.
 
-## 3. Cobertura real (o que é prometível)
+## 3. Cobertura medida (do banco, em 2026-10-30 — não estimada)
 
-- **≥20 anos**: Cananéia, Eldorado, Jacupiranga, Miracatu (2000); Iguape,
-  Pariquera-Açu (2004); Registro, Sete Barras, Tapiraí, Ribeira (2005) — 10 estações.
-- **10-16 anos**: Juquiá, Juquitiba (2008); Registro Unesp (2010); Apiaí, Cajati,
-  Iporanga, Itaóca (2011).
-- **8 anos**: Barra do Chapéu, Barra do Turvo, Itapirapuã Paulista, Pariquera-Açu 2,
-  Pedro de Toledo (2018).
-- **Sem estação CIIAGRO**: Itanhaém, Mongaguá, Ilha Comprida. Peruíbe existe só na
-  rede principal (`/ema/index.php?id=56`), com navegação diferente — fora desta versão.
+4.914 linhas, todas mensais, `1990-01` a `2026-10`. Anos de dado ≠ anos de
+intervalo: Miracatu cobre 36 anos de calendário com 26,9 anos de dado.
 
-15 das 23 estações caem dentro dos 17 municípios. As outras 8 (Apiaí, Barra do
-Chapéu, Iporanga, Itaóca, Itapirapuã Paulista, Juquitiba, Ribeira, Tapiraí) são de
-municípios vizinhos e ficam no banco com `municipio_id` nulo, como referência.
+| Estação | Município | Desde | Meses | Anos de dado |
+|---|---|---|---|---|
+| Miracatu | Miracatu | 1990-01 | 323 | 26,9 |
+| Pariquera-Açu | Pariquera-Açu | 1992-10 | **409** | **34,1** |
+| Registro | Registro | 1994-11 | 379 | **31,6** |
+| Cananéia | Cananéia | 2000-01 | 321 | 26,8 |
+| Sete Barras | Sete Barras | 2000-03 | 320 | 26,7 |
+| Jacupiranga | Jacupiranga | 2000-03 | 310 | 25,8 |
+| Iguape | Iguape | 2004-01 | 219 | 18,2 |
+| Eldorado | Eldorado | 2000-03 | 197 | 16,4 |
+| Ribeira | — | 2005-11 | 238 | 19,8 |
+| Tapiraí | — | 2005-08 | 231 | 19,2 |
+| Juquitiba | — | 2008-01 | 216 | 18,0 |
+| Itariri | Itariri | 2008-05 | 213 | 17,8 |
+| Apiaí | — | 2011-01 | 189 | 15,8 |
+| Registro Unesp | Registro | 2009-09 | 191 | 15,9 |
+| Cajati | Cajati | 2011-02 | 185 | 15,4 |
+| Iporanga | — | 2011-01 | 184 | 15,3 |
+| Itaóca | — | 2011-01 | 184 | 15,3 |
+| Juquiá | Juquiá | 2008-05 | 158 | 13,2 |
+| Barra do Chapéu | — | 2018-08 | 99 | 8,2 |
+| Pedro de Toledo | Pedro de Toledo | 2018-08 | 99 | 8,2 |
+| Pariquera-Açu 2 | Pariquera-Açu | 2018-08 | 97 | 8,1 |
+| Barra do Turvo | Barra do Turvo | 2018-08 | 76 | 6,3 |
+| Itapirapuã Paulista | — | 2018-08 | 76 | 6,3 |
+
+**Três séries começam antes do que o `/calendario` declara** e isso não era
+sabido quando o plano foi escrito: Pariquera-Açu `1992-10` (11,7 anos antes),
+Registro `1994-11` (10,9 antes), Miracatu `1990-01`. Nenhuma célula nula de
+`tmed` ou `chuva` nas três. É o que permite, pela primeira vez, falar em
+normal climatológica — **se** o dado pré-automação for registro convencional.
+Se for reconstrução, é número bonito sem base. Só o INMET decide, e nada foi
+descartado: `auditar` marca as três com `dado antes do início`.
+
+**13 dos 17 municípios têm estação** (15 é o número de *estações*, porque
+Registro e Pariquera-Açu têm duas cada). Sem nenhuma: Itanhaém, Mongaguá, Ilha
+Comprida e Peruíbe — esta última só na rede principal
+(`/ema/index.php?id=56`), com navegação diferente, fora desta versão.
+
+As 8 estações de municípios vizinhos (Apiaí, Barra do Chapéu, Iporanga, Itaóca,
+Itapirapuã Paulista, Juquitiba, Ribeira, Tapiraí) ficam no banco com
+`municipio_id` nulo, como referência.
 
 **Consequência:** "20 anos nos 17 municípios" não existe no CIIAGRO. Ou o
 relatório declara a série real de cada município, ou entra INMET/NASA POWER.
@@ -158,5 +191,21 @@ verde com coletor que não coleta.
   removida: escolhia o dia sobre o mês e, com mês parcial, somava só parte do mês.
   A regra certa não é "dia vence" — é "um dos dois existe". A view volta na
   tarefa 07, quando houver uma segunda fonte real para justificar a escolha.
-- **Sem framework de teste.** `unittest` da stdlib, 16 testes, 0,5 s.
-- **Sem `git init`.** Fica a critério de quem for versionar.
+- **Sem framework de teste.** `unittest` da stdlib, 17 testes, ~0,5 s, sem rede.
+- **Git em `main`, histórico linear**, primeiro commit só com `README.md`;
+  `dados/` e `__pycache__/` fora do versionamento.
+
+## 8. Pendências, em ordem
+
+1. **Tarefa 05 — `relatorio.py`.** Única entrega que falta. 13 municípios com
+   estação, 4 com aviso, 6 testes já especificados em `testes.md`.
+2. **Faixa de sanidade em `auditar`** (tarefa 06, a criar). Hoje `tmed = 873,35`
+   de Miracatu em `03/1990` passa limpo: a auditoria só alerta cobertura, `0` de
+   umidade/chuva e início suspeito. Regra: T fora de [-20, 50], chuva mensal >
+   1000, UR > 100 ou < 0.
+3. **Origem do dado pré-2000.** Pariquera-Açu e Registro passam de 30 anos; a
+   palavra "normal climatológica" só entra depois do cruzamento com o INMET.
+4. **Peruíbe**, que só existe em `/ema/index.php?id=56` — outra navegação, outra
+   tarefa.
+5. **Série diária** (`--diario`), só quando veranico e dias secos forem
+   necessários. O banco já suporta, via `substituir_granularidade`.

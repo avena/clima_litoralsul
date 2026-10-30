@@ -29,17 +29,25 @@ dado efetivamente recebido, número de linhas e alertas (`dado antes do início`
 Não há API. Os números vêm em `data.addRows([['Registro',17.1,21.5,25.9],…])`
 dentro do HTML; o extrator é regex, testado contra HTML real em `tests/fixtures/`.
 
-## Cobertura real
+## Cobertura medida (do banco, não do calendário do site)
 
-- **≥20 anos**: Cananéia, Eldorado, Jacupiranga, Miracatu (2000); Iguape,
-  Pariquera-Açu (2004); Registro, Sete Barras, Tapiraí, Ribeira (2005).
-- **10-16 anos**: Juquiá, Juquitiba, Registro Unesp, Apiaí, Cajati, Iporanga, Itaóca.
-- **8 anos**: Barra do Chapéu, Barra do Turvo, Itapirapuã, Pariquera-Açu 2, Pedro de Toledo.
+4.914 linhas mensais, `1990-01` a `2026-10`, 23 estações.
+
+- **≥30 anos de dado**: Pariquera-Açu (34,1), Registro (31,6) — as duas só
+  alcançam isso porque o CIIAGRO serve série anterior ao início que ele mesmo
+  declara (`/calendario` diz 2004 e 2005).
+- **20-29 anos**: Miracatu (26,9), Cananéia (26,8), Sete Barras (26,7),
+  Jacupiranga (25,8).
+- **13-19 anos**: Iguape, Ribeira, Tapiraí, Juquitiba, Itariri, Eldorado,
+  Registro Unesp, Apiaí, Cajati, Iporanga, Itaóca, Juquiá.
+- **6-8 anos**: Pedro de Toledo, Pariquera-Açu 2, Barra do Chapéu, Barra do
+  Turvo, Itapirapuã Paulista.
 - **Sem estação CIIAGRO**: Itanhaém, Mongaguá, Ilha Comprida. Peruíbe só na rede
   principal (`/ema/index.php?id=56`), fora desta versão.
 
-15 estações caem dentro dos 17 municípios; 8 são de municípios vizinhos e ficam
-no banco com `municipio_id` nulo, disponíveis como referência.
+**13 dos 17 municípios** têm estação — 15 é o número de estações, porque Registro
+e Pariquera-Açu têm duas cada. As 8 estações de municípios vizinhos ficam no
+banco com `municipio_id` nulo, como referência.
 
 ## Duas armadilhas que mudam a interpretação
 

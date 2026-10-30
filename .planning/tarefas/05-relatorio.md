@@ -17,7 +17,7 @@ Comando, não servidor. DreamHost Shared roda só CGI, então a "web" é HTML
 estático gerado aqui e copiado depois.
 
 ```
-python3 relatorio.py                 # todos os 15 municípios com estação
+python3 relatorio.py                 # os 13 municípios com estação
 python3 relatorio.py --municipio Registro
 ```
 
