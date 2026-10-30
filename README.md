@@ -19,6 +19,7 @@ Vite. Sem banco externo, sem servidor de aplicação, sem CDN em runtime.
 | `relatorio.py` | **agregação e export**: médias por mês do ano, chuva anual, estações do ano, faixa de sanidade, rótulo "normal climatológica" → `site/public/dados.json` | `python3 relatorio.py` |
 | `site/` | **render**: SPA React (um único `dados.json`, troca de município sem recarregar) + Tailwind v4 | `npm --prefix site run dev` |
 | `start.sh` | exporta, builda e serve numa porta livre em `0.0.0.0` | `./start.sh` |
+| `deploy.sh` | exporta, testa, builda, commita o `dados.json` e faz push (= deploy) | `./deploy.sh` |
 | `tests/` | 25 testes Python sobre HTML real em `tests/fixtures/` | `python3 -m unittest discover -s tests` |
 | `dados/clima.sqlite` | banco (gitignorado, gerado pela coleta) | — |
 | `.planning/` | plano, tarefas e catálogo de testes — comece por `.planning/PLANO.md` | — |
@@ -83,10 +84,11 @@ Build estático, sem backend. `dados.json` é **versionado** justamente porque o
 deploy não tem acesso ao banco (que é gitignorado):
 
 ```bash
-python3 relatorio.py       # atualiza site/public/dados.json
-git add site/public/dados.json && git commit -m "chore(dados): atualiza a série"
-git push
+./deploy.sh                # relatorio.py + testes + build + commit do JSON + push
 ```
+
+O push é o deploy. `deploy.sh` só commita `site/public/dados.json`; se houver
+código pendente ele aborta pedindo commit, em vez de misturar as coisas.
 
 - **Netlify**: `netlify.toml` já define base `site`, `npm run build`, publish
   `dist`. Conecte o repositório e pronto — passo a passo em

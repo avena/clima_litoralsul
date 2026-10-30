@@ -52,6 +52,7 @@ quebram, e é isso que se quer.
 | T05.5 | `test_municipio_sem_estacao_entra_com_lista_vazia` | município sem estação aparece no JSON com `estacoes: []`, em vez de sumir da lista |
 | T05.6 | `test_mes_sem_dado_vira_null` | buraco de série é `null` no JSON, não `0` |
 | T05.7 | `test_sazonal_soma_a_chuva_anual` | as quatro estações fecham exatamente com a chuva anual do card; o percentual não distribui água inexistente |
+| T05.9 | `test_cada_estacao_tem_rota_propria_no_json` | duas estações do mesmo município saem com slugs distintos — `#/registro` e `#/registro-unesp` não podem abrir a mesma tela |
 | T05.8 | `test_json_exportado_e_serializavel` | o `dados.json` sai do disco íntegro, com 12 linhas e chuva anual — sem isso o SPA abriria vazio sem erro |
 
 ## T06 — Painel (React)

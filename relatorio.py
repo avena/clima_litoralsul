@@ -268,12 +268,16 @@ def exportar(conn: sqlite3.Connection) -> dict:
 
     Returns:
         Dict com `gerado` (data), `fonte` e `municipios`; cada município traz
-        `slug`, `nome` e `estacoes`. Município sem estação aparece com a lista
-        vazia — quem decide como mostrar isso é o front.
+        `slug`, `nome` e `estacoes`. Cada estação traz `slug` e `municipio`, que
+        são a sua rota no painel (`#/registro-unesp`). Município sem estação
+        aparece com a lista vazia — quem decide como mostrar isso é o front.
 
     Nota:
         A lista de municípios vem da tabela `municipio`, inclusive os 4 sem
         estação: sumir com eles transformaria "não há dado" em "não existe".
+
+        O `slug` da estação, e não o do município, é a rota: Registro e
+        Pariquera-Açu têm duas estações cada, e a URL precisa dizer qual.
     """
     municipios = []
     for mun_id, mun in conn.execute("SELECT id, nome FROM municipio ORDER BY nome"):
@@ -283,6 +287,8 @@ def exportar(conn: sqlite3.Connection) -> dict:
                 "WHERE municipio_id = ? ORDER BY nome", (mun_id,)):
             estacao = _estacao(conn, p)
             if estacao:
+                estacao["slug"] = slug(p["nome"])
+                estacao["municipio"] = mun
                 estacoes.append(estacao)
         municipios.append({"slug": slug(mun), "nome": mun, "estacoes": estacoes})
     return {"gerado": date.today().isoformat(), "fonte": "CIIAGRO",

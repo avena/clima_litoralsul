@@ -39,10 +39,11 @@ git push
 
 ```bash
 python3 coletor.py coletar --desde 2000-01 --ate 2026-10   # ou cron
-python3 relatorio.py                                       # JSON novo
-git add site/public/dados.json && git commit -m "chore(dados): atualiza a série"
-git push                                                   # Netlify rebuilda
+./deploy.sh                                                # JSON novo + build + push
 ```
+
+`./deploy.sh` roda `relatorio.py`, os 26 testes, o `npm run check`, o build,
+commita só `site/public/dados.json` e faz push — a Netlify rebuilda sozinha.
 
 A data que aparece no rodapé ("Dados sincronizados em") é a do `dados.json`, não
 a do build. O hash e a hora do rodapé vêm do build (`vite.config.js` lê

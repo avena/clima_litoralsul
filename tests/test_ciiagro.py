@@ -280,6 +280,26 @@ class TestRelatorio(unittest.TestCase):
         self.assertEqual(relatorio.slug("Pariquera-Açu"), "pariquera-acu")
         self.assertEqual(relatorio.slug("Itanhaém"), "itanhaem")
 
+    def test_cada_estacao_tem_rota_propria_no_json(self):
+        """Duas estações do mesmo município saem com slugs distintos.
+
+        O painel escolhe a estação pela URL (`#/registro-unesp`); se a rota fosse
+        a do município, Registro e Registro Unesp abririam a mesma tela.
+        """
+        self.conn.execute(
+            "INSERT INTO ponto(id, fonte, nome, municipio_id) "
+            "VALUES('109','ciiagro','Registro Unesp',1)")
+        for ponto in ("63", "109"):
+            self.conn.execute(
+                "INSERT INTO fato(ponto_id, data, tmed, chuva) VALUES(?, '2005-01', 20, 100)",
+                (ponto,))
+        caminho = relatorio.escrever(self.conn, Path(self.tmp.name) / "d.json")
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        registro = next(m for m in dados["municipios"] if m["slug"] == "registro")
+        self.assertEqual([e["slug"] for e in registro["estacoes"]],
+                         ["registro", "registro-unesp"])
+        self.assertEqual({e["municipio"] for e in registro["estacoes"]}, {"Registro"})
+
     def test_menos_de_30_anos_nunca_diz_normal(self):
         """Série de 2 anos não ganha o rótulo "normal climatológica".
 

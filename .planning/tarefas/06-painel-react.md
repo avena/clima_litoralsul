@@ -24,10 +24,15 @@ da mesma mentira possível.
 
 ### 06.2 — Troca de município sem reload
 
-Estado do React (`useState`) + rota em hash (`#/pariquera-acu`). Hash porque
-dispensa rewrite de rota no host; `hashchange` mantém voltar/avançar e link
-compartilhado funcionando. As duas estações de Registro e Pariquera-Açu viram
-abas quando o município tem mais de uma.
+Estado do React (`useState`) + rota em hash **por estação** (`#/registro-unesp`).
+Hash porque dispensa rewrite de rota no host; `hashchange` mantém voltar/avançar
+e link compartilhado funcionando.
+
+A primeira versão listava municípios num `<select>` e deixava as duas estações
+de Registro e Pariquera-Açu como abas. Trocado por um grid de cards — a escolha
+fica visível para quem não sabe que existe um menu — e cada estação passou a ter
+card e URL próprios (`relatorio.py` exporta `slug` e `municipio` por estação).
+Município sem estação continua com card, que abre o aviso em vez de sumir.
 
 ### 06.3 — Componentes
 

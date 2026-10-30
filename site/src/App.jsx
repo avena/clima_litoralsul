@@ -135,16 +135,10 @@ export default function App({ dados }) {
   const inicios = municipios.flatMap((m) => m.estacoes.map((e) => e.inicio)).filter(Boolean).sort();
   const fins = municipios.flatMap((m) => m.estacoes.map((e) => e.fim)).filter(Boolean).sort();
   const periodo = inicios.length ? `${inicios[0]} → ${fins[fins.length - 1]}` : "—";
-  const estacoes = municipios.reduce((total, m) => total + m.estacoes.length, 0);
+  const estacoes = municipios.flatMap((m) => m.estacoes);
   const daHash = () => decodeURIComponent(location.hash.replace(/^#\/?/, ""));
   const [slug, setSlug] = useState(daHash);
-  const [i, setI] = useState(0);
   const [foco, setFoco] = useState(null);
-
-  const municipio =
-    municipios.find((m) => m.slug === slug) ??
-    municipios.find((m) => m.estacoes.length) ??
-    municipios[0];
 
   useEffect(() => {
     const aoTrocar = () => setSlug(daHash());
@@ -152,7 +146,19 @@ export default function App({ dados }) {
     return () => removeEventListener("hashchange", aoTrocar);
   }, []);
 
-  const estacao = municipio.estacoes[Math.min(i, municipio.estacoes.length - 1)] ?? null;
+  // A rota é da estação (`#/registro-unesp`); o slug do município só serve para
+  // chegar ao aviso de "sem estação". Sem hash, abre a primeira estação.
+  const semEstacao = municipios.find((m) => m.slug === slug && !m.estacoes.length);
+  const estacao =
+    estacoes.find((e) => e.slug === slug) ?? (semEstacao ? null : estacoes[0]);
+  const municipio = estacao ? estacao.municipio : semEstacao?.nome ?? municipios[0].nome;
+  const chave = estacao?.slug ?? semEstacao?.slug;
+  // Registro tem "Registro" e "Registro Unesp": o nome da estação precisa aparecer.
+  const titulo = estacao
+    ? estacao.nome === estacao.municipio
+      ? estacao.municipio
+      : `${estacao.municipio} — ${estacao.nome}`
+    : municipio;
   const cardChuva = estacao ? ((estacao.chuva_ano ?? 0) / 2000) * 100 : 0;
 
   return (
@@ -174,81 +180,54 @@ export default function App({ dados }) {
 
       <section className="mt-6 rounded-xl border border-borda bg-painel p-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2 px-1">
-          <h2 className="text-sm font-semibold">Escolha o município</h2>
+          <h2 className="text-sm font-semibold">Municípios e estações</h2>
           <span className="tabular text-xs text-fraco">
-            {municipios.length} municípios · {estacoes} estações
+            {municipios.length} municípios · {estacoes.length} estações
           </span>
         </div>
         <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-          {municipios.map((m) => {
-            const ativo = m.slug === municipio.slug;
-            const primeira = m.estacoes[0];
-            return (
-              <li key={m.slug}>
-                <a
-                  href={`#/${m.slug}`}
-                  aria-current={ativo ? "page" : undefined}
-                  onClick={() => {
-                    setI(0);
-                    setFoco(null);
-                  }}
-                  className={`block rounded-lg border px-3 py-2 transition-colors ${
-                    ativo
-                      ? "border-med bg-painel-alto"
-                      : "border-borda/60 hover:border-borda hover:bg-painel-alto"
-                  }`}
-                >
-                  <span
-                    className={`block text-base leading-snug ${
-                      ativo ? "font-semibold text-med" : "text-texto"
+          {municipios.flatMap((m) =>
+            (m.estacoes.length
+              ? m.estacoes
+              : [{ slug: m.slug, nome: m.nome, semEstacao: true }]
+            ).map((e) => {
+              const ativo = e.slug === chave;
+              return (
+                <li key={e.slug}>
+                  <a
+                    href={`#/${e.slug}`}
+                    aria-current={ativo ? "page" : undefined}
+                    onClick={() => setFoco(null)}
+                    className={`block rounded-lg border px-3 py-2 transition-colors ${
+                      ativo
+                        ? "border-med bg-painel-alto"
+                        : "border-borda/60 hover:border-borda hover:bg-painel-alto"
                     }`}
                   >
-                    {m.nome}
-                  </span>
-                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
-                    {primeira
-                      ? `${m.estacoes.length} ${m.estacoes.length > 1 ? "estações" : "estação"}`
-                      : "sem estação"}
-                    {primeira && (
-                      <span className="hidden sm:inline">
-                        {" · "}
-                        {primeira.inicio} → {primeira.fim}
-                      </span>
-                    )}
-                  </span>
-                </a>
-              </li>
-            );
-          })}
+                    <span
+                      className={`block text-base leading-snug ${
+                        ativo ? "font-semibold text-med" : "text-texto"
+                      }`}
+                    >
+                      {e.nome}
+                    </span>
+                    <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
+                      {e.semEstacao ? "sem estação no CIIAGRO" : `${e.inicio} → ${e.fim}`}
+                    </span>
+                  </a>
+                </li>
+              );
+            }),
+          )}
         </ul>
       </section>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {municipio.estacoes.length > 1 &&
-          municipio.estacoes.map((e, indice) => (
-            <button
-              key={e.id}
-              type="button"
-              onClick={() => {
-                setI(indice);
-                setFoco(null);
-              }}
-              className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-                indice === i
-                  ? "bg-med font-semibold text-fundo"
-                  : "border border-borda text-fraco hover:bg-painel-alto hover:text-texto"
-              }`}
-            >
-              {e.nome} · {e.id}
-            </button>
-          ))}
-
-        {estacao && (
-          <span className="tabular ml-auto rounded-full bg-painel-alto px-3 py-1 text-xs text-fraco">
-            {estacao.inicio} → {estacao.fim} · {estacao.total_meses} meses
-          </span>
-        )}
-      </div>
+      {estacao && (
+        <p className="tabular mt-3 text-xs text-fraco">
+          estação {estacao.id} · {estacao.inicio} → {estacao.fim} ·{" "}
+          {estacao.total_meses} meses
+        </p>
+      )}
 
       {!estacao && (
         <p className="mt-4 border-l-2 border-quente bg-painel px-4 py-3 text-sm text-quente/90">
@@ -307,8 +286,7 @@ export default function App({ dados }) {
           <div className="mt-4 rounded-xl border border-borda bg-painel p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-base font-semibold">
-                Climatograma — {municipio.nome}
-                {municipio.estacoes.length > 1 ? ` (${estacao.id})` : ""}
+                Climatograma — {titulo}
               </h2>
               <div className="flex flex-wrap gap-3 text-xs text-fraco">
                 <span className="flex items-center gap-1">
@@ -392,7 +370,7 @@ export default function App({ dados }) {
           </div>
           <div>
             <dt className="text-fraco/70">Série no painel</dt>
-            <dd className="tabular">{periodo} · {estacoes} estações</dd>
+            <dd className="tabular">{periodo} · {estacoes.length} estações</dd>
           </div>
           <div>
             <dt className="text-fraco/70">Dados sincronizados em</dt>
