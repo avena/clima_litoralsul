@@ -1,14 +1,17 @@
 # Plano — clima_litoralsul
 
-Série climática dos 17 municípios da mesorregião **Litoral Sul Paulista**, a partir
-do CIIAGRO. Escopo aprovado: **só CIIAGRO, escopo honesto** — nenhuma estimativa
-apresentada como medição.
+Série climática dos 25 municípios do **Litoral Sul Paulista + Vale do Ribeira**
+(faixa costeira, baixo/médio curso e Alto Vale), a partir do CIIAGRO. Escopo
+aprovado: **só CIIAGRO, escopo honesto** — nenhuma estimativa apresentada como
+medição.
 
 ## Índice
 
 | Documento | Conteúdo |
 |---|---|
-| `tarefas/01-catalogo.md` | 17 municípios + 23 estações, coordenadas, datas de início |
+| `tarefas/01-catalogo.md` | 17 municípios + 23 estações, coordenadas, datas de início (histórico; hoje 25 + 23) |
+| `tarefas/07-ficha-a4.md` | ficha A4 em LaTeX, preto e branco, e uso no planejamento |
+| `tarefas/08-litoral-e-vale.md` | 25 municípios em 3 regiões: Litoral Sul, Vale do Ribeira, Alto Vale |
 | `tarefas/02-extrator.md` | HTML do CIIAGRO → 8 colunas canônicas |
 | `tarefas/03-coletor.md` | série histórica, UPSERT, invariante mês/dia |
 | `tarefas/04-auditoria.md` | cobertura e valores suspeitos |
@@ -25,6 +28,8 @@ apresentada como medição.
 | 04 | Auditoria | 03 | **feito** |
 | 05 | Relatório | 04 | **feito** (JSON) |
 | 06 | Painel React | 05 | **feito** |
+| 07 | Ficha A4 | 05, 06 | **feito** (PDF P&B) |
+| 08 | Litoral e Vale | 01, 05, 06, 07 | **feito** (25 municípios, 3 regiões) |
 
 ---
 
@@ -87,21 +92,21 @@ intervalo: Miracatu cobre 36 anos de calendário com 26,9 anos de dado.
 | Jacupiranga | Jacupiranga | 2000-03 | 310 | 25,8 |
 | Iguape | Iguape | 2004-01 | 219 | 18,2 |
 | Eldorado | Eldorado | 2000-03 | 197 | 16,4 |
-| Ribeira | — | 2005-11 | 238 | 19,8 |
-| Tapiraí | — | 2005-08 | 231 | 19,2 |
-| Juquitiba | — | 2008-01 | 216 | 18,0 |
+| Ribeira | Ribeira | 2005-11 | 238 | 19,8 |
+| Tapiraí | Tapiraí | 2005-08 | 231 | 19,2 |
+| Juquitiba | Juquitiba | 2008-01 | 216 | 18,0 |
 | Itariri | Itariri | 2008-05 | 213 | 17,8 |
-| Apiaí | — | 2011-01 | 189 | 15,8 |
+| Apiaí | Apiaí | 2011-01 | 189 | 15,8 |
 | Registro Unesp | Registro | 2009-09 | 191 | 15,9 |
 | Cajati | Cajati | 2011-02 | 185 | 15,4 |
-| Iporanga | — | 2011-01 | 184 | 15,3 |
-| Itaóca | — | 2011-01 | 184 | 15,3 |
+| Iporanga | Iporanga | 2011-01 | 184 | 15,3 |
+| Itaóca | Itaóca | 2011-01 | 184 | 15,3 |
 | Juquiá | Juquiá | 2008-05 | 158 | 13,2 |
-| Barra do Chapéu | — | 2018-08 | 99 | 8,2 |
+| Barra do Chapéu | Barra do Chapéu | 2018-08 | 99 | 8,2 |
 | Pedro de Toledo | Pedro de Toledo | 2018-08 | 99 | 8,2 |
 | Pariquera-Açu 2 | Pariquera-Açu | 2018-08 | 97 | 8,1 |
 | Barra do Turvo | Barra do Turvo | 2018-08 | 76 | 6,3 |
-| Itapirapuã Paulista | — | 2018-08 | 76 | 6,3 |
+| Itapirapuã Paulista | Itapirapuã Paulista | 2018-08 | 76 | 6,3 |
 
 **Três séries começam antes do que o `/calendario` declara** e isso não era
 sabido quando o plano foi escrito: Pariquera-Açu `1992-10` (11,7 anos antes),
@@ -111,17 +116,18 @@ normal climatológica — **se** o dado pré-automação for registro convencion
 Se for reconstrução, é número bonito sem base. Só o INMET decide, e nada foi
 descartado: `auditar` marca as três com `dado antes do início`.
 
-**13 dos 17 municípios têm estação** (15 é o número de *estações*, porque
+**21 dos 25 municípios têm estação** (23 é o número de *estações*, porque
 Registro e Pariquera-Açu têm duas cada). Sem nenhuma: Itanhaém, Mongaguá, Ilha
 Comprida e Peruíbe — esta última só na rede principal
 (`/ema/index.php?id=56`), com navegação diferente, fora desta versão.
 
-As 8 estações de municípios vizinhos (Apiaí, Barra do Chapéu, Iporanga, Itaóca,
-Itapirapuã Paulista, Juquitiba, Ribeira, Tapiraí) ficam no banco com
-`municipio_id` nulo, como referência.
+As 8 estações do Alto Vale e Cabeceiras (Apiaí, Barra do Chapéu, Iporanga,
+Itaóca, Itapirapuã Paulista, Juquitiba, Ribeira, Tapiraí) foram integradas na
+tarefa 08, formando os 3 recortes geográficos do painel: Litoral Sul, Vale do
+Ribeira e Alto Vale e Cabeceiras.
 
-**Consequência:** "20 anos nos 17 municípios" não existe no CIIAGRO. Ou o
-relatório declara a série real de cada município, ou entra INMET/NASA POWER.
+**Consequência:** A série real de cada município é declarada individualmente,
+com honestidade metodológica e sem interpolação.
 
 ## 4. Arquitetura
 
@@ -129,11 +135,11 @@ relatório declara a série real de cada município, ou entra INMET/NASA POWER.
 coletor.py          CLI + SQLite (schema, upsert, invariante, auditoria)
 relatorio.py        lê o banco e escreve site/public/dados.json
 fontes/ciiagro.py   FONTE, pontos(), fatos() — não conhece o banco
-municipios.py       os 17 municípios + casamento de nome de estação
-municipios.csv      dados, não código
+municipios.py       os 25 municípios em 3 regiões + casamento de nome de estação
+municipios.csv      dados, não código (municipio, regiao)
 site/               SPA React + Tailwind v4 (Vite) sobre dados.json
 start.sh            export + build + http.server numa porta livre
-tests/              25 testes contra HTML real em tests/fixtures/
+tests/              31 testes contra HTML real em tests/fixtures/
 ```
 
 A camada de cálculo e a de render são separadas de propósito: o número é
@@ -148,7 +154,7 @@ INMET é adicionar um arquivo.
 ### Schema
 
 ```sql
-municipio(id INTEGER PRIMARY KEY, nome TEXT UNIQUE, microrregiao TEXT);
+municipio(id INTEGER PRIMARY KEY, nome TEXT UNIQUE, regiao TEXT);
 ponto(id TEXT PRIMARY KEY, fonte TEXT, nome TEXT, municipio_id INTEGER,
       lat REAL, lon REAL, inicio_auto TEXT, primeiro_fato TEXT);
 fato(ponto_id TEXT, data TEXT, tmin REAL, tmed REAL, tmax REAL,

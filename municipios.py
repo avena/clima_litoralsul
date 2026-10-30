@@ -1,4 +1,8 @@
-"""Os 17 municípios da mesorregião Litoral Sul Paulista e o casamento de nomes.
+"""Os 25 municípios do Litoral Sul + Vale do Ribeira e o casamento de nomes.
+
+Três recortes, na ordem em que o painel os mostra: **Litoral Sul** (faixa
+costeira e estuário), **Vale do Ribeira** (baixo/médio curso) e **Alto Vale e
+Cabeceiras**. A ordem do CSV é a ordem dos grupos na tela.
 
 O CIIAGRO nomeia a estação pelo município, mas às vezes acrescenta sufixo
 ("Registro Unesp", "Pariquera-Açu 2"). `resolver` normaliza e tenta o nome
@@ -24,12 +28,17 @@ def normalizar(nome: str) -> str:
 
 @lru_cache(maxsize=1)
 def todos() -> tuple[dict[str, str], ...]:
-    """[(nome, microrregião), ...] na ordem do CSV."""
+    """[(nome, região), ...] na ordem do CSV."""
     with CSV.open(encoding="utf-8") as f:
         return tuple(
-            {"nome": r["municipio"], "microrregiao": r["microrregiao"]}
+            {"nome": r["municipio"], "regiao": r["regiao"]}
             for r in csv.DictReader(f)
         )
+
+
+def regioes() -> tuple[str, ...]:
+    """Nomes das regiões sem repetir, na ordem do CSV — a ordem dos grupos."""
+    return tuple(dict.fromkeys(m["regiao"] for m in todos()))
 
 
 def resolver(nome_estacao: str) -> str | None:

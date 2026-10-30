@@ -33,7 +33,7 @@ ESQUEMA = """
 CREATE TABLE IF NOT EXISTS municipio(
     id INTEGER PRIMARY KEY,
     nome TEXT UNIQUE NOT NULL,
-    microrregiao TEXT NOT NULL
+    regiao TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS ponto(
     id TEXT PRIMARY KEY,
@@ -73,16 +73,23 @@ def abrir(caminho: Path = DB) -> sqlite3.Connection:
     conn = sqlite3.connect(caminho)
     conn.row_factory = sqlite3.Row
     conn.executescript(ESQUEMA)
+    # Banco antigo tinha `municipio.microrregiao`; `CREATE TABLE IF NOT EXISTS`
+    # não toca em tabela existente, então renomeia à mão. O `ALTER` preserva os
+    # ids, e com eles o `ponto.municipio_id` já vinculado.
+    colunas = {r["name"] for r in conn.execute("PRAGMA table_info(municipio)")}
+    if "microrregiao" in colunas and "regiao" not in colunas:
+        conn.execute("ALTER TABLE municipio RENAME COLUMN microrregiao TO regiao")
+        conn.commit()
     return conn
 
 
 def catalogo(conn: sqlite3.Connection) -> None:
     """Sincroniza `municipio` e `ponto` com o CSV local e com o CIIAGRO.
 
-    Faz três requisições ao CIIAGRO (calendário, códigos, mapa). Os 17
-    municípios vêm de `municipios.csv`, que é a lista canônica: estação cujo
-    nome não casa com nenhum deles entra com `municipio_id = NULL` e continua
-    utilizável como referência.
+    Faz três requisições ao CIIAGRO (calendário, códigos, mapa). Os municípios
+    vêm de `municipios.csv`, que é a lista canônica: estação cujo nome não casa
+    com nenhum deles entra com `municipio_id = NULL` e continua utilizável como
+    referência.
 
     Args:
         conn: conexão aberta por `abrir`.
@@ -92,9 +99,9 @@ def catalogo(conn: sqlite3.Connection) -> None:
         Não toca em `fato`; recolher o catálogo não apaga série.
     """
     conn.executemany(
-        "INSERT INTO municipio(nome, microrregiao) VALUES(?, ?) "
-        "ON CONFLICT(nome) DO UPDATE SET microrregiao = excluded.microrregiao",
-        [(m["nome"], m["microrregiao"]) for m in todos()],
+        "INSERT INTO municipio(nome, regiao) VALUES(?, ?) "
+        "ON CONFLICT(nome) DO UPDATE SET regiao = excluded.regiao",
+        [(m["nome"], m["regiao"]) for m in todos()],
     )
     ids = {r["nome"]: r["id"] for r in conn.execute("SELECT id, nome FROM municipio")}
     pontos = ciiagro.pontos()
@@ -111,7 +118,7 @@ def catalogo(conn: sqlite3.Connection) -> None:
     conn.commit()
     dentro = sum(p["municipio"] is not None for p in pontos)
     print(f"{len(ids)} municípios, {len(pontos)} estações "
-          f"({dentro} dentro dos 17, {len(pontos) - dentro} fora do escopo)")
+          f"({dentro} dentro, {len(pontos) - dentro} fora do escopo)")
 
 
 def substituir_granularidade(conn: sqlite3.Connection, pontos_meses: set[tuple[str, str]],

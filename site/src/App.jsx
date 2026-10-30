@@ -292,7 +292,7 @@ export default function App({ dados }) {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-fraco sm:text-[0.72rem]">
-            Litoral Sul Paulista · CIIAGRO
+            Litoral Sul e Vale do Ribeira · CIIAGRO
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
             Climatologia das estações
@@ -312,8 +312,8 @@ export default function App({ dados }) {
           </span>
         </div>
         <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-          {municipios.flatMap((m) =>
-            (m.estacoes.length
+          {municipios.flatMap((m, i) => {
+            const itens = (m.estacoes.length
               ? m.estacoes
               : [{ slug: m.slug, nome: m.nome, semEstacao: true }]
             ).map((e) => {
@@ -369,8 +369,21 @@ export default function App({ dados }) {
                   </a>
                 </li>
               );
-            }),
-          )}
+            });
+            // Título de região quando ela muda; ocupa a linha toda do grid.
+            const abre = i === 0 || municipios[i - 1].regiao !== m.regiao;
+            return abre
+              ? [
+                  <li
+                    key={`regiao:${m.regiao}`}
+                    className="col-span-full px-1 pt-1 text-xs font-semibold tracking-wide text-fraco uppercase"
+                  >
+                    {m.regiao}
+                  </li>,
+                  ...itens,
+                ]
+              : itens;
+          })}
         </ul>
       </section>
 
@@ -385,7 +398,7 @@ export default function App({ dados }) {
         <p className="mt-4 border-l-2 border-quente bg-painel px-4 py-3 text-sm text-quente/90">
           Nenhuma estação do CIIAGRO neste município. Itanhaém, Mongaguá, Ilha
           Comprida e Peruíbe não têm série na rede usada por este painel — os
-          outros 13 municípios têm.
+          outros 21 municípios têm.
         </p>
       )}
 

@@ -137,15 +137,18 @@ class TestPeriodos(unittest.TestCase):
 
 
 class TestMunicipios(unittest.TestCase):
-    """Garante o casamento entre nome de estação e os 17 municípios."""
+    """Garante o casamento entre nome de estação e os 25 municípios."""
 
-    def test_dezessete_municipios(self):
-        """O CSV tem que ter exatamente os 17 da mesorregião.
+    def test_vinte_e_cinco_municipios(self):
+        """O CSV tem que ter exatamente os 25 do Litoral Sul e do Vale.
 
         Se alguém adicionar ou remover linha, o relatório passa a prometer
         cobertura que não existe.
         """
-        self.assertEqual(len(municipios.todos()), 17)
+        self.assertEqual(len(municipios.todos()), 25)
+        self.assertEqual(municipios.regioes(),
+                         ("Litoral Sul", "Vale do Ribeira",
+                          "Alto Vale e Cabeceiras"))
 
     def test_nome_exato(self):
         """Nome igual ao do município resolve direto, inclusive com acento."""
@@ -161,13 +164,13 @@ class TestMunicipios(unittest.TestCase):
         self.assertEqual(municipios.resolver("Registro Unesp"), "Registro")
         self.assertEqual(municipios.resolver("Pariquera-Açu 2"), "Pariquera-Açu")
 
-    def test_estacao_fora_dos_17(self):
+    def test_estacao_fora_do_escopo(self):
         """Estação de município vizinho fica sem município, e isso não é erro.
 
         Elas continuam no banco como referência; o que não pode é entrar no
-        relatório de um dos 17 municípios.
+        relatório de um dos 25 municípios.
         """
-        for fora in ("Apiaí", "Juquitiba", "Ribeira", "Tapiraí", "Itaóca"):
+        for fora in ("Sorocaba", "Santos", "Itapeva", "Pindamonhangaba"):
             self.assertIsNone(municipios.resolver(fora), fora)
 
 
@@ -178,7 +181,7 @@ class TestBanco(unittest.TestCase):
         """Cria banco temporário com um município e uma estação."""
         self.tmp = tempfile.TemporaryDirectory()
         self.conn = coletor.abrir(Path(self.tmp.name) / "t.sqlite")
-        self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Registro','Registro')")
+        self.conn.execute("INSERT INTO municipio(nome, regiao) VALUES('Registro','Vale do Ribeira')")
         self.conn.execute(
             "INSERT INTO ponto(id, fonte, nome, municipio_id) VALUES('63','ciiagro','Registro',1)")
 
@@ -256,8 +259,8 @@ class TestRelatorio(unittest.TestCase):
         """Cria banco temporário com um município e uma estação."""
         self.tmp = tempfile.TemporaryDirectory()
         self.conn = coletor.abrir(Path(self.tmp.name) / "r.sqlite")
-        self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Registro','Registro')")
-        self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Itanhaém','Itanhaém')")
+        self.conn.execute("INSERT INTO municipio(nome, regiao) VALUES('Registro','Vale do Ribeira')")
+        self.conn.execute("INSERT INTO municipio(nome, regiao) VALUES('Itanhaém','Litoral Sul')")
         self.conn.execute(
             "INSERT INTO ponto(id, fonte, nome, municipio_id) VALUES('63','ciiagro','Registro',1)")
     def tearDown(self):

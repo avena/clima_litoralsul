@@ -1,18 +1,26 @@
-municipio,microrregiao
-Itanhaém,Itanhaém
-Itariri,Itanhaém
-Mongaguá,Itanhaém
-Pedro de Toledo,Itanhaém
-Peruíbe,Itanhaém
-Barra do Turvo,Registro
-Cajati,Registro
-Cananéia,Registro
-Eldorado,Registro
-Iguape,Registro
-Ilha Comprida,Registro
-Jacupiranga,Registro
-Juquiá,Registro
-Miracatu,Registro
-Pariquera-Açu,Registro
-Registro,Registro
-Sete Barras,Registro
+municipio,regiao
+Itanhaém,Litoral Sul
+Itariri,Litoral Sul
+Mongaguá,Litoral Sul
+Pedro de Toledo,Litoral Sul
+Peruíbe,Litoral Sul
+Cananéia,Litoral Sul
+Iguape,Litoral Sul
+Ilha Comprida,Litoral Sul
+Barra do Turvo,Vale do Ribeira
+Cajati,Vale do Ribeira
+Eldorado,Vale do Ribeira
+Jacupiranga,Vale do Ribeira
+Juquiá,Vale do Ribeira
+Miracatu,Vale do Ribeira
+Pariquera-Açu,Vale do Ribeira
+Registro,Vale do Ribeira
+Sete Barras,Vale do Ribeira
+Apiaí,Alto Vale e Cabeceiras
+Barra do Chapéu,Alto Vale e Cabeceiras
+Iporanga,Alto Vale e Cabeceiras
+Itaóca,Alto Vale e Cabeceiras
+Itapirapuã Paulista,Alto Vale e Cabeceiras
+Juquitiba,Alto Vale e Cabeceiras
+Ribeira,Alto Vale e Cabeceiras
+Tapiraí,Alto Vale e Cabeceiras

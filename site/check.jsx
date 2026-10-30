@@ -50,6 +50,11 @@ const checagens = [
     "lista de estações mostra quantos anos fechados cada uma tem",
   ],
   [
+    dados.regioes.length === 3 &&
+      dados.regioes.every((r) => registro.includes(`>${r}<`)),
+    "lista separada nas 3 regiões do painel (Litoral Sul, Vale do Ribeira, Alto Vale)",
+  ],
+  [
     registro.includes('href="fichas/registro.pdf"'),
     "climatograma linka a ficha em PDF da própria estação",
   ],

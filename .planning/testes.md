@@ -13,10 +13,10 @@ quebram, e é isso que se quer.
 
 | ID | Teste | O que garante |
 |---|---|---|
-| T01.1 | `test_dezessete_municipios` | o CSV tem exatamente os 17 da mesorregião; a promessa de cobertura não infla |
+| T01.1 | `test_vinte_e_cinco_municipios` | o CSV tem exatamente os 25 do Litoral Sul e do Vale, nas 3 regiões canônicas; a promessa de cobertura não infla |
 | T01.2 | `test_nome_exato` | nome de município com acento resolve (Cananéia, Itanhaém) |
 | T01.3 | `test_sufixo_de_estacao` | `Registro Unesp` e `Pariquera-Açu 2` não viram município novo |
-| T01.4 | `test_estacao_fora_dos_17` | estação vizinha (Apiaí, Juquitiba, Ribeira, Tapiraí, Itaóca) devolve `None` em vez de casar com o município errado |
+| T01.4 | `test_estacao_fora_do_escopo` | estação de município fora do escopo (Sorocaba, Santos, etc.) devolve `None` em vez de casar com o município errado |
 | T01.5 | `test_calendario_traz_inicio_de_cada_estacao` | 23 estações, e `dd/mm/aaaa` → `AAAA-MM-DD` sem inverter dia e mês |
 | T01.6 | `test_periodo_traz_o_codigo_numerico` | o código da estação sai da única página que o expõe |
 | T01.7 | `test_marcadores_do_mapa_dao_coordenadas` | lat/lon saem do HTML do Leaflet, na ordem correta |

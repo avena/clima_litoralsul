@@ -21,6 +21,7 @@ from datetime import date
 from pathlib import Path
 
 from coletor import DB, abrir
+from municipios import regioes as grupos
 
 SAIDA = Path(__file__).with_name("site") / "public" / "dados.json"
 MESES = ("jan", "fev", "mar", "abr", "mai", "jun",
@@ -564,20 +565,27 @@ def exportar(conn: sqlite3.Connection) -> dict:
         conn: conexão aberta por `coletor.abrir`.
 
     Returns:
-        Dict com `gerado` (data), `fonte` e `municipios`; cada município traz
-        `slug`, `nome` e `estacoes`. Cada estação traz `slug` e `municipio`, que
-        são a sua rota no painel (`#/registro-unesp`). Município sem estação
-        aparece com a lista vazia — quem decide como mostrar isso é o front.
+        Dict com `gerado` (data), `fonte`, `regioes`, `municipios` e `regiao`;
+        cada município traz `slug`, `nome`, `regiao` e `estacoes`. Cada estação
+        traz `slug` e `municipio`, que são a sua rota no painel
+        (`#/registro-unesp`). Município sem estação aparece com a lista vazia —
+        quem decide como mostrar isso é o front.
 
     Nota:
-        A lista de municípios vem da tabela `municipio`, inclusive os 4 sem
+        A lista de municípios vem da tabela `municipio`, inclusive os sem
         estação: sumir com eles transformaria "não há dado" em "não existe".
 
         O `slug` da estação, e não o do município, é a rota: Registro e
         Pariquera-Açu têm duas estações cada, e a URL precisa dizer qual.
+
+        `regioes` é a ordem dos grupos na tela (`Litoral Sul`, `Vale do
+        Ribeira`, `Alto Vale e Cabeceiras`), e os municípios já saem ordenados
+        por ela. `regiao` (singular) é outra coisa: o texto de uso geral que
+        vale para todos — o nome é infeliz, mas renomeá-lo quebraria o front.
     """
     municipios = []
-    for mun_id, mun in conn.execute("SELECT id, nome FROM municipio ORDER BY nome"):
+    for mun_id, mun, regiao in conn.execute(
+            "SELECT id, nome, regiao FROM municipio ORDER BY nome"):
         estacoes = []
         for p in conn.execute(
                 "SELECT id, nome, inicio_auto, primeiro_fato FROM ponto "
@@ -587,9 +595,14 @@ def exportar(conn: sqlite3.Connection) -> dict:
                 estacao["slug"] = slug(p["nome"])
                 estacao["municipio"] = mun
                 estacoes.append(estacao)
-        municipios.append({"slug": slug(mun), "nome": mun, "estacoes": estacoes})
+        municipios.append({"slug": slug(mun), "nome": mun, "regiao": regiao,
+                           "estacoes": estacoes})
+    # Ordem do CSV: agrupa na tela sem o front ter de saber a ordem das regiões.
+    ordem = {r: i for i, r in enumerate(grupos())}
+    municipios.sort(key=lambda m: (ordem.get(m["regiao"], len(ordem)), m["nome"]))
     return {"gerado": date.today().isoformat(), "fonte": "CIIAGRO",
-            "regiao": {"uso": USO_GERAL}, "municipios": municipios}
+            "regioes": list(grupos()), "regiao": {"uso": USO_GERAL},
+            "municipios": municipios}
 
 
 def escrever(conn: sqlite3.Connection, destino: Path = SAIDA) -> Path:

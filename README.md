@@ -1,7 +1,7 @@
 # clima_litoralsul
 
-Série climática dos **17 municípios da mesorregião Litoral Sul Paulista**
-(microrregiões de Itanhaém e Registro), a partir das estações do
+Série climática dos **25 municípios do Litoral Sul Paulista e Vale do Ribeira**
+(Litoral Sul, Vale do Ribeira e Alto Vale/Cabeceiras), a partir das estações do
 [CIIAGRO](http://www.ciiagro.org.br).
 
 Coleta em **Python 3.12 só com stdlib** (`urllib`, `sqlite3`, `re`, `json`,
@@ -12,7 +12,7 @@ Vite. Sem banco externo, sem servidor de aplicação, sem CDN em runtime.
 
 | Arquivo | Responsável por | Como rodar |
 |---|---|---|
-| `municipios.csv` | os 17 municípios (nome, microrregião) — a lista é entrada fixa, não vem do site | — |
+| `municipios.csv` | os 25 municípios (nome, região) em 3 grupos canônicos — lista fixa de entrada | — |
 | `municipios.py` | lê o CSV e cria/atualiza `municipio` | chamado por `coletor.py` |
 | `coletor.py` | **CLI e banco**: schema, `abrir`, `catalogo`, `coletar`, `auditar` e a consolidação (`substituir_granularidade`, `atualizar_primeiro_fato`) | `python3 coletor.py …` |
 | `fontes/ciiagro.py` | **raspagem**: POST nos endpoints, regex no `addRows` do HTML, devolve `{estação: {coluna: valor}}`. Não conhece `sqlite3` | chamado por `coletor.py` |
@@ -20,7 +20,7 @@ Vite. Sem banco externo, sem servidor de aplicação, sem CDN em runtime.
 | `site/` | **render**: SPA React (um único `dados.json`, troca de município sem recarregar) + Tailwind v4 | `npm --prefix site run dev` |
 | `start.sh` | exporta, builda e serve numa porta livre em `0.0.0.0` | `./start.sh` |
 | `deploy.sh` | exporta, testa, builda, commita o `dados.json` e faz push (= deploy) | `./deploy.sh` |
-| `latex/gerar.py` | **ficha A4**: lê `site/public/dados.json` e escreve `latex/fichas/<slug>.tex`, uma página por estação (médias de vários anos, tabela mensal, sazonal, solstícios e uso no planejamento) | `python3 latex/gerar.py`, depois pdfLaTeX/tectonic |
+| `latex/gerar.py` | **ficha A4**: lê `site/public/dados.json` e escreve `latex/fichas/<slug>.tex`, uma página por estação (23 estações, médias de vários anos, tabela mensal, sazonal, solstícios e uso no planejamento) | `python3 latex/gerar.py`, depois pdfLaTeX/tectonic |
 | `tests/` | 31 testes Python sobre HTML real em `tests/fixtures/` | `python3 -m unittest discover -s tests` |
 | `dados/clima.sqlite` | banco (gitignorado, gerado pela coleta) | — |
 | `.planning/` | plano, tarefas e catálogo de testes — comece por `.planning/PLANO.md` | — |
@@ -68,8 +68,8 @@ O script imprime a URL de `localhost` e a do IP do WSL; escuta em `0.0.0.0`,
 então o navegador do Windows alcança. Precisa de Node 20+ só para o `site/`; a
 coleta continua sem dependência nenhuma.
 
-O painel abre com os 17 municípios em cards (nome, número de estações e
-período): clicar troca a cidade sem recarregar e sem piscar, e a URL guarda a
+O painel abre com os 25 municípios agrupados em 3 regiões (Litoral Sul, Vale do
+Ribeira, Alto Vale e Cabeceiras): clicar troca a cidade sem recarregar e sem piscar, e a URL guarda a
 escolha (`#/registro`) para poder ser compartilhada. Abaixo vêm os cards de KPI
 (chuva anual, temperatura média, amplitude sazonal, UR), o climatograma de eixo
 duplo (chuva em barras, T mín/méd/máx em linhas, faixa térmica sombreada), a
@@ -96,7 +96,7 @@ PDF"): o link é a rota da estação, não a do município — `#/registro-unesp
 
 O PDF é versionado em `site/public/fichas/`, porque o Netlify não tem TeX e o
 `vite build` só copia `public/` para `dist/`. `SOURCE_DATE_EPOCH` fixa o carimbo
-do PDF na data do `dados.json`: sem isso cada build geraria 15 binários novos
+do PDF na data do `dados.json`: sem isso cada build geraria 23 binários novos
 sem uma vírgula de diferença.
 
 Cada ficha cabe em **uma folha A4** e é **preto e branco estrito**: a paleta é a
@@ -160,9 +160,9 @@ dentro do HTML; o extrator é regex, testado contra HTML real em `tests/fixtures
 - **Sem estação CIIAGRO**: Itanhaém, Mongaguá, Ilha Comprida. Peruíbe só na rede
   principal (`/ema/index.php?id=56`), fora desta versão.
 
-**13 dos 17 municípios** têm estação — 15 é o número de estações, porque Registro
-e Pariquera-Açu têm duas cada. As 8 estações de municípios vizinhos ficam no
-banco com `municipio_id` nulo, como referência.
+**21 dos 25 municípios** têm estação — 23 é o número de estações, porque Registro
+e Pariquera-Açu têm duas cada. Sem estação no CIIAGRO: Itanhaém, Mongaguá, Ilha
+Comprida e Peruíbe.
 
 ## Duas armadilhas que mudam interpretação
 
