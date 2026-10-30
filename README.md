@@ -89,7 +89,8 @@ git push
 ```
 
 - **Netlify**: `netlify.toml` já define base `site`, `npm run build`, publish
-  `dist`. Conecte o repositório e pronto.
+  `dist`. Conecte o repositório e pronto — passo a passo em
+  `netlify.readme.md` (o campo **Base directory** precisa ser `site`).
 - **Vercel**: `vercel.json` roda `cd site && npm run build` e publica
   `site/dist`.
 - **Hook manual** (`.github/workflows/deploy.yml`): criado para forçar o build
