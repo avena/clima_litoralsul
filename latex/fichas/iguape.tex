@@ -1,0 +1,124 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\definecolor{chuva}{HTML}{1B7F9E}
+\definecolor{cinza}{HTML}{666666}
+\newcommand{\barra}[1]{\textcolor{chuva}{\rule{#1mm}{2.4pt}}}
+\begin{document}
+
+{\Large\bfseries Iguape --- climatologia das médias}\\[1pt]
+{\small Estação CIIAGRO/IAC 296 \,\textbullet\, 219 meses
+medidos (2004-01 a 2026-10) \,\textbullet\, \textbf{17 anos com os 12 meses fechados}}
+
+\vspace{3pt}
+\colorbox{cinza!8}{\parbox{\dimexpr\textwidth-2\fboxsep}{\small
+\textbf{Leia antes de usar:} os números abaixo são \textbf{médias de vários anos},
+calculadas a partir das medições mensais do CIIAGRO. \textbf{Não é previsão do tempo}
+para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
+calendário agrícola, manejo de solo e planejamento da propriedade.}}
+
+\vspace{5pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Chuva anual média} & \textbf{Mês mais chuvoso} & \textbf{Mês mais seco} \\
+{\LARGE 1.983} mm/ano &
+{\LARGE 273} mm & {\LARGE 97} mm \\
+{\small em todo o ano} & {\small em janeiro} &
+{\small em agosto} \\
+\end{tabular}
+
+\vspace{3pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Temperatura média} & \textbf{Mês mais quente} & \textbf{Mês mais frio} \\
+{\LARGE 22,2} °C & 26,2 °C &
+18,2 °C \\
+{\small em todo o ano} & {\small em fevereiro} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{6pt}
+{\bfseries Chuva média por mês do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l r l r r r@{}}
+\toprule
+mês & chuva (mm) & perfil & t mín & t méd & t máx \\
+\midrule
+janeiro    &   273 & \barra{26.0}   & 21,2 & 25,6 & 30,0 \\
+fevereiro  &   230 & \barra{21.9}   & 21,3 & 26,2 & 31,1 \\
+março      &   211 & \barra{20.0}   & 20,7 & 25,2 & 29,7 \\
+abril      &   157 & \barra{14.9}   & 18,6 & 23,3 & 27,9 \\
+maio       &   133 & \barra{12.7}   & 15,6 & 20,5 & 25,4 \\
+junho      &   112 & \barra{10.7}   & 14,2 & 19,1 & 24,0 \\
+julho      &   124 & \barra{11.8}   & 13,2 & 18,2 & 23,2 \\
+agosto     &    97 & \barra{9.2}    & 14,1 & 18,9 & 23,6 \\
+setembro   &   134 & \barra{12.8}   & 15,8 & 20,2 & 24,6 \\
+outubro    &   171 & \barra{16.3}   & 18,0 & 21,7 & 25,4 \\
+novembro   &   150 & \barra{14.2}   & 18,8 & 23,0 & 27,1 \\
+dezembro   &   193 & \barra{18.4}   & 20,3 & 24,8 & 29,4 \\
+\midrule
+ano & 1.983 & & & 22,2 & \\
+\bottomrule
+\end{tabular}}
+
+\vspace{5pt}
+{\bfseries Chuva por estação do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l l r r r l l@{}}
+\toprule
+estação & meses & total (mm) & \% do ano & média/mês & maior mês & menor mês \\
+\midrule
+Verão      & dez--fev &   696 &  35\% &  232 & 273 (jan) & 193 (dez) \\
+Outono     & mar--mai &   500 &  25\% &  167 & 211 (mar) & 133 (mai) \\
+Inverno    & jun--ago &   333 &  17\% &  111 & 124 (jul) & 97 (ago) \\
+Primavera  & set--nov &   455 &  23\% &  152 & 171 (out) & 134 (set) \\
+\bottomrule
+\end{tabular}}
+
+\vspace{3pt}
+{\small\textbf{Antes dos solstícios} (acumulado desde janeiro)}
+
+{\small
+inverno: janeiro a maio somam 1.004 mm (51\% do ano) \quad\textbullet\quad
+verão: junho a novembro somam 788 mm (40\% do ano)
+\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
+acumulados acima.}
+
+\vspace{5pt}
+{\bfseries Como usar no planejamento nesta estação}
+\small\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Amostragem de solo e preparo mecânico}: Em agosto a chuva média fica em 97 mm/mês — é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência. Como até o mês mais seco passa de 60 mm, o solo raramente seca: a janela vale para entrar com máquina, não para preparo em solo seco.
+  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de setembro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
+  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 696 mm, 35\% da chuva do ano — favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
+  \item \textbf{Excesso de chuva e conservação}: janeiro passa de 200 mm em média (273 mm): canteiros altos, drenagem limpa e cobertura morta antes da temporada, para não perder solo e adubo no escoamento.
+  \item \textbf{Calor, frio e fitossanidade}: fevereiro tem a maior média (26,2 °C) e julho a menor (18,2 °C, com mínima média de 13,2 °C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
+\end{itemize}
+
+\vspace{2pt}
+{\bfseries Vale para qualquer município da região}
+\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Média não é previsão}: Descrevem o padrão de vários anos, não o tempo deste ano: use para escolher a janela de cada operação, e decida no campo.
+  \item \textbf{Corrija antes de precisar}: Calcário reage em meses; aplicado na janela seca, chega ao plantio já reagido.
+  \item \textbf{Chuva em mm não é água no solo}: Textura, declive e cobertura morta decidem quanto do que cai chega à raiz.
+  \item \textbf{Série curta é pista, não padrão}: Poucos anos fechados oscilam muito: compare com a estação vizinha antes de fixar calendário.
+\end{itemize}
+
+\vspace{2pt}
+{\footnotesize\color{cinza}
+Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
+Painel interativo:
+\href{https://climalitoralsul.netlify.app/\#iguape}{\texttt{climalitoralsul.netlify.app/\#iguape}}\\
+Umidade relativa ficou fora: a fonte usa \texttt{0} para ``sem sensor'', o que tornaria a média enganosa. Rótulo do painel: médias do período 2004–2026 (18.2 anos de dado).
+2 leitura(s) fora da faixa de sanidade excluída(s) da média (tmed 1, tmax 1); o banco as preserva.
+Gerado a partir de \texttt{dados.json} de 2026-10-30.}
+
+\end{document}

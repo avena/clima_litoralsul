@@ -16,11 +16,12 @@ Vite. Sem banco externo, sem servidor de aplicação, sem CDN em runtime.
 | `municipios.py` | lê o CSV e cria/atualiza `municipio` | chamado por `coletor.py` |
 | `coletor.py` | **CLI e banco**: schema, `abrir`, `catalogo`, `coletar`, `auditar` e a consolidação (`substituir_granularidade`, `atualizar_primeiro_fato`) | `python3 coletor.py …` |
 | `fontes/ciiagro.py` | **raspagem**: POST nos endpoints, regex no `addRows` do HTML, devolve `{estação: {coluna: valor}}`. Não conhece `sqlite3` | chamado por `coletor.py` |
-| `relatorio.py` | **agregação e export**: médias por mês do ano, chuva anual, estações do ano, faixa de sanidade, rótulo "normal climatológica" → `site/public/dados.json` | `python3 relatorio.py` |
+| `relatorio.py` | **agregação e export**: médias por mês do ano, chuva anual, estações do ano com total/%, solstícios, texto de uso no planejamento, faixa de sanidade, rótulo "normal climatológica" → `site/public/dados.json` | `python3 relatorio.py` |
 | `site/` | **render**: SPA React (um único `dados.json`, troca de município sem recarregar) + Tailwind v4 | `npm --prefix site run dev` |
 | `start.sh` | exporta, builda e serve numa porta livre em `0.0.0.0` | `./start.sh` |
 | `deploy.sh` | exporta, testa, builda, commita o `dados.json` e faz push (= deploy) | `./deploy.sh` |
-| `tests/` | 25 testes Python sobre HTML real em `tests/fixtures/` | `python3 -m unittest discover -s tests` |
+| `latex/gerar.py` | **ficha A4**: lê `site/public/dados.json` e escreve `latex/fichas/<slug>.tex`, uma página por estação (médias de vários anos, tabela mensal, sazonal, solstícios e uso no planejamento) | `python3 latex/gerar.py`, depois pdfLaTeX/tectonic |
+| `tests/` | 31 testes Python sobre HTML real em `tests/fixtures/` | `python3 -m unittest discover -s tests` |
 | `dados/clima.sqlite` | banco (gitignorado, gerado pela coleta) | — |
 | `.planning/` | plano, tarefas e catálogo de testes — comece por `.planning/PLANO.md` | — |
 

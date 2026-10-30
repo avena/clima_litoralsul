@@ -1,0 +1,124 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\definecolor{chuva}{HTML}{1B7F9E}
+\definecolor{cinza}{HTML}{666666}
+\newcommand{\barra}[1]{\textcolor{chuva}{\rule{#1mm}{2.4pt}}}
+\begin{document}
+
+{\Large\bfseries Pariquera-Açu --- climatologia das médias}\\[1pt]
+{\small Estação CIIAGRO/IAC 54 \,\textbullet\, 409 meses
+medidos (1992-10 a 2026-10) \,\textbullet\, \textbf{33 anos com os 12 meses fechados}}
+
+\vspace{3pt}
+\colorbox{cinza!8}{\parbox{\dimexpr\textwidth-2\fboxsep}{\small
+\textbf{Leia antes de usar:} os números abaixo são \textbf{médias de vários anos},
+calculadas a partir das medições mensais do CIIAGRO. \textbf{Não é previsão do tempo}
+para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
+calendário agrícola, manejo de solo e planejamento da propriedade.}}
+
+\vspace{5pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Chuva anual média} & \textbf{Mês mais chuvoso} & \textbf{Mês mais seco} \\
+{\LARGE 1.544} mm/ano &
+{\LARGE 273} mm & {\LARGE 57} mm \\
+{\small em todo o ano} & {\small em janeiro} &
+{\small em agosto} \\
+\end{tabular}
+
+\vspace{3pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Temperatura média} & \textbf{Mês mais quente} & \textbf{Mês mais frio} \\
+{\LARGE 22,0} °C & 26,0 °C &
+17,5 °C \\
+{\small em todo o ano} & {\small em fevereiro} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{6pt}
+{\bfseries Chuva média por mês do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l r l r r r@{}}
+\toprule
+mês & chuva (mm) & perfil & t mín & t méd & t máx \\
+\midrule
+janeiro    &   273 & \barra{26.0}   & 20,8 & 25,7 & 30,6 \\
+fevereiro  &   207 & \barra{19.6}   & 21,0 & 26,0 & 31,1 \\
+março      &   195 & \barra{18.5}   & 20,3 & 25,0 & 29,7 \\
+abril      &    90 & \barra{8.5}    & 18,1 & 23,0 & 27,9 \\
+maio       &    79 & \barra{7.5}    & 15,0 & 19,9 & 24,9 \\
+junho      &    77 & \barra{7.3}    & 13,0 & 18,1 & 23,2 \\
+julho      &    72 & \barra{6.8}    & 12,1 & 17,5 & 22,9 \\
+agosto     &    57 & \barra{5.4}    & 12,9 & 18,3 & 23,7 \\
+setembro   &   102 & \barra{9.7}    & 15,3 & 20,4 & 24,4 \\
+outubro    &   120 & \barra{11.4}   & 17,3 & 22,1 & 25,8 \\
+novembro   &   119 & \barra{11.3}   & 18,3 & 23,0 & 27,7 \\
+dezembro   &   162 & \barra{15.4}   & 20,0 & 24,9 & 29,8 \\
+\midrule
+ano & 1.544 & & & 22,0 & \\
+\bottomrule
+\end{tabular}}
+
+\vspace{5pt}
+{\bfseries Chuva por estação do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l l r r r l l@{}}
+\toprule
+estação & meses & total (mm) & \% do ano & média/mês & maior mês & menor mês \\
+\midrule
+Verão      & dez--fev &   642 &  42\% &  214 & 273 (jan) & 162 (dez) \\
+Outono     & mar--mai &   363 &  24\% &  121 & 195 (mar) & 79 (mai) \\
+Inverno    & jun--ago &   205 &  13\% &   68 & 77 (jun) & 57 (ago) \\
+Primavera  & set--nov &   341 &  22\% &  114 & 120 (out) & 102 (set) \\
+\bottomrule
+\end{tabular}}
+
+\vspace{3pt}
+{\small\textbf{Antes dos solstícios} (acumulado desde janeiro)}
+
+{\small
+inverno: janeiro a maio somam 843 mm (55\% do ano) \quad\textbullet\quad
+verão: junho a novembro somam 546 mm (35\% do ano)
+\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
+acumulados acima.}
+
+\vspace{5pt}
+{\bfseries Como usar no planejamento nesta estação}
+\small\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Amostragem de solo e preparo mecânico}: Em abril, maio, junho, julho e agosto a chuva média fica entre 57 e 90 mm/mês — é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência.
+  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de outubro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
+  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 642 mm, 42\% da chuva do ano — favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
+  \item \textbf{Excesso de chuva e conservação}: janeiro passa de 200 mm em média (273 mm): canteiros altos, drenagem limpa e cobertura morta antes da temporada, para não perder solo e adubo no escoamento.
+  \item \textbf{Calor, frio e fitossanidade}: fevereiro tem a maior média (26,0 °C) e julho a menor (17,5 °C, com mínima média de 12,1 °C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
+\end{itemize}
+
+\vspace{2pt}
+{\bfseries Vale para qualquer município da região}
+\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Média não é previsão}: Descrevem o padrão de vários anos, não o tempo deste ano: use para escolher a janela de cada operação, e decida no campo.
+  \item \textbf{Corrija antes de precisar}: Calcário reage em meses; aplicado na janela seca, chega ao plantio já reagido.
+  \item \textbf{Chuva em mm não é água no solo}: Textura, declive e cobertura morta decidem quanto do que cai chega à raiz.
+  \item \textbf{Série curta é pista, não padrão}: Poucos anos fechados oscilam muito: compare com a estação vizinha antes de fixar calendário.
+\end{itemize}
+
+\vspace{2pt}
+{\footnotesize\color{cinza}
+Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
+Painel interativo:
+\href{https://climalitoralsul.netlify.app/\#pariquera-acu}{\texttt{climalitoralsul.netlify.app/\#pariquera-acu}}\\
+Umidade relativa ficou fora: a fonte usa \texttt{0} para ``sem sensor'', o que tornaria a média enganosa. Rótulo do painel: médias do período 1992–2026 (34.1 anos de dado; parte da série não validada).
+2 leitura(s) fora da faixa de sanidade excluída(s) da média (tmin 2); o banco as preserva.
+Gerado a partir de \texttt{dados.json} de 2026-10-30.}
+
+\end{document}

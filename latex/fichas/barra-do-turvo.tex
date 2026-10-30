@@ -1,0 +1,123 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\definecolor{chuva}{HTML}{1B7F9E}
+\definecolor{cinza}{HTML}{666666}
+\newcommand{\barra}[1]{\textcolor{chuva}{\rule{#1mm}{2.4pt}}}
+\begin{document}
+
+{\Large\bfseries Barra do Turvo --- climatologia das médias}\\[1pt]
+{\small Estação CIIAGRO/IAC 294 \,\textbullet\, 76 meses
+medidos (2018-08 a 2026-10) \,\textbullet\, \textbf{série curta: apenas 4 anos com os 12 meses fechados --- trate como referência do período medido, não como padrão consolidado}}
+
+\vspace{3pt}
+\colorbox{cinza!8}{\parbox{\dimexpr\textwidth-2\fboxsep}{\small
+\textbf{Leia antes de usar:} os números abaixo são \textbf{médias de vários anos},
+calculadas a partir das medições mensais do CIIAGRO. \textbf{Não é previsão do tempo}
+para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
+calendário agrícola, manejo de solo e planejamento da propriedade.}}
+
+\vspace{5pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Chuva anual média} & \textbf{Mês mais chuvoso} & \textbf{Mês mais seco} \\
+{\LARGE 1.377} mm/ano &
+{\LARGE 166} mm & {\LARGE 49} mm \\
+{\small em todo o ano} & {\small em janeiro} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{3pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Temperatura média} & \textbf{Mês mais quente} & \textbf{Mês mais frio} \\
+{\LARGE 21,4} °C & 27,2 °C &
+17,0 °C \\
+{\small em todo o ano} & {\small em março} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{6pt}
+{\bfseries Chuva média por mês do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l r l r r r@{}}
+\toprule
+mês & chuva (mm) & perfil & t mín & t méd & t máx \\
+\midrule
+janeiro    &   166 & \barra{26.0}   & 16,0 & 20,4 & 24,9 \\
+fevereiro  &   157 & \barra{24.6}   & 18,1 & 23,4 & 28,7 \\
+março      &   127 & \barra{19.9}   & 21,2 & 27,2 & 33,2 \\
+abril      &    80 & \barra{12.6}   & 19,1 & 24,7 & 30,4 \\
+maio       &    60 & \barra{9.3}    & 16,4 & 22,1 & 27,8 \\
+junho      &    71 & \barra{11.1}   & 14,6 & 20,0 & 25,4 \\
+julho      &    49 & \barra{7.6}    &  9,1 & 17,0 & 24,8 \\
+agosto     &    71 & \barra{11.2}   & 14,4 & 20,5 & 26,5 \\
+setembro   &    90 & \barra{14.1}   & 14,3 & 19,0 & 21,0 \\
+outubro    &   156 & \barra{24.4}   & 15,9 & 18,4 & 21,0 \\
+novembro   &   122 & \barra{19.1}   & 19,7 & 20,9 & 22,1 \\
+dezembro   &   151 & \barra{23.7}   & 21,8 & 22,6 & 23,4 \\
+\midrule
+ano & 1.377 & & & 21,4 & \\
+\bottomrule
+\end{tabular}}
+
+\vspace{5pt}
+{\bfseries Chuva por estação do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l l r r r l l@{}}
+\toprule
+estação & meses & total (mm) & \% do ano & média/mês & maior mês & menor mês \\
+\midrule
+Verão      & dez--fev &   475 &  34\% &  158 & 166 (jan) & 151 (dez) \\
+Outono     & mar--mai &   267 &  19\% &   89 & 127 (mar) & 60 (mai) \\
+Inverno    & jun--ago &   191 &  14\% &   64 & 71 (ago) & 49 (jul) \\
+Primavera  & set--nov &   368 &  27\% &  123 & 156 (out) & 90 (set) \\
+\bottomrule
+\end{tabular}}
+
+\vspace{3pt}
+{\small\textbf{Antes dos solstícios} (acumulado desde janeiro)}
+
+{\small
+inverno: janeiro a maio somam 591 mm (43\% do ano) \quad\textbullet\quad
+verão: junho a novembro somam 559 mm (41\% do ano)
+\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
+acumulados acima.}
+
+\vspace{5pt}
+{\bfseries Como usar no planejamento nesta estação}
+\small\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Amostragem de solo e preparo mecânico}: Em abril, maio, junho, julho, agosto e setembro a chuva média fica entre 49 e 90 mm/mês — é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência.
+  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de outubro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
+  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 475 mm, 34\% da chuva do ano — favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
+  \item \textbf{Calor, frio e fitossanidade}: março tem a maior média (27,2 °C) e julho a menor (17,0 °C, com mínima média de 9,1 °C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
+\end{itemize}
+
+\vspace{2pt}
+{\bfseries Vale para qualquer município da região}
+\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Média não é previsão}: Descrevem o padrão de vários anos, não o tempo deste ano: use para escolher a janela de cada operação, e decida no campo.
+  \item \textbf{Corrija antes de precisar}: Calcário reage em meses; aplicado na janela seca, chega ao plantio já reagido.
+  \item \textbf{Chuva em mm não é água no solo}: Textura, declive e cobertura morta decidem quanto do que cai chega à raiz.
+  \item \textbf{Série curta é pista, não padrão}: Poucos anos fechados oscilam muito: compare com a estação vizinha antes de fixar calendário.
+\end{itemize}
+
+\vspace{2pt}
+{\footnotesize\color{cinza}
+Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
+Painel interativo:
+\href{https://climalitoralsul.netlify.app/\#barra-do-turvo}{\texttt{climalitoralsul.netlify.app/\#barra-do-turvo}}\\
+Umidade relativa ficou fora: a fonte usa \texttt{0} para ``sem sensor'', o que tornaria a média enganosa. Rótulo do painel: médias do período 2018–2026 (6.3 anos de dado).
+1 leitura(s) fora da faixa de sanidade excluída(s) da média (tmed 1); o banco as preserva.
+Gerado a partir de \texttt{dados.json} de 2026-10-30.}
+
+\end{document}

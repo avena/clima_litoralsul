@@ -1,0 +1,124 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\definecolor{chuva}{HTML}{1B7F9E}
+\definecolor{cinza}{HTML}{666666}
+\newcommand{\barra}[1]{\textcolor{chuva}{\rule{#1mm}{2.4pt}}}
+\begin{document}
+
+{\Large\bfseries Pedro de Toledo --- climatologia das médias}\\[1pt]
+{\small Estação CIIAGRO/IAC 300 \,\textbullet\, 99 meses
+medidos (2018-08 a 2026-10) \,\textbullet\, \textbf{série curta: apenas 7 anos com os 12 meses fechados --- trate como referência do período medido, não como padrão consolidado}}
+
+\vspace{3pt}
+\colorbox{cinza!8}{\parbox{\dimexpr\textwidth-2\fboxsep}{\small
+\textbf{Leia antes de usar:} os números abaixo são \textbf{médias de vários anos},
+calculadas a partir das medições mensais do CIIAGRO. \textbf{Não é previsão do tempo}
+para amanhã nem para este ano: é o padrão médio da estação, para apoiar decisões de
+calendário agrícola, manejo de solo e planejamento da propriedade.}}
+
+\vspace{5pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Chuva anual média} & \textbf{Mês mais chuvoso} & \textbf{Mês mais seco} \\
+{\LARGE 1.240} mm/ano &
+{\LARGE 219} mm & {\LARGE 34} mm \\
+{\small em todo o ano} & {\small em janeiro} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{3pt}
+\begin{tabular}{@{}p{0.31\textwidth}p{0.31\textwidth}p{0.31\textwidth}@{}}
+\textbf{Temperatura média} & \textbf{Mês mais quente} & \textbf{Mês mais frio} \\
+{\LARGE 23,9} °C & 27,9 °C &
+20,2 °C \\
+{\small em todo o ano} & {\small em janeiro} &
+{\small em julho} \\
+\end{tabular}
+
+\vspace{6pt}
+{\bfseries Chuva média por mês do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l r l r r r@{}}
+\toprule
+mês & chuva (mm) & perfil & t mín & t méd & t máx \\
+\midrule
+janeiro    &   219 & \barra{26.0}   & 22,5 & 27,9 & 33,4 \\
+fevereiro  &   187 & \barra{22.2}   & 21,8 & 27,5 & 33,3 \\
+março      &   163 & \barra{19.4}   & 22,0 & 27,2 & 32,4 \\
+abril      &    78 & \barra{9.2}    & 19,3 & 24,7 & 30,1 \\
+maio       &    90 & \barra{10.7}   & 15,9 & 21,9 & 28,0 \\
+junho      &    63 & \barra{7.5}    & 15,5 & 21,1 & 26,7 \\
+julho      &    34 & \barra{4.1}    & 14,2 & 20,2 & 26,2 \\
+agosto     &    46 & \barra{5.5}    & 15,5 & 20,9 & 26,2 \\
+setembro   &    56 & \barra{6.7}    & 17,6 & 22,5 & 27,4 \\
+outubro    &    79 & \barra{9.4}    & 19,2 & 23,5 & 27,8 \\
+novembro   &   121 & \barra{14.3}   & 19,6 & 24,6 & 29,6 \\
+dezembro   &   129 & \barra{15.4}   & 18,1 & 25,1 & 32,6 \\
+\midrule
+ano & 1.240 & & & 23,9 & \\
+\bottomrule
+\end{tabular}}
+
+\vspace{5pt}
+{\bfseries Chuva por estação do ano}
+\vspace{1pt}
+{\small
+\begin{tabular}{@{}l l r r r l l@{}}
+\toprule
+estação & meses & total (mm) & \% do ano & média/mês & maior mês & menor mês \\
+\midrule
+Verão      & dez--fev &   535 &  43\% &  178 & 219 (jan) & 129 (dez) \\
+Outono     & mar--mai &   331 &  27\% &  110 & 163 (mar) & 78 (abr) \\
+Inverno    & jun--ago &   143 &  12\% &   48 & 63 (jun) & 34 (jul) \\
+Primavera  & set--nov &   256 &  21\% &   85 & 121 (nov) & 56 (set) \\
+\bottomrule
+\end{tabular}}
+
+\vspace{3pt}
+{\small\textbf{Antes dos solstícios} (acumulado desde janeiro)}
+
+{\small
+inverno: janeiro a maio somam 736 mm (59\% do ano) \quad\textbullet\quad
+verão: junho a novembro somam 400 mm (32\% do ano)
+\\ Dezembro fica depois do solstício de verão e entra no total anual, não nos
+acumulados acima.}
+
+\vspace{5pt}
+{\bfseries Como usar no planejamento nesta estação}
+\small\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Amostragem de solo e preparo mecânico}: Em abril, maio, junho, julho, agosto, setembro e outubro a chuva média fica entre 34 e 90 mm/mês — é a janela de menor encharcamento para retirar terra para laudo, arar e incorporar calcário com antecedência.
+  \item \textbf{Calagem em cobertura (pasto e perene já formado)}: A partir de novembro, quando a média volta a passar de 120 mm/mês: aí há água para o corretivo descer no perfil sem enxurrada.
+  \item \textbf{Plantio e transplante}: O verão (dezembro a fevereiro) concentra 535 mm, 43\% da chuva do ano — favorece o pegamento de mudas sem irrigação pesada; em áreas declivosas, reforce a conservação de solo nesse período.
+  \item \textbf{Excesso de chuva e conservação}: janeiro passa de 200 mm em média (219 mm): canteiros altos, drenagem limpa e cobertura morta antes da temporada, para não perder solo e adubo no escoamento.
+  \item \textbf{Calor, frio e fitossanidade}: janeiro tem a maior média (27,9 °C) e julho a menor (20,2 °C, com mínima média de 14,2 °C). Antecipe o monitoramento de doenças fúngicas nos meses quentes e úmidos e proteja culturas sensíveis ao frio nos mais frios.
+\end{itemize}
+
+\vspace{2pt}
+{\bfseries Vale para qualquer município da região}
+\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Média não é previsão}: Descrevem o padrão de vários anos, não o tempo deste ano: use para escolher a janela de cada operação, e decida no campo.
+  \item \textbf{Corrija antes de precisar}: Calcário reage em meses; aplicado na janela seca, chega ao plantio já reagido.
+  \item \textbf{Chuva em mm não é água no solo}: Textura, declive e cobertura morta decidem quanto do que cai chega à raiz.
+  \item \textbf{Série curta é pista, não padrão}: Poucos anos fechados oscilam muito: compare com a estação vizinha antes de fixar calendário.
+\end{itemize}
+
+\vspace{2pt}
+{\footnotesize\color{cinza}
+Fonte: CIIAGRO/IAC (ciiagro.org.br), série mensal medida; chuva é o total do mês.
+Painel interativo:
+\href{https://climalitoralsul.netlify.app/\#pedro-de-toledo}{\texttt{climalitoralsul.netlify.app/\#pedro-de-toledo}}\\
+Umidade relativa ficou fora: a fonte usa \texttt{0} para ``sem sensor'', o que tornaria a média enganosa. Rótulo do painel: médias do período 2018–2026 (8.2 anos de dado).
+6 leitura(s) fora da faixa de sanidade excluída(s) da média (tmed 3, tmax 3); o banco as preserva.
+Gerado a partir de \texttt{dados.json} de 2026-10-30.}
+
+\end{document}
