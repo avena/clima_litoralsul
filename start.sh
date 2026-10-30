@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Gera os relatórios do banco e serve numa porta livre sorteada.
+# Exporta os dados, builda o dashboard e serve numa porta livre sorteada.
 #
 #   ./start.sh                 # porta aleatória, escuta em 0.0.0.0
 #   PORT=8000 ./start.sh       # porta fixa
-#   ./start.sh Registro        # só um município
+#   ./start.sh --dev           # atalho: vite dev, com hot reload (sem build)
 #
 # Escutar em 0.0.0.0 é o que deixa o navegador do Windows alcançar o WSL:
 # http://<ip-do-wsl>:<porta>. Em WSL2, http://localhost:<porta> costuma
@@ -20,10 +20,17 @@ PY
 )}"
 
 IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
-python3 relatorio.py "$@"
-
-echo
 echo "Linux/WSL:  http://localhost:$PORT"
 [ -n "$IP" ] && echo "Windows:    http://$IP:$PORT"
 echo "Ctrl+C para parar."
-exec python3 -m http.server "$PORT" --bind 0.0.0.0 --directory relatorios
+echo
+
+python3 relatorio.py
+[ -d site/node_modules ] || npm --prefix site install --no-fund --no-audit
+
+if [ "${1:-}" = "--dev" ]; then
+  exec npm --prefix site run dev -- --host 0.0.0.0 --port "$PORT" --strictPort
+fi
+
+npm --prefix site run build
+exec python3 -m http.server "$PORT" --bind 0.0.0.0 --directory site/dist

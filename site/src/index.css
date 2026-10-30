@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fundo: #080d1a;
+  --color-painel: #0f172b;
+  --color-painel-alto: #131d33;
+  --color-borda: #1d2740;
+  --color-texto: #dae2fd;
+  --color-fraco: #93a0bd;
+  --color-chuva: #4cd7f6;
+  --color-med: #b4c5ff;
+  --color-quente: #ffb690;
+  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", monospace;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
