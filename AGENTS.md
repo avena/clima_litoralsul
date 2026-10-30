@@ -7,14 +7,26 @@ Paulista**. Python 3.12, **só stdlib**. Planos em `.planning/` — comece por
 ## Comandos
 
 ```bash
-python3 coletor.py catalogo                        # 3 requisições, monta município+ponto
-python3 coletor.py coletar --desde 2000-01 --ate 2026-10          # mensal, ~2 min
-python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-31 --diario   # ~80 min/20 anos
-python3 coletor.py auditar                         # cobertura + valores suspeitos
-python3 -m unittest discover -s tests              # 17 testes, sem rede
+python3 coletor.py catalogo                        # 3 requisições; rode antes de coletar
+python3 coletor.py coletar --desde 2000-01 --ate 2026-10           # mensal, ~2 min
+python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-31 --diario
+python3 coletor.py auditar                         # cobertura + suspeitas; nunca escreve
+python3 -m unittest discover -s tests              # 17 testes, ~0,5 s, sem rede
+python3 -m unittest tests.test_ciiagro.TestBanco.test_upsert_nao_duplica   # um teste só
 ```
 
-`dados/clima.sqlite` é o banco. Não há instalação, não há `pip install`.
+`dados/clima.sqlite` é o banco. Não há instalação, não há `pip install` — e não é
+pacote: `coletor.py` é a única entrada executável (`relatorio.py` ainda não existe).
+
+Três coisas que custam tempo de depuração:
+
+- **`coletar` sem `catalogo` não grava nada.** O banco resolve a estação por nome
+  em `ponto`; o que não estiver lá é ignorado com aviso "fora do catálogo".
+- **Mês anterior a 2000 responde em ~1,5 s** (contra ~0,24 s dos recentes),
+  então uma varredura de 1990 com `timeout 180` morre no meio sem mensagem.
+  Rode em background.
+- **Os testes comparam com HTML real em `tests/fixtures/`.** Se falharem depois de
+  o site mudar, baixe a página de novo; não ajuste o valor esperado "até passar".
 
 ## Invariantes que não podem quebrar
 
@@ -31,6 +43,9 @@ python3 -m unittest discover -s tests              # 17 testes, sem rede
 
 - O servidor devolve dados **antes da estação existir**: `Registro` tem 380 mm em
   `01/1995` e começou em `11/10/2005`. `Cananéia` tem `1 mm` em `01/2000` — placeholder.
+- `Miracatu` em `03/1990` vem no `addRows` cru como `tmed = 873,35`: coluna
+  deslocada na fonte, não bug do extrator. Preserve e denuncie em `auditar`;
+  limpar na coleta apagaria a evidência de que a fonte se corrompe.
 - `horario.php?codigo=N` responde **mas ignora qualquer parâmetro de data**: é janela
   rolante de 7 dias. Não serve para série, por mais que pareça a página certa.
 - `diario/cperiodo` devolve só um resumo por estação, não uma série.
