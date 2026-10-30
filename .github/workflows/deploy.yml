@@ -11,9 +11,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_DEPLOY_HOOK_URL: ${{ secrets.NETLIFY_DEPLOY_HOOK_URL }}
+      VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
     steps:
       - name: Netlify
-        if: ${{ secrets.NETLIFY_DEPLOY_HOOK_URL != '' }}
+        if: ${{ env.NETLIFY_DEPLOY_HOOK_URL != '' }}
         uses: lwojcik/github-action-deploy-static-site@v1
         with:
           platform: netlify
@@ -21,7 +24,7 @@ jobs:
           always_deploy: true
 
       - name: Vercel
-        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' }}
+        if: ${{ env.VERCEL_DEPLOY_HOOK_URL != '' }}
         uses: lwojcik/github-action-deploy-static-site@v1
         with:
           platform: vercel
