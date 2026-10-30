@@ -33,6 +33,9 @@ Três coisas que custam tempo de depuração:
   Rode em background.
 - **Os testes comparam com HTML real em `tests/fixtures/`.** Se falharem depois de
   o site mudar, baixe a página de novo; não ajuste o valor esperado "até passar".
+- **O fixture `estacoes.html` tem o token do Mapbox redigido.** O CIIAGRO embute
+  um `pk.eyJ…` de verdade no HTML e o GitHub recusa push por segredo detectado.
+  Não restaure o token: os testes leem `addRows` e tabelas, não o mapa.
 
 ## Invariantes que não podem quebrar
 
