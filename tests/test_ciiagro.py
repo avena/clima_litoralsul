@@ -352,6 +352,87 @@ class TestRelatorio(unittest.TestCase):
         r = relatorio.resumo(relatorio.agregado(self.conn, "63"))
         self.assertAlmostEqual(sum(s["mm"] for s in r["sazonal"]), r["chuva_ano"])
 
+    def test_sazonal_traz_total_media_maximo_e_minimo(self):
+        """A estação do ano carrega total, %, média/mês e os meses extremos.
+
+        T07.1 — o site e a ficha LaTeX mostram máx, mín e média por estação; se
+        viessem só o total, cada um calcularia de um jeito e um deles diria
+        "máx 248" onde o outro diz 206. Aqui a média é o total dividido pelos
+        três meses da estação, não a média das médias.
+        """
+        for mes in range(1, 25):
+            # janeiro e fevereiro chuvosos, o resto seco: os extremos do verão
+            # ficam sem empate, e um "pega o primeiro" apareceria.
+            chuva = 200.0 if (mes - 1) % 12 in (0, 1) else 80.0
+            self._mes(f"{2000 + (mes - 1) // 12}-{mes % 12 or 12:02d}", chuva=chuva)
+        r = relatorio.resumo(relatorio.agregado(self.conn, "63"))
+        verao = next(s for s in r["sazonal"] if s["nome"] == "Verão")
+        self.assertAlmostEqual(verao["media"], verao["mm"] / 3)
+        self.assertEqual(verao["max_mes"], "jan")
+        self.assertEqual(verao["min_mes"], "dez")
+        self.assertAlmostEqual(sum(s["pct"] for s in r["sazonal"]), 100.0)
+
+    def test_solsticios_nao_somam_duas_vezes_nem_perdem_dezembro(self):
+        """Os dois acumulados mais dezembro fecham com a chuva anual.
+
+        T07.2 — o acumulado "antes do solstício de inverno" vai de janeiro a
+        maio e o de verão de junho a novembro; dezembro é o único mês que fica
+        de fora. Se um intervalo escapasse, a ficha apresentaria percentuais que
+        não somam o ano.
+        """
+        for mes in range(1, 25):
+            self._mes(f"{2000 + (mes - 1) // 12}-{mes % 12 or 12:02d}")
+        ag = relatorio.agregado(self.conn, "63")
+        r = relatorio.resumo(ag)
+        dois = sum(s["mm"] for s in relatorio.solsticios(ag["por_mes"], r["chuva_ano"]))
+        dezembro = next(m["chuva"] for m in ag["por_mes"] if m["mes"] == "dez")
+        self.assertAlmostEqual(dois + dezembro, r["chuva_ano"])
+
+    def test_uso_local_cita_numero_e_nao_deixa_valor_ausente(self):
+        """O texto de planejamento sai com os números certos e sem `None`.
+
+        T07.3 — é o texto que vai para a ATER; um `None` impresso ou um conselho
+        sem o número que o sustenta derruba a confiança na ficha inteira. O
+        mesmo texto alimenta o card do site e a ficha em LaTeX.
+        """
+        for mes in range(1, 13):
+            self._mes(f"2005-{mes:02d}", chuva=200.0 if mes in (1, 2, 3) else 80.0)
+        r = relatorio.resumo(relatorio.agregado(self.conn, "63"))
+        est = {"meses": relatorio.agregado(self.conn, "63")["por_mes"], **r}
+        itens = relatorio.uso_local(est)
+        self.assertGreaterEqual(len(itens), 3)
+        for item in itens:
+            self.assertTrue(item["titulo"] and item["texto"])
+            self.assertNotIn("None", item["texto"])
+            self.assertNotIn("nan", item["texto"])
+        self.assertIn("Calagem em cobertura", " ".join(i["titulo"] for i in itens))
+
+    def test_inicio_das_chuvas_e_o_mes_depois_do_seco_nao_janeiro(self):
+        """A volta das chuvas é o mês seguinte ao mais seco, não janeiro.
+
+        T07.4 — pegar o primeiro mês úmido do ano civil devolvia janeiro, plena
+        estação chuvosa, e a ficha mandava aplicar calcário no pior momento.
+        """
+        meses = [{"mes": m, "chuva": c} for m, c in zip(
+            relatorio.MESES,
+            [250.0, 200.0, 150.0, 60.0, 50.0, 70.0, 80.0, 40.0, 90.0, 130.0, 140.0, 180.0])]
+        self.assertEqual(relatorio.inicio_das_chuvas(meses, "ago"), "out")
+        self.assertEqual(relatorio.janela_seca(meses, "ago"),
+                         ["abr", "mai", "jun", "jul", "ago", "set"])
+
+    def test_regiao_leva_orientacao_geral_no_json(self):
+        """O JSON traz, no topo, a orientação que vale para todo município.
+
+        T07.5 — o card do site separa "vale para a região" de "nesta estação".
+        Se o bloco geral sumisse da exportação, a página quebraria ao renderizar
+        e a ficha ficaria só com conselho local.
+        """
+        caminho = relatorio.escrever(self.conn, Path(self.tmp.name) / "d.json")
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(dados["regiao"]["uso"]), 3)
+        for item in dados["regiao"]["uso"]:
+            self.assertTrue(item["titulo"] and item["texto"])
+
     def test_json_exportado_e_serializavel(self):
         """O JSON do dashboard sai do disco íntegro, com 12 linhas e chuva anual.
 

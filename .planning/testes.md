@@ -61,6 +61,23 @@ quebram, e é isso que se quer.
 |---|---|---|
 | T06.1 | `site/check.jsx` (`npm --prefix site run check`) | o SPA renderiza com o `dados.json` real fora do navegador: climatograma com envelope, KPI em pt-BR, aviso de município sem estação e nenhum `NaN`/`undefined` no HTML |
 
+## T07 — Sazonal, solstícios e uso no planejamento
+
+O texto agronômico saiu do JavaScript e do LaTeX e passou a nascer em
+`relatorio.py`: site e ficha em PDF mostram a mesma frase porque a frase é uma
+só. Foi escrito à mão por cidade uma vez, e duas frases saíram contra os números
+(mínima de junho em Barra do Turvo; "mais de 40% da chuva" em Jacupiranga, que
+dá 39,8%).
+
+| ID | Teste | O que garante |
+|---|---|---|
+| T07.1 | `test_sazonal_traz_total_media_maximo_e_minimo` | cada estação do ano traz total, %, média/mês e os meses maior e menor — site e ficha não calculam isso cada um do seu jeito |
+| T07.2 | `test_solsticios_nao_somam_duas_vezes_nem_perdem_dezembro` | os acumulados "antes do solstício de inverno" (jan–mai) e "de verão" (jun–nov) mais dezembro fecham com a chuva anual |
+| T07.3 | `test_uso_local_cita_numero_e_nao_deixa_valor_ausente` | o texto de planejamento sai com título, texto e sem `None`/`NaN` — é o que vai para a ATER |
+| T07.4 | `test_inicio_das_chuvas_e_o_mes_depois_do_seco_nao_janeiro` | a volta das chuvas é o mês seguinte ao mais seco; pegar o primeiro mês úmido do ano civil mandava aplicar calcário em janeiro |
+| T07.5 | `test_regiao_leva_orientacao_geral_no_json` | a orientação que vale para todo município (`regiao.uso`) vai no topo do `dados.json` |
+| T07.6 | `site/check.jsx` | o card de uso, a média sazonal vinda do JSON e os acumulados de solstício aparecem no HTML renderizado, uma vez só |
+
 ## O que não está testado, e por quê
 
 - **Rede.** `_get` e `_post` não têm teste automatizado: exigiriam rede ou um
