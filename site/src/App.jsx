@@ -192,28 +192,46 @@ export default function App({ dados }) {
               : [{ slug: m.slug, nome: m.nome, semEstacao: true }]
             ).map((e) => {
               const ativo = e.slug === chave;
+              const caixa = ativo
+                ? "border-med bg-painel-alto"
+                : "border-borda/60 hover:border-borda hover:bg-painel-alto";
+              const texto = (
+                <>
+                  <span
+                    className={`block text-base leading-snug ${
+                      ativo ? "font-semibold text-med" : "text-texto"
+                    }`}
+                  >
+                    {e.nome}
+                  </span>
+                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
+                    {e.semEstacao ? "sem estação no CIIAGRO" : `${e.inicio} → ${e.fim}`}
+                  </span>
+                </>
+              );
+              // Município sem estação fica na lista (não sumir é o ponto), mas
+              // desativado: não há série para abrir.
+              if (e.semEstacao) {
+                return (
+                  <li key={e.slug}>
+                    <div
+                      aria-disabled="true"
+                      className="block cursor-not-allowed rounded-lg border border-dashed border-borda/50 px-3 py-2 opacity-45"
+                    >
+                      {texto}
+                    </div>
+                  </li>
+                );
+              }
               return (
                 <li key={e.slug}>
                   <a
                     href={`#/${e.slug}`}
                     aria-current={ativo ? "page" : undefined}
                     onClick={() => setFoco(null)}
-                    className={`block rounded-lg border px-3 py-2 transition-colors ${
-                      ativo
-                        ? "border-med bg-painel-alto"
-                        : "border-borda/60 hover:border-borda hover:bg-painel-alto"
-                    }`}
+                    className={`block rounded-lg border px-3 py-2 transition-colors ${caixa}`}
                   >
-                    <span
-                      className={`block text-base leading-snug ${
-                        ativo ? "font-semibold text-med" : "text-texto"
-                      }`}
-                    >
-                      {e.nome}
-                    </span>
-                    <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
-                      {e.semEstacao ? "sem estação no CIIAGRO" : `${e.inicio} → ${e.fim}`}
-                    </span>
+                    {texto}
                   </a>
                 </li>
               );

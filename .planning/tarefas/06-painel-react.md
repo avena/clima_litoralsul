@@ -32,7 +32,10 @@ A primeira versão listava municípios num `<select>` e deixava as duas estaçõ
 de Registro e Pariquera-Açu como abas. Trocado por um grid de cards — a escolha
 fica visível para quem não sabe que existe um menu — e cada estação passou a ter
 card e URL próprios (`relatorio.py` exporta `slug` e `municipio` por estação).
-Município sem estação continua com card, que abre o aviso em vez de sumir.
+Município sem estação continua com card, porém desativado (`aria-disabled`,
+`cursor-not-allowed`): sumir seria dizer que o município não existe, mas card
+clicável prometeria uma série que não há. A rota antiga (`#/itanhaem`) ainda
+abre o aviso, para link já compartilhado não virar tela vazia.
 
 ### 06.3 — Componentes
 
