@@ -8,6 +8,7 @@ funções puras sobre texto, e o banco roda em arquivo temporário.
 """
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -259,12 +260,8 @@ class TestRelatorio(unittest.TestCase):
         self.conn.execute("INSERT INTO municipio(nome, microrregiao) VALUES('Itanhaém','Itanhaém')")
         self.conn.execute(
             "INSERT INTO ponto(id, fonte, nome, municipio_id) VALUES('63','ciiagro','Registro',1)")
-        self._saida = relatorio.SAIDA
-        relatorio.SAIDA = Path(self.tmp.name) / "saida"
-
     def tearDown(self):
-        """Restaura o diretório de saída e apaga o temporário."""
-        relatorio.SAIDA = self._saida
+        """Fecha a conexão e apaga o banco temporário."""
         self.conn.close()
         self.tmp.cleanup()
 
@@ -275,10 +272,10 @@ class TestRelatorio(unittest.TestCase):
             (data, tmed, chuva))
 
     def test_nome_de_arquivo_sem_acento(self):
-        """`Pariquera-Açu` vira `pariquera-acu`, sem `%C3%A7` na URL.
+        """`Pariquera-Açu` vira `pariquera-acu`, sem `%C3%A7` no link.
 
-        O HTML é estático e o link tem de funcionar em servidor que não
-        reescreve URL.
+        O slug é a rota do SPA (`#/pariquera-acu`); com acento o link quebra ao
+        ser colado em chat ou planilha.
         """
         self.assertEqual(relatorio.slug("Pariquera-Açu"), "pariquera-acu")
         self.assertEqual(relatorio.slug("Itanhaém"), "itanhaem")
@@ -324,24 +321,52 @@ class TestRelatorio(unittest.TestCase):
         self.assertAlmostEqual(ag["por_mes"][2]["tmed"], 20.0)
         self.assertEqual(ag["descartes"]["tmed"], 1)
 
-    def test_municipio_sem_estacao_avisa_em_vez_de_tabela_vazia(self):
-        """Itanhaém gera página com aviso, não tabela de zeros.
+    def test_sazonal_soma_a_chuva_anual(self):
+        """A soma das quatro estações fecha exatamente com a chuva anual do card.
 
-        Tabela vazia com `0` seria lida como "chuva zero no município", que é
-        falso: o município não tem estação.
+        Se divergisse, o percentual sazonal estaria distribuindo água que não
+        existe (ou escondendo parte dela).
         """
-        relatorio.gerar(self.conn, [])
-        pagina = (Path(self.tmp.name) / "saida" / "itanhaem.html").read_text(encoding="utf-8")
-        self.assertIn("Nenhuma estação", pagina)
-        self.assertNotIn("<table>", pagina)
+        for mes in range(1, 25):
+            self._mes(f"{2000 + (mes - 1) // 12}-{mes % 12 or 12:02d}")
+        r = relatorio.resumo(relatorio.agregado(self.conn, "63"))
+        self.assertAlmostEqual(sum(s["mm"] for s in r["sazonal"]), r["chuva_ano"])
 
-    def test_mes_sem_dado_sai_como_travessao(self):
-        """Mês ausente é `—`, nunca `0` — buraco de série não é seca."""
-        self.assertEqual(relatorio._fmt(None), "—")
+    def test_json_exportado_e_serializavel(self):
+        """O JSON do dashboard sai do disco íntegro, com 12 linhas e chuva anual.
+
+        Se a exportação perdesse a estrutura, o SPA abriria vazio sem erro
+        nenhum — e ninguém saberia que o dado sumiu.
+        """
+        for mes in range(1, 13):
+            self._mes(f"2005-{mes:02d}")
+        caminho = relatorio.escrever(self.conn, Path(self.tmp.name) / "d.json")
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        registro = next(m for m in dados["municipios"] if m["slug"] == "registro")
+        estacao = registro["estacoes"][0]
+        self.assertEqual(estacao["id"], "63")
+        self.assertEqual(len(estacao["meses"]), 12)
+        self.assertAlmostEqual(estacao["chuva_ano"], 1200.0)
+
+    def test_municipio_sem_estacao_entra_com_lista_vazia(self):
+        """Itanhaém aparece no JSON com `estacoes: []`, não desaparece da lista.
+
+        Sumir com o município transformaria "não há dado" em "não existe".
+        """
+        caminho = relatorio.escrever(self.conn, Path(self.tmp.name) / "d.json")
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        itanhaem = next(m for m in dados["municipios"] if m["slug"] == "itanhaem")
+        self.assertEqual(itanhaem["estacoes"], [])
+
+    def test_mes_sem_dado_vira_null(self):
+        """Mês ausente é `null` no JSON, nunca `0` — buraco de série não é seca."""
         self._mes("2005-03", tmed=None, chuva=None)
-        ag = relatorio.agregado(self.conn, "63")
-        self.assertIsNone(ag["por_mes"][2]["chuva"])
-        self.assertIn("—", relatorio._tabela(ag))
+        caminho = relatorio.escrever(self.conn, Path(self.tmp.name) / "d.json")
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        registro = next(m for m in dados["municipios"] if m["slug"] == "registro")
+        marco = registro["estacoes"][0]["meses"][2]
+        self.assertIsNone(marco["chuva"])
+        self.assertIsNone(marco["tmed"])
 
 
 if __name__ == "__main__":
