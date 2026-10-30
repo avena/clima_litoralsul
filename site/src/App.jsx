@@ -15,6 +15,15 @@ const fmt = (v, casas = 1) =>
 
 const mesLongo = (m) => NOMES[m] ?? m;
 
+// Séries do climatograma; a legenda é o filtro. `alto` só muda o formato do
+// quadradinho (barra) contra o traço das linhas.
+const SERIES = [
+  { campo: "chuva", rotulo: "chuva", cor: "bg-chuva", alto: true },
+  { campo: "tmax", rotulo: "t máx", cor: "bg-quente" },
+  { campo: "tmed", rotulo: "t méd", cor: "bg-med" },
+  { campo: "tmin", rotulo: "t mín", cor: "border-t-2 border-dashed border-chuva" },
+];
+
 // Injetados em build pelo vite.config.js; `typeof` protege o render fora do Vite.
 const COMMIT = typeof __COMMIT__ === "string" ? __COMMIT__ : "local";
 const COMMIT_INICIAL = typeof __COMMIT_INICIAL__ === "string" ? __COMMIT_INICIAL__ : "local";
@@ -63,6 +72,37 @@ function Sazonal({ sazonal }) {
             <div
               className="h-full rounded-full bg-chuva"
               style={{ width: `${((s.mm ?? 0) / total) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Ranking das estações por chuva anual, da maior para a menor, em barras. */
+function Ranking({ estacoes, atual }) {
+  const ordenado = [...estacoes]
+    .filter((e) => e.chuva_ano !== null)
+    .sort((a, b) => b.chuva_ano - a.chuva_ano);
+  const maior = ordenado[0]?.chuva_ano ?? 1;
+  return (
+    <div className="mt-3 space-y-2">
+      {ordenado.map((e) => (
+        <div key={e.id}>
+          <div className="flex justify-between gap-2 text-xs">
+            <span className={e.slug === atual ? "font-semibold text-chuva" : ""}>
+              {e.nome}
+              {e.nome !== e.municipio && (
+                <span className="text-fraco"> · {e.municipio}</span>
+              )}
+            </span>
+            <span className="tabular text-chuva">{fmt(e.chuva_ano, 0)} mm</span>
+          </div>
+          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-painel-alto">
+            <div
+              className={`h-full rounded-full ${e.slug === atual ? "bg-chuva" : "bg-chuva/50"}`}
+              style={{ width: `${(e.chuva_ano / maior) * 100}%` }}
             />
           </div>
         </div>
@@ -139,6 +179,17 @@ export default function App({ dados }) {
   const daHash = () => decodeURIComponent(location.hash.replace(/^#\/?/, ""));
   const [slug, setSlug] = useState(daHash);
   const [foco, setFoco] = useState(null);
+  const [visiveis, setVisiveis] = useState(SERIES.map((s) => s.campo));
+
+  // Desmarcar tudo deixaria um gráfico mudo; a última série ligada não sai.
+  const alternar = (campo) =>
+    setVisiveis((atual) =>
+      atual.includes(campo)
+        ? atual.length > 1
+          ? atual.filter((c) => c !== campo)
+          : atual
+        : [...atual, campo],
+    );
 
   useEffect(() => {
     const aoTrocar = () => setSlug(daHash());
@@ -306,19 +357,30 @@ export default function App({ dados }) {
               <h2 className="text-base font-semibold">
                 Climatograma — {titulo}
               </h2>
-              <div className="flex flex-wrap gap-3 text-xs text-fraco">
-                <span className="flex items-center gap-1">
-                  <i className="h-2 w-3 rounded-sm bg-chuva" /> chuva
-                </span>
-                <span className="flex items-center gap-1">
-                  <i className="h-0.5 w-4 bg-quente" /> t máx
-                </span>
-                <span className="flex items-center gap-1">
-                  <i className="h-0.5 w-4 bg-med" /> t méd
-                </span>
-                <span className="flex items-center gap-1">
-                  <i className="h-0.5 w-4 border-t border-dashed border-chuva" /> t mín
-                </span>
+              <div className="flex flex-wrap gap-1 text-xs">
+                {SERIES.map(({ campo, rotulo, cor, alto }) => {
+                  const ligada = visiveis.includes(campo);
+                  return (
+                    <button
+                      key={campo}
+                      type="button"
+                      aria-pressed={ligada}
+                      onClick={() => alternar(campo)}
+                      className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors ${
+                        ligada
+                          ? "bg-painel-alto text-texto"
+                          : "text-fraco/60 hover:text-fraco"
+                      }`}
+                    >
+                      <i
+                        className={`${alto ? "h-2 w-3 rounded-sm" : "w-4"} ${cor} ${
+                          ligada ? "" : "opacity-40"
+                        }`}
+                      />
+                      {rotulo}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -342,11 +404,18 @@ export default function App({ dados }) {
             </div>
 
             <div className="mt-2">
-              <Climatograma meses={estacao.meses} foco={foco} setFoco={setFoco} />
+              <Climatograma
+                meses={estacao.meses}
+                foco={foco}
+                setFoco={setFoco}
+                visiveis={visiveis}
+              />
             </div>
             <p className="mt-2 text-xs text-fraco">
               Barras: chuva mensal (mm, eixo esquerdo). Linhas e faixa sombreada:
-              temperaturas mínima, média e máxima (°C, eixo direito).
+              temperaturas mínima, média e máxima (°C, eixo direito). Clique na
+              legenda para ver uma série por vez — com uma só, os valores de cada
+              mês aparecem no gráfico.
             </p>
           </div>
 
@@ -366,6 +435,18 @@ export default function App({ dados }) {
               {estacao.aviso}
             </p>
           )}
+
+          <section className="mt-4 rounded-xl border border-borda bg-painel p-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-base font-semibold">Chuva anual por estação</h2>
+              <span className="text-xs text-fraco">da maior para a menor · mm/ano</span>
+            </div>
+            <Ranking estacoes={estacoes} atual={estacao.slug} />
+            <p className="mt-3 text-xs text-fraco">
+              Média dos anos com os 12 meses fechados. Comparação direta, sem
+              ajuste por período — série curta continua sendo série curta.
+            </p>
+          </section>
 
           <p className="mt-4 text-xs text-fraco">
             {estacao.aviso_descarte ??

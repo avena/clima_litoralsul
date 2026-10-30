@@ -42,7 +42,12 @@ abre o aviso, para link já compartilhado não virar tela vazia.
 - `Card`: KPI com rótulo, valor, unidade e até três linhas de detalhe.
 - `Climatograma`: SVG de eixo duplo — chuva em barras (mm, esquerda) e t
   mín/méd/máx em linhas (°C, direita), com o envelope térmico sombreado entre
-  mín e máx, um polígono por trecho contínuo (não liga meses com buraco).
+  mín e máx, um polígono por trecho contínuo (não liga meses com buraco). A
+  legenda é o filtro de séries; com uma só visível, o valor de cada mês é
+  impresso no gráfico (modo leitura). Desmarcar a última não é permitido, para
+  não sobrar um gráfico mudo.
+- `Ranking`: chuva anual de todas as estações, da maior para a menor, com a
+  estação aberta destacada.
 - `Sazonal`: barras horizontais DJF/MAM/JJA/SON, em mm e em %.
 - `Tabela`: matriz mensal com micro-barra proporcional ao mês mais chuvoso.
 

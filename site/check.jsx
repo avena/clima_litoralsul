@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { renderToString } from "react-dom/server";
 import App from "./src/App.jsx";
+import Climatograma from "./src/Climatograma.jsx";
 
 const dados = JSON.parse(readFileSync("public/dados.json", "utf8"));
 
@@ -10,6 +11,17 @@ function renderar(hash) {
 }
 
 const registro = renderar("#/registro");
+
+// Uma série só: modo leitura, com o valor impresso em cada mês.
+const meses = dados.municipios
+  .flatMap((m) => m.estacoes)
+  .find((e) => e.slug === "registro").meses;
+const soChuva = renderToString(
+  <Climatograma meses={meses} foco={null} setFoco={() => {}} visiveis={["chuva"]} />,
+);
+const soTmax = renderToString(
+  <Climatograma meses={meses} foco={null} setFoco={() => {}} visiveis={["tmax"]} />,
+);
 const itanhaem = renderar("#/itanhaem");
 const pariquera = renderar("#/pariquera-acu");
 const unesp = renderar("#/registro-unesp");
@@ -33,6 +45,9 @@ const checagens = [
   [unesp.includes("Registro Unesp") && /109/.test(unesp), "URL #/registro-unesp abre a estação 109"],
   [registro.includes("github.com/avena/clima_litoralsul"), "rodapé linka o repositório"],
   [registro.includes("Dados sincronizados em"), "rodapé mostra a data dos dados"],
+  [soChuva.includes(">248<") && !soChuva.includes("<polyline"), "só chuva imprime os mm e esconde as linhas"],
+  [soTmax.includes("<polyline") && !soTmax.includes(">248<"), "só t máx esconde a chuva"],
+  [registro.includes("Chuva anual por estação"), "ranking de chuva anual presente"],
   [/NaN|undefined|Infinity/.test(registro) === false, "sem NaN/undefined no HTML"],
 ];
 

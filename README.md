@@ -72,8 +72,11 @@ período): clicar troca a cidade sem recarregar e sem piscar, e a URL guarda a
 escolha (`#/registro`) para poder ser compartilhada. Abaixo vêm os cards de KPI
 (chuva anual, temperatura média, amplitude sazonal, UR), o climatograma de eixo
 duplo (chuva em barras, T mín/méd/máx em linhas, faixa térmica sombreada), a
-distribuição sazonal da chuva e a matriz mensal com micro-barras. Layout de uma
-coluna no celular; no gráfico, o toque fixa o mês que o hover mostra no desktop.
+distribuição sazonal da chuva, a matriz mensal com micro-barras e o ranking de
+chuva anual das estações (da maior para a menor). A legenda do climatograma é um
+filtro: marque só `chuva` e o gráfico mostra os mm de cada mês; só `t máx`, só as
+máximas. Layout de uma coluna no celular; no gráfico, o toque fixa o mês que o
+hover mostra no desktop.
 
 No rodapé ficam a data de sincronização do `dados.json`, o período coberto, o
 hash do build e do commit inicial, o link do repositório e o resumo do ambiente.
