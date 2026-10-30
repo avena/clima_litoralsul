@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estações do Ribeira/Litoral Sul - Portal Agrometeorológico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" content="Estações do Ribeira/Litoral Sul - Portal Agrometeorológico">
+  <meta name="author" content="emaxxi">
+  <!-- Le styles -->
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/docs.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/leaflet.css" />
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/leaflet.ie.css" />
+  <![endif]-->
+  <!-- JQuery -->
+  <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/jquery.js"></script>
+  <script>
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "0";
+    }
+    function mostra(prof,boletim) {
+      document.cookie= "tipo= " + boletim;
+      document.cookie= "profundidade= " + prof;
+      window.location.assign("/estacoes/boletim/mostra");
+  }
+  </script>
+</head>
+<body>
+  <header class="jumbotron subhead" id="overview">
+  <div class="container" >
+    <h1>Estações do Ribeira/Litoral Sul</h1> 
+    <h2>Portal Agrometeorológico</h2>
+  </div>
+  </header>
+    <table>
+    <tr>
+    <td width="34"><a href="https://facebook.com/ciiagro" target="_blank"> <img src="/assets/ico/facebook.png" width="30" height="30"></a></td>
+    <td width="34"><a href="https://www.instagram.com/ciiagro" target="_blank"><img src="/assets/ico/instagram.png" width="30" height="30"></td>
+    <td width="34"><a href="https://www.linkedin.com/company/ciiagro" target="_blank"><img src="/assets/ico/linkedin.png" width="30" height="30"></a></td>
+    <td> </td>
+    </tr></table>
+  <section>
+  <div class="container">
+  <div class="row">
+  <div class="span3">
+    <ul class="nav nav-list bs-docs-sidenav">
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/"> Início</a></li>
+      <li class="nav-header">Conceitos</li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/objetivo"> Objetivos</a></li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/definicao"> Definições</a></li>
+<!--      <li class="nav-header">Boletins</li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/agrometeorologico"> Agrometeorológico</a></li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/umidadesolo"> Umidade do solo</a></li>
+      <li><a href="javascript:mostra(0,1)">Boletins periódicos</a></li>
+      <li class="nav-header">Alertas</li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/alerta"> Extremos climáticos</a></li>
+-->
+      <li class="nav-header">Consultas</li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/diario/periodo"> Consulta por período</a></li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/diario"> Dados diários</a></li>
+      <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/mensal"> Dados mensais</a></li>
+      <li><a href="http://www.ciiagro.org.br/ema/"> CIIAGRO - Rede meteorológica</a></li>
+    </ul>
+  </div>
+  <div class="span6">
+﻿<h4>Estações meteorológicas automáticas</h4>
+  <!-- Mapa Leaflet -->
+  <div class="columns map">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+    crossorigin="">
+  </script>
+  <div id="mapid" style="width: 550px; height: 350px"></div>
+  <style>
+  .legend {
+    background-color: white;
+  }
+  </style>
+  <script>
+    var map = L.map('mapid').setView([-24.41, -47.78], 8);
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={Token}', {
+      maxZoom: 18,
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+      '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,' +
+      'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      id: 'mapbox/streets-v11',
+      Token: '<TOKEN-REMOVIDO>'
+    }).addTo(map);
+    var blueIcon = L.icon({
+      iconUrl: "http://ciiagro.org.br/assets/ico/marker-icon-blue.png",
+      iconSize: [25, 41]
+      });
+    var legend = L.control({position: 'bottomleft'});
+    L.Control.Watermark= L.Control.extend({
+      onAdd:function(map){
+        var img= L.DomUtil.create('img');
+        img.src= 'http://ciiagro.org.br/assets/ico/logo.png';
+        img.style.width= '150px';
+        return img;
+        },
+      onRemove:function(map){},
+      });
+    L.control.watermark= function(opts){
+      return new L.Control.Watermark(opts);
+      }
+    L.control.watermark({position:'bottomleft'}).addTo(map);
+    L.marker([-25.0202,-47.925], {title: "Cananéia" }).addTo(map).bindPopup("<h4>Cananéia</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 20.66ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/15'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.308,-47.1477], {title: "Itariri" }).addTo(map).bindPopup("<h4>Itariri</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 21.7ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/31'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.6973,-48.0034], {title: "Jacupiranga" }).addTo(map).bindPopup("<h4>Jacupiranga</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 22.7ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/33'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-23.9299,-47.0728], {title: "Juquitiba" }).addTo(map).bindPopup("<h4>Juquitiba</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 17.77ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/39'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.2801,-47.4512], {title: "Miracatu" }).addTo(map).bindPopup("<h4>Miracatu</h4><p>Última coleta: 30-10-2026 13:00 <br> Temperatura do ar: 22.9ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/43'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.6109,-47.8835], {title: "Pariquera-Açu" }).addTo(map).bindPopup("<h4>Pariquera-Açu</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 22.65ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/54'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.5053,-47.8334], {title: "Registro" }).addTo(map).bindPopup("<h4>Registro</h4><p>Última coleta: 28-10-2026 05:00 <br> Temperatura do ar: 19.07ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/63'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.6403,-49.0024], {title: "Ribeira" }).addTo(map).bindPopup("<h4>Ribeira</h4><p>Última coleta: 29-10-2026 13:00 <br> Temperatura do ar: 20.2ºC <br> Precipitação: 0.508 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/64'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.389,-47.9286], {title: "Sete Barras" }).addTo(map).bindPopup("<h4>Sete Barras</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 20.81ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/80'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-23.9567,-47.5019], {title: "Tapiraí" }).addTo(map).bindPopup("<h4>Tapiraí</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 17.7ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/82'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.3306,-47.634], {title: "Juquiá" }).addTo(map).bindPopup("<h4>Juquiá</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 21.7ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/107'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.5352356,-47.8615832], {title: "Registro Unesp" }).addTo(map).bindPopup("<h4>Registro Unesp</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 22.49ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/109'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.6466,-48.8386], {title: "Itaóca" }).addTo(map).bindPopup("<h4>Itaóca</h4><p>Última coleta: 30-10-2026 11:00 <br> Temperatura do ar: 22.1ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/116'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.5078,-48.846], {title: "Apiaí" }).addTo(map).bindPopup("<h4>Apiaí</h4><p>Última coleta: 30-10-2026 11:00 <br> Temperatura do ar: 18.01ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/117'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.583,-48.5973], {title: "Iporanga" }).addTo(map).bindPopup("<h4>Iporanga</h4><p>Última coleta: 30-10-2026 07:00 <br> Temperatura do ar: 18ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/118'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.73611,-48.12278], {title: "Cajati" }).addTo(map).bindPopup("<h4>Cajati</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 21.94ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/120'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.47439722222222,-49.015052777777775], {title: "Barra do Chapéu" }).addTo(map).bindPopup("<h4>Barra do Chapéu</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 21.9ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/293'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.75126388888889,-48.50206388888889], {title: "Barra do Turvo" }).addTo(map).bindPopup("<h4>Barra do Turvo</h4><p>Última coleta: 30-10-2026 07:00 <br> Temperatura do ar: 18.9ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/294'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.502005555555556,-48.084919444444445], {title: "Eldorado" }).addTo(map).bindPopup("<h4>Eldorado</h4><p>Última coleta: 30-10-2026 11:00 <br> Temperatura do ar: 21.4ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/295'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.69687777777778,-47.57083055555556], {title: "Iguape" }).addTo(map).bindPopup("<h4>Iguape</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 21.8ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/296'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.574980555555555,-49.16865555555555], {title: "Itapirapuã Paulista" }).addTo(map).bindPopup("<h4>Itapirapuã Paulista</h4><p>Última coleta: 30-06-2026 11:00 <br> Temperatura do ar: 17.2ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/298'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.71041111111111,-47.88403611111111], {title: "Pariquera-Açu 2" }).addTo(map).bindPopup("<h4>Pariquera-Açu 2</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 23.1ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/299'>Consultar dados de 20 minutos</a>--></p>");
+L.marker([-24.281969444444442,-47.230691666666665], {title: "Pedro de Toledo" }).addTo(map).bindPopup("<h4>Pedro de Toledo</h4><p>Última coleta: 30-10-2026 12:00 <br> Temperatura do ar: 24.1ºC <br> Precipitação: 0 mm</p><p><!--<a href='http://www.ciiagro.org.br/cbhrb/estacoes/horario/mapa/300'>Consultar dados de 20 minutos</a>--></p>");
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+  }).addTo(map);
+  map.on('click', onMapClick);
+  </script>
+  </div>
+﻿					</div>
+					<div class="span3">
+						<ul class="nav nav-list bs-docs-sidenav">
+														
+							
+							<li class="nav-header">Ferramentas</li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/balancohidrico"> Balanço hídrico</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/calendario"> Calendário agrícola</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/estiagem"> Estiagem</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/indiceseca"> Índice de seca</a></li>
+          					<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/isagricola"> Índice de seca agrícola</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/climatico"> Monitoramento climático</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/agroclimatico"> Monitoramento agrometeorológico</a></li>
+             				<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/prognostico"> Prognóstico do balanço hídrico</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/resenha"> Resenha mensal</a></li>
+							<li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/umidadesolo"> Sensoriamento umidade do solo</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+    <!-- Footer
+    ================================================== -->
+     <footer class="footer">
+      <div class="container">
+        <p class="pull-right">
+		<img src="http://www.ciiagro.org.br/cbhrb/estacoes//assets/img/logoALPA.png">
+			<a href="http://www.daee.sp.gov.br/"><img src="http://www.ciiagro.org.br/cbhrb/estacoes//assets/img/daee.jpg"></a>
+			<a href="http://fehidro.sigrh.sp.gov.br/fehidro/"><img src="http://www.ciiagro.org.br/cbhrb/estacoes//assets/img/fehidro.png"></a>
+			<a href="http://www.fundag.br"><img src="/assets/img/fundag.png"></a>
+		</p>
+        
+        <p>Estações da RMC</p>
+        <p>Portal Agrometeorológico</p>
+        <p>2026 - Todos os direitos reservados.</p>
+        <ul class="footer-links">
+			<li><a href="http://www.ciiagro.org.br">CIIAGRO - Instituto Agronômico</a> - <a href="https://www.fundag.br">Funda</a></li>
+        </ul>
+      </div>
+    </footer>
+	 <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/bootstrap-alert.js"></script>
+    <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/bootstrap-dropdown.js"></script>
+    <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/bootstrap-button.js"></script>
+    <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/bootstrap-affix.js"></script>
+  </body>
+</html>

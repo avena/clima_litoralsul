@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>  
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estações do Ribeira/Litoral Sul - Portal Agrometeorológico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Estações do Ribeira/Litoral Sul   - Portal Agrometeorológico">
+  <title>Estações do Ribeira/Litoral Sul - Portal Agrometeorológico</title>
+  <meta name="author" content="emaxxi">
+  <!-- Le styles -->
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="http://www.ciiagro.org.br/cbhrb/estacoes/assets/css/docs.css" rel="stylesheet">
+  <!-- JQuery -->
+  <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/jquery.js"></script>
+  <!-- Google -->
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="http://www.ciiagro.org.br/cbhrb/estacoes/assets/js/attc.googleCharts.js"></script>
+  <style>
+    body{padding-top: 40px;}
+  </style>
+</head>
+<body>
+    <table>
+    <tr>
+    <td width="34"><a href="https://facebook.com/ciiagro" target="_blank"> <img src="/assets/ico/facebook.png" width="30" height="30"></a></td>
+    <td width="34"><a href="https://www.instagram.com/ciiagro" target="_blank"><img src="/assets/ico/instagram.png" width="30" height="30"></td>
+    <td width="34"><a href="https://www.linkedin.com/company/ciiagro" target="_blank"><img src="/assets/ico/linkedin.png" width="30" height="30"></a></td>
+    <td> </td>
+    </tr></table>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+  <div class="container">
+  <div class="nav-collapse collapse">
+    <ul class="nav">
+      <li class="active"><a href="http://www.ciiagro.org.br/cbhrb/estacoes/">Início</a></li>
+      <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Ferramentas <b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li class="nav-header">Conceitos</li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/objetivo"> Objetivos</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/definicao"> Definições</a></li>
+        <li class="nav-header">Boletins</li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/agrometeorologico"> Agrometeorológico</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/umidadesolo"> Umidade solo</a></li>
+        <li class="nav-header">Alertas</li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/boletim/exibir/alerta"> Extremos climáticos</a></li>
+        <li class="nav-header">Consultas</li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/diario/periodo"> Consulta por período</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/diario"> Dados diários</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/mensal"> Dados mensais</a></li>
+        <li><a href="http://www.ciiagro.org.br/ema/"> CIIAGRO - Rede meteorológica</a></li>
+        <li class="nav-header">Ferramentas</li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/balancohidrico"> Balanço hídrico</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/calendario"> Calendário agrícola</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/estiagem"> Estiagem</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/indiceseca"> Índice de seca</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/isagricola"> Índice de seca agrícola</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/climatico"> Monitoramento climático</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/agroclimatico"> Monitoramento agrometeorológico</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/prognostico"> Prognóstico do balanço hídrico</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/resenha"> Resenha mensal</a></li>
+        <li><a href="http://www.ciiagro.org.br/cbhrb/estacoes/umidadesolo"> Sensoriamento umidade do solo</a></li>
+      </ul>
+      </li>
+    </ul>
+  </div><!--/.nav-collapse -->
+  </div>
+  </div>
+  </div>
+  
+  <section>
+    <div class="container">
+    <h1>Estações do Ribeira/Litoral Sul</h1> 
+      <h3>Portal Agrometeorológico</h3>
+      <div class="row"> 
+      <div class="span12">
+      <div>
+  <div class="row">
+    <legend>Calendário agrícola</legend>
+    <div class="span6">
+      <form class="well" method="post" action="http://www.ciiagro.org.br/cbhrb/estacoes/calendario/executar">
+        <fieldset>
+                    <label>Selecione o local</label>
+          <select name="estacao_id" required="required">
+          <option value="117">Apiaí</option><option value="293">Barra do Chapéu</option><option value="294">Barra do Turvo</option><option value="120">Cajati</option><option value="15">Cananéia</option><option value="295">Eldorado</option><option value="296">Iguape</option><option value="118">Iporanga</option><option value="116">Itaóca</option><option value="298">Itapirapuã Paulista</option><option value="31">Itariri</option><option value="33">Jacupiranga</option><option value="107">Juquiá</option><option value="39">Juquitiba</option><option value="43">Miracatu</option><option value="54">Pariquera-Açu</option><option value="299">Pariquera-Açu 2</option><option value="300">Pedro de Toledo</option><option value="63">Registro</option><option value="109">Registro Unesp</option><option value="64">Ribeira</option><option value="80">Sete Barras</option><option value="82">Tapiraí</option>          </select>
+          <label>Data início ou semeadura/plantio</label>
+          <input type="text" name="inicio" placeholder="dd/mm/aaaa" required="required"  pattern="^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$">
+          <label>Cultura</label>
+          <select name="cultura" required="required">
+          <option value="1">Algodão</option><option value="2">Batata</option><option value="3">Cana</option><option value="4">Feijão</option><option value="5">Mandioca</option><option value="6">Milho Normal</option><option value="7">Milho Precoce</option><option value="8">Tomate</option><option value="9">Tomate Repicagem</option>          </select>
+          <span class="help-block"></span>
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Consultar</button>
+            <a class="btn btn-primary" href="http://www.ciiagro.org.br/cbhrb/estacoes/">Voltar</a>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="span6">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Local</th>
+            <th>Ínicio das atividades</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr><td>Apiaí</td><td>
+07/01/2011</td></tr>
+<tr><td>Barra do Chapéu</td><td>
+17/08/2018</td></tr>
+<tr><td>Barra do Turvo</td><td>
+23/08/2018</td></tr>
+<tr><td>Cajati</td><td>
+04/02/2011</td></tr>
+<tr><td>Cananéia</td><td>
+31/08/2000</td></tr>
+<tr><td>Eldorado</td><td>
+24/03/2000</td></tr>
+<tr><td>Iguape</td><td>
+01/01/2004</td></tr>
+<tr><td>Iporanga</td><td>
+14/01/2011</td></tr>
+<tr><td>Itaóca</td><td>
+06/01/2011</td></tr>
+<tr><td>Itapirapuã Paulista</td><td>
+17/08/2018</td></tr>
+<tr><td>Itariri</td><td>
+31/12/1969</td></tr>
+<tr><td>Jacupiranga</td><td>
+10/11/2000</td></tr>
+<tr><td>Juquiá</td><td>
+30/05/2008</td></tr>
+<tr><td>Juquitiba</td><td>
+27/05/2008</td></tr>
+<tr><td>Miracatu</td><td>
+30/08/2000</td></tr>
+<tr><td>Pariquera-Açu</td><td>
+16/06/2004</td></tr>
+<tr><td>Pariquera-Açu 2</td><td>
+08/08/2018</td></tr>
+<tr><td>Pedro de Toledo</td><td>
+09/08/2018</td></tr>
+<tr><td>Registro</td><td>
+11/10/2005</td></tr>
+<tr><td>Registro Unesp</td><td>
+16/09/2010</td></tr>
+<tr><td>Ribeira</td><td>
+02/11/2005</td></tr>
+<tr><td>Sete Barras</td><td>
+19/08/2005</td></tr>
+<tr><td>Tapiraí</td><td>
+12/08/2005</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+					</div>
+				  
+				</div>
+			</div>
+		</section>
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right">
+			<a href="http://www.fundag.br"><img src="/assets/img/fundag.png"></a>
+		</p>
+		
+		<p>Estações da RMC</p>
+        <p>Portal Agrometeorológico</p>
+        <p>2026 - Todos os direitos reservados.</p>
+        <ul class="footer-links">
+			
+			<li><a href="https://www.ciiagro.org.br">CIIAGRO - Instituto Agronômico</a> - <a href="https://www.fundag.br">Fundag</a></li>
+        </ul>
+      </div>
+    </footer>
+	 <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/estacoesassets/js/bootstrap-alert.js"></script>
+    <script src="/estacoesassets/js/bootstrap-dropdown.js"></script>
+    <script src="/estacoesassets/js/bootstrap-button.js"></script>
+    <script src="/estacoesassets/js/bootstrap-affix.js"></script>
+  </body>
+</html>
