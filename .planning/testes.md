@@ -39,6 +39,7 @@ quebram, e é isso que se quer.
 | T03.2 | `test_dias_inclusivos` | a contagem de dias atravessa a virada de mês |
 | T03.3 | `test_mes_e_dia_nao_convivem_no_mesmo_mes` | coletar diário depois de mensal apaga o total do mês; a soma dos dias continua igual ao total |
 | T03.4 | `test_mensal_apaga_os_dias_do_mes` | a invariante vale nos dois sentidos |
+| T03.5 | `test_primeiro_fato_recalcula_para_tras` | `primeiro_fato` é o menor `data` do banco, mesmo coletado fora de ordem — regressão de `COALESCE` que congelava a data |
 
 ## T05 — Relatório (previstos, ainda não escritos)
 

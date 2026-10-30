@@ -229,6 +229,23 @@ class TestBanco(unittest.TestCase):
         coletor.substituir_granularidade(self.conn, {("63", "2026-10")}, diario=False)
         self.assertEqual(self.conn.execute("SELECT data FROM fato").fetchall(), [])
 
+    def test_primeiro_fato_recalcula_para_tras(self):
+        """`primeiro_fato` é o menor `data` do banco, mesmo coletado fora de ordem.
+
+        Regressão real: com `COALESCE(primeiro_fato, ?)` o primeiro lote
+        congelava o valor, e coletar 1995 depois de 2005 deixava a estação
+        marcada como começando em 2005. A auditoria depende deste valor para
+        acusar série anterior ao início da estação.
+        """
+        self._grava("2005-10", 1.0)
+        coletor.atualizar_primeiro_fato(self.conn)
+        self.assertEqual(self.conn.execute("SELECT primeiro_fato FROM ponto").fetchone()[0],
+                         "2005-10")
+        self._grava("1995-01", 2.0)
+        coletor.atualizar_primeiro_fato(self.conn)
+        self.assertEqual(self.conn.execute("SELECT primeiro_fato FROM ponto").fetchone()[0],
+                         "1995-01")
+
 
 if __name__ == "__main__":
     unittest.main()

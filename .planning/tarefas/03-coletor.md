@@ -91,11 +91,19 @@ vence", é "só uma das duas existe".
 
 ### 03.8 — Primeiro dado de cada estação
 
-Depois da gravação, `ponto.primeiro_fato` recebe o menor `data` já visto.
+Depois da gravação, `atualizar_primeiro_fato(conn)` recalcula
+`ponto.primeiro_fato` como `MIN(data)` de `fato` — para **todas** as estações,
+não só as do lote.
 
 Isso existe porque o site devolve série **antes** da estação existir (Registro
 tem 380 mm em 01/1995 e começou em 2005). Guardar os dois valores permite que
 `auditar` mostre a discrepância em vez de escondê-la.
+
+**Regressão corrigida:** a primeira versão gravava o mínimo do lote com
+`COALESCE(primeiro_fato, ?)`, e o primeiro lote congelava o valor para sempre.
+Coletar 1995 depois de 2026 deixava a estação marcada como começando em 2026, e
+a auditoria perdia o alerta. Recalcular 23 linhas inteiras é mais barato do que
+rastrear o mínimo incrementalmente — e sempre correto.
 
 ### 03.9 — CLI
 

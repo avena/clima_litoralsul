@@ -11,7 +11,7 @@ python3 coletor.py catalogo                        # 3 requisições, monta muni
 python3 coletor.py coletar --desde 2000-01 --ate 2026-10          # mensal, ~2 min
 python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-31 --diario   # ~80 min/20 anos
 python3 coletor.py auditar                         # cobertura + valores suspeitos
-python3 -m unittest discover -s tests              # 16 testes, sem rede
+python3 -m unittest discover -s tests              # 17 testes, sem rede
 ```
 
 `dados/clima.sqlite` é o banco. Não há instalação, não há `pip install`.

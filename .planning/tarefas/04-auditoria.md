@@ -43,9 +43,13 @@ vizinhos.
 
 ### 04.3 — Alerta `dado antes do início`
 
-Dispara quando `primeiro_fato < inicio_auto`. É o sinal de série
-pré-automação, que **não é descartada**: pode ser registro histórico
-convencional (ótimo) ou reconstrução (inútil), e só o INMET decide.
+Dispara quando `substr(primeiro_fato,1,7) < substr(inicio_auto,1,7)` — comparando
+**mês**, não a string inteira.
+
+A comparação direta de strings dá falso positivo em toda estação saudável:
+`"2011-01" < "2011-01-07"` é verdadeiro, então Apiaí (início 07/01/2011, primeiro
+fato `2011-01`) aparecia com o alerta mesmo começando na data certa. Com a
+comparação por mês, só sobram os casos reais.
 
 ### 04.4 — Alerta `início suspeito (site)`
 

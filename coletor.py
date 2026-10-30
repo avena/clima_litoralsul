@@ -128,6 +128,24 @@ def substituir_granularidade(conn: sqlite3.Connection, pontos_meses: set[tuple[s
     )
 
 
+def atualizar_primeiro_fato(conn: sqlite3.Connection) -> None:
+    """Recalcula `ponto.primeiro_fato` como o menor `data` existente em `fato`.
+
+    Args:
+        conn: conexão aberta por `abrir`.
+
+    Nota:
+        Recalcular do zero, e não só gravar o menor valor do lote: com
+        `COALESCE(primeiro_fato, ?)` o primeiro lote coletado congelava o valor
+        para sempre, e uma coleta posterior de período mais antigo não corrigia.
+        Como são 23 linhas, o `UPDATE` inteiro é mais barato que rastrear o
+        mínimo por lote.
+    """
+    conn.execute(
+        "UPDATE ponto SET primeiro_fato = "
+        "(SELECT MIN(f.data) FROM fato f WHERE f.ponto_id = ponto.id)")
+
+
 def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> None:
     """Baixa um intervalo do CIIAGRO e grava em `fato`.
 
@@ -159,7 +177,6 @@ def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> Non
            + ", ".join(f"{c} = COALESCE(excluded.{c}, {c})" for c in CAMPOS))
 
     lote: list[tuple] = []
-    vistos: dict[str, str] = {}
     ignorados: set[str] = set()
     vazio = 0
     for f in ciiagro.fatos(desde, ate, diario=diario):
@@ -168,7 +185,6 @@ def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> Non
             ignorados.add(f["nome"])
             continue
         lote.append((ponto, f["data"], *(f[c] for c in CAMPOS)))
-        vistos[ponto] = max(vistos.get(ponto, ""), f["data"])
     if not lote:
         # Um período sem nenhuma estação é sinal de data inválida, não de seca.
         vazio = 1
@@ -177,14 +193,10 @@ def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> Non
     # Sem isso, um SUM por mês somaria o total do mês com os dias do mesmo mês.
     substituir_granularidade(conn, {(p, d[:7]) for p, d, *_ in lote}, diario)
     conn.executemany(sql, lote)
-    conn.executemany(
-        "UPDATE ponto SET primeiro_fato = COALESCE(primeiro_fato, ?) "
-        "WHERE id = ? AND (primeiro_fato IS NULL OR ? < primeiro_fato)",
-        [(d, p, d) for p, d in vistos.items()],
-    )
+    atualizar_primeiro_fato(conn)
     conn.commit()
     unidade = "dias" if diario else "meses"
-    print(f"{len(lote)} linhas em {len(vistos)} estações "
+    print(f"{len(lote)} linhas em {len({p for p, *_ in lote})} estações "
           f"({desde} a {ate}, {unidade})")
     if ignorados:
         print("fora do catálogo (rode `catalogo`): " + ", ".join(sorted(ignorados)))
@@ -216,14 +228,15 @@ def auditar(conn: sqlite3.Connection) -> None:
         SELECT p.nome, COALESCE(m.nome, '-') AS municipio, p.inicio_auto, p.primeiro_fato,
                COUNT(f.data) AS n,
                SUM(CASE WHEN f.urmed = 0 THEN 1 ELSE 0 END) AS ur_zero,
-               SUM(CASE WHEN f.chuva = 0 THEN 1 ELSE 0 END) AS chuva_zero
+               SUM(CASE WHEN f.chuva = 0 THEN 1 ELSE 0 END) AS chuva_zero,
+               substr(p.primeiro_fato, 1, 7) < substr(p.inicio_auto, 1, 7) AS antes
         FROM ponto p
         LEFT JOIN municipio m ON m.id = p.municipio_id
         LEFT JOIN fato f ON f.ponto_id = p.id
         GROUP BY p.id ORDER BY p.nome
     """):
         alertas = []
-        if r["primeiro_fato"] and r["inicio_auto"] and r["primeiro_fato"] < r["inicio_auto"]:
+        if r["antes"]:
             alertas.append("dado antes do início")
         if r["inicio_auto"] and r["inicio_auto"] < "1970":
             alertas.append("início suspeito (site)")
