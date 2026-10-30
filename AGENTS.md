@@ -44,8 +44,9 @@ Três coisas que custam tempo de depuração:
 - O servidor devolve dados **antes da estação existir**: `Registro` tem 380 mm em
   `01/1995` e começou em `11/10/2005`. `Cananéia` tem `1 mm` em `01/2000` — placeholder.
 - `Miracatu` em `03/1990` vem no `addRows` cru como `tmed = 873,35`: coluna
-  deslocada na fonte, não bug do extrator. Preserve e denuncie em `auditar`;
-  limpar na coleta apagaria a evidência de que a fonte se corrompe.
+  deslocada na fonte, não bug do extrator. Preserve — limpar na coleta apagaria
+  a evidência. `auditar` **ainda não** pega isso: só alerta cobertura, `0` de
+  umidade/chuva e início suspeito. Não existe faixa de sanidade implementada.
 - `horario.php?codigo=N` responde **mas ignora qualquer parâmetro de data**: é janela
   rolante de 7 dias. Não serve para série, por mais que pareça a página certa.
 - `diario/cperiodo` devolve só um resumo por estação, não uma série.
