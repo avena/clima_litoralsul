@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+dados/
+
+# material de terceiros, guardado só como evidência da revisão em .planning/PLANO.md
+.planning/arquivo/
