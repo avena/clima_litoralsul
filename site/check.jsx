@@ -17,10 +17,10 @@ const meses = dados.municipios
   .flatMap((m) => m.estacoes)
   .find((e) => e.slug === "registro").meses;
 const soChuva = renderToString(
-  <Climatograma meses={meses} foco={null} setFoco={() => {}} visiveis={["chuva"]} />,
+  <Climatograma meses={meses} foco={null} setFoco={() => {}} rotular="chuva" />,
 );
-const soTmax = renderToString(
-  <Climatograma meses={meses} foco={null} setFoco={() => {}} visiveis={["tmax"]} />,
+const semRotulo = renderToString(
+  <Climatograma meses={meses} foco={null} setFoco={() => {}} />,
 );
 const itanhaem = renderar("#/itanhaem");
 const pariquera = renderar("#/pariquera-acu");
@@ -45,8 +45,15 @@ const checagens = [
   [unesp.includes("Registro Unesp") && /109/.test(unesp), "URL #/registro-unesp abre a estação 109"],
   [registro.includes("github.com/avena/clima_litoralsul"), "rodapé linka o repositório"],
   [registro.includes("Dados sincronizados em"), "rodapé mostra a data dos dados"],
-  [soChuva.includes(">248<") && !soChuva.includes("<polyline"), "só chuva imprime os mm e esconde as linhas"],
-  [soTmax.includes("<polyline") && !soTmax.includes(">248<"), "só t máx esconde a chuva"],
+  [
+    soChuva.includes(">248<") && soChuva.includes("<polyline"),
+    "destacar chuva imprime os mm sem esconder as linhas",
+  ],
+  [
+    !semRotulo.includes(">248<") && semRotulo.includes("<polyline"),
+    "sem destaque o gráfico fica com as quatro séries e sem números",
+  ],
+  [registro.includes("mm/mês"), "sazonal mostra máx, mín e média"],
   [registro.includes("Chuva anual por estação"), "ranking de chuva anual presente"],
   [/NaN|undefined|Infinity/.test(registro) === false, "sem NaN/undefined no HTML"],
 ];

@@ -37,15 +37,11 @@ const num = (v, casas = 1) => v.toFixed(casas).replace(".", ",");
  * t mín/méd/máx em linhas (°C, direita), com o envelope térmico sombreado.
  * Sem biblioteca de gráfico: SVG puro, escala arredondada e `—` para ausente.
  *
- * Só desenha as séries em `visiveis`. Quando sobra **uma** série, imprime o
- * valor de cada mês no gráfico — é o modo "leitura", para quando o público quer
- * o número e não a forma da curva.
+ * As quatro séries são sempre desenhadas: o gráfico não muda de forma quando
+ * alguém escolhe uma na legenda. O que muda é `rotular` — a série escolhida
+ * ganha o valor de cada mês impresso ao lado da barra ou do ponto.
  */
-export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
-  const mostraChuva = visiveis.includes("chuva");
-  const mostraTemp = visiveis.some((c) => c.startsWith("t"));
-  const leitura = visiveis.length === 1;
-  const soUm = visiveis[0];
+export default function Climatograma({ meses, foco, setFoco, rotular = null }) {
 
   const maxChuva = maior(meses, "chuva") ?? 0;
   const topoChuva = Math.max(100, Math.ceil(maxChuva / 50) * 50);
@@ -61,7 +57,7 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
 
   const envelope = [];
   let trecho = [];
-  if (visiveis.includes("tmin") && visiveis.includes("tmax")) {
+  {
     [...meses, { tmin: null, tmax: null }].forEach((m, i) => {
       if (m.tmin !== null && m.tmax !== null) {
         trecho.push(i);
@@ -79,7 +75,6 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
   }
 
   const linhas = ["tmax", "tmed", "tmin"]
-    .filter((campo) => visiveis.includes(campo))
     .map((campo) => ({
       campo,
       cor: CORES[campo],
@@ -108,16 +103,12 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
         return (
           <g key={i}>
             <line x1={dl} x2={dr} y1={y} y2={y} stroke="#1d2740" strokeDasharray="3 5" />
-            {mostraChuva && (
-              <text x={dl - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#4cd7f6">
-                {Math.round(topoChuva * frac)}
-              </text>
-            )}
-            {mostraTemp && (
-              <text x={dr + 8} y={y + 4} textAnchor="start" fontSize="12" fill="#ffb690">
-                {Math.round(baseT + (topoT - baseT) * frac)}°
-              </text>
-            )}
+            <text x={dl - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#4cd7f6">
+              {Math.round(topoChuva * frac)}
+            </text>
+            <text x={dr + 8} y={y + 4} textAnchor="start" fontSize="12" fill="#ffb690">
+              {Math.round(baseT + (topoT - baseT) * frac)}°
+            </text>
           </g>
         );
       })}
@@ -128,7 +119,7 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
 
       {meses.map((m, i) => (
         <g key={m.mes}>
-          {mostraChuva && m.chuva !== null && (
+          {m.chuva !== null && (
             <rect
               x={x(i) - (passo * 0.46) / 2}
               y={yChuva(m.chuva)}
@@ -138,7 +129,7 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
               fill="url(#chuva)"
             />
           )}
-          {leitura && soUm === "chuva" && m.chuva !== null && (
+          {rotular === "chuva" && m.chuva !== null && (
             <text
               x={x(i)}
               y={yChuva(m.chuva) - 5}
@@ -184,7 +175,7 @@ export default function Climatograma({ meses, foco, setFoco, visiveis = [] }) {
           {pontos.map((p) => (
             <circle key={p.i} cx={p.px} cy={p.py} r="2.6" fill={cor} />
           ))}
-          {leitura &&
+          {rotular === campo &&
             pontos.map((p) => (
               <text
                 key={`v${p.i}`}

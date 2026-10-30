@@ -55,27 +55,50 @@ function Card({ titulo, valor, unidade, cor = "text-texto", detalhes = [], barra
   );
 }
 
-/** Distribuição sazonal da chuva em barras horizontais, em mm e em %. */
-function Sazonal({ sazonal }) {
-  const total = sazonal.reduce((soma, s) => soma + (s.mm ?? 0), 0) || 1;
+/** Meses civis de cada estação do ano no hemisfério sul. */
+const MESES_DA_ESTACAO = {
+  Verão: ["dez", "jan", "fev"],
+  Outono: ["mar", "abr", "mai"],
+  Inverno: ["jun", "jul", "ago"],
+  Primavera: ["set", "out", "nov"],
+};
+
+/**
+ * Distribuição sazonal da chuva em barras horizontais, em mm e em %.
+ *
+ * Sob cada estação vão também o maior, o menor e a média dos meses que a
+ * compõem — o total esconde que um verão chuvoso pode ser um mês extremo.
+ */
+function Sazonal({ estacao }) {
+  const total = estacao.sazonal.reduce((soma, s) => soma + (s.mm ?? 0), 0) || 1;
   return (
     <div className="mt-3 space-y-3">
-      {sazonal.map((s) => (
-        <div key={s.nome}>
-          <div className="flex justify-between text-xs">
-            <span>{s.nome}</span>
-            <span className="tabular text-chuva">
-              {fmt(s.mm)} mm · {fmt(((s.mm ?? 0) / total) * 100, 0)}%
-            </span>
+      {estacao.sazonal.map((s) => {
+        const meses = (MESES_DA_ESTACAO[s.nome] ?? [])
+          .map((mes) => estacao.meses.find((m) => m.mes === mes)?.chuva)
+          .filter((v) => v !== null && v !== undefined);
+        const media = meses.length ? meses.reduce((a, b) => a + b, 0) / meses.length : null;
+        return (
+          <div key={s.nome}>
+            <div className="flex justify-between text-xs">
+              <span>{s.nome}</span>
+              <span className="tabular text-chuva">
+                {fmt(s.mm)} mm · {fmt(((s.mm ?? 0) / total) * 100, 0)}%
+              </span>
+            </div>
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-painel-alto">
+              <div
+                className="h-full rounded-full bg-chuva"
+                style={{ width: `${((s.mm ?? 0) / total) * 100}%` }}
+              />
+            </div>
+            <p className="tabular mt-1 text-[0.7rem] text-fraco">
+              máx {fmt(meses.length ? Math.max(...meses) : null, 0)} · mín{" "}
+              {fmt(meses.length ? Math.min(...meses) : null, 0)} · média {fmt(media, 0)} mm/mês
+            </p>
           </div>
-          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-painel-alto">
-            <div
-              className="h-full rounded-full bg-chuva"
-              style={{ width: `${((s.mm ?? 0) / total) * 100}%` }}
-            />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -179,17 +202,8 @@ export default function App({ dados }) {
   const daHash = () => decodeURIComponent(location.hash.replace(/^#\/?/, ""));
   const [slug, setSlug] = useState(daHash);
   const [foco, setFoco] = useState(null);
-  const [visiveis, setVisiveis] = useState(SERIES.map((s) => s.campo));
-
-  // Desmarcar tudo deixaria um gráfico mudo; a última série ligada não sai.
-  const alternar = (campo) =>
-    setVisiveis((atual) =>
-      atual.includes(campo)
-        ? atual.length > 1
-          ? atual.filter((c) => c !== campo)
-          : atual
-        : [...atual, campo],
-    );
+  // Nenhuma série some do gráfico: `rotular` só diz qual delas mostra os valores.
+  const [rotular, setRotular] = useState(null);
 
   useEffect(() => {
     const aoTrocar = () => setSlug(daHash());
@@ -359,24 +373,21 @@ export default function App({ dados }) {
               </h2>
               <div className="flex flex-wrap gap-1 text-xs">
                 {SERIES.map(({ campo, rotulo, cor, alto }) => {
-                  const ligada = visiveis.includes(campo);
+                  const ligada = rotular === campo;
                   return (
                     <button
                       key={campo}
                       type="button"
                       aria-pressed={ligada}
-                      onClick={() => alternar(campo)}
+                      title={`Mostrar os valores de ${rotulo} em cada mês`}
+                      onClick={() => setRotular(ligada ? null : campo)}
                       className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors ${
                         ligada
-                          ? "bg-painel-alto text-texto"
-                          : "text-fraco/60 hover:text-fraco"
+                          ? "bg-painel-alto font-semibold text-texto"
+                          : "text-fraco hover:bg-painel-alto hover:text-texto"
                       }`}
                     >
-                      <i
-                        className={`${alto ? "h-2 w-3 rounded-sm" : "w-4"} ${cor} ${
-                          ligada ? "" : "opacity-40"
-                        }`}
-                      />
+                      <i className={`${alto ? "h-2 w-3 rounded-sm" : "w-4"} ${cor}`} />
                       {rotulo}
                     </button>
                   );
@@ -408,21 +419,21 @@ export default function App({ dados }) {
                 meses={estacao.meses}
                 foco={foco}
                 setFoco={setFoco}
-                visiveis={visiveis}
+                rotular={rotular}
               />
             </div>
             <p className="mt-2 text-xs text-fraco">
               Barras: chuva mensal (mm, eixo esquerdo). Linhas e faixa sombreada:
-              temperaturas mínima, média e máxima (°C, eixo direito). Clique na
-              legenda para ver uma série por vez — com uma só, os valores de cada
-              mês aparecem no gráfico.
+              temperaturas mínima, média e máxima (°C, eixo direito). O gráfico
+              mostra sempre as quatro séries; clique na legenda para imprimir os
+              valores de uma delas em cada mês.
             </p>
           </div>
 
           <div className="mt-4 grid gap-3 lg:grid-cols-[17rem_1fr]">
             <div className="rounded-xl border border-borda bg-painel p-4">
               <h2 className="text-base font-semibold">Chuva por estação do ano</h2>
-              <Sazonal sazonal={estacao.sazonal} />
+              <Sazonal estacao={estacao} />
             </div>
             <div className="rounded-xl border border-borda bg-painel p-4">
               <h2 className="text-base font-semibold">Matriz mensal</h2>
