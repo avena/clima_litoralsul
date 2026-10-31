@@ -28,6 +28,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "index.html"),
         inmet: resolve(import.meta.dirname, "inmet.html"),
+        inmettodas: resolve(import.meta.dirname, "inmettodas.html"),
       },
     },
   },
