@@ -23,7 +23,7 @@ async function iniciar() {
           Não foi possível carregar <code>inmet_regional.json</code> ({String(erro)}).
         </p>
         <p className="mt-3 text-xs text-fraco">
-          Execute: <code>python3 dadoshistoricosinmet/processar.py</code> para gerar o arquivo.
+          Arquivo de dados históricos não encontrado na pasta pública.
         </p>
       </div>,
     );

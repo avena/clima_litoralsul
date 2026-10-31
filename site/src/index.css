@@ -10,15 +10,24 @@
   --color-chuva: #4cd7f6;
   --color-med: #b4c5ff;
   --color-quente: #ffb690;
-  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", monospace;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
+  font-family: var(--font-sans);
   background: var(--color-fundo);
   color: var(--color-texto);
+  font-size: 1rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
 }

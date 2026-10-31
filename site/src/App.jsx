@@ -44,7 +44,7 @@ function FonteBadge({ fonte, tipo }) {
   const rotulo = FONTE_ROTULO[fonte] ?? fonte?.toUpperCase() ?? "FONTE";
   const estilo = FONTE_BADGE[fonte] ?? "border-borda bg-painel-alto text-fraco";
   return (
-    <span className={`shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[0.62rem] font-medium uppercase tracking-wider border ${estilo}`}>
+    <span className={`shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium uppercase tracking-wider border ${estilo}`}>
       {rotulo}
       {tipo === "reanalise" ? " · Reanálise" : ""}
     </span>
@@ -69,7 +69,7 @@ const BUILD = typeof __BUILD__ === "string" ? __BUILD__ : "—";
 function Card({ titulo, valor, unidade, cor = "text-texto", detalhes = [], barra }) {
   return (
     <div className="rounded-xl border border-borda bg-painel p-4">
-      <p className="text-xs uppercase tracking-wider text-fraco sm:text-[0.68rem]">{titulo}</p>
+      <p className="text-xs uppercase tracking-wider text-fraco">{titulo}</p>
       <p className={`tabular mt-1 text-3xl font-bold leading-tight ${cor}`}>
         {valor}
         <span className="ml-1 text-xs font-normal text-fraco">{unidade}</span>
@@ -118,14 +118,14 @@ function Sazonal({ estacao }) {
                 style={{ width: `${s.pct ?? 0}%` }}
               />
             </div>
-            <p className="tabular mt-1 text-[0.7rem] text-fraco">
+            <p className="tabular mt-1 text-xs text-fraco">
               {`média ${fmt(s.media, 0)} mm/mês · maior ${fmt(s.max, 0)} (${s.max_mes}) ` +
                 `· menor ${fmt(s.min, 0)} (${s.min_mes})`}
             </p>
           </div>
         ))}
       </div>
-      <div className="mt-3 border-t border-borda pt-2 text-[0.7rem]">
+      <div className="mt-3 border-t border-borda pt-2 text-xs">
         <p className="font-medium">Antes dos solstícios</p>
         <ul className="mt-1 space-y-0.5 text-fraco">
           {estacao.solsticios.map((s) => (
@@ -223,7 +223,7 @@ function Tabela({ estacao }) {
     <div className="mt-3 overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="text-xs uppercase tracking-wider text-fraco sm:text-[0.68rem]">
+          <tr className="text-xs uppercase tracking-wider text-fraco">
             <th className="border-b border-borda px-2 py-2 text-left">mês</th>
             <th className="border-b border-borda px-2 py-2 text-right">chuva (mm)</th>
             <th className="hidden border-b border-borda px-2 py-2 text-left sm:table-cell">perfil</th>
@@ -317,7 +317,7 @@ export default function App({ dados }) {
     <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-fraco sm:text-[0.72rem]">
+          <p className="text-xs uppercase tracking-widest text-fraco">
             Litoral Sul e Vale do Ribeira · CIIAGRO · INMET · NASA POWER
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -365,13 +365,13 @@ export default function App({ dados }) {
                     >
                       {e.nome.replace(/\s*\(NASA POWER\)/i, "")}
                       {!e.semEstacao && (
-                        <span className="tabular ml-1.5 text-[0.7rem] font-normal text-fraco">
+                        <span className="tabular ml-1.5 text-xs font-normal text-fraco">
                           {anosFechados(e.anos_completos)}
                         </span>
                       )}
                     </span>
                   </div>
-                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs mt-0.5">
+                  <span className="tabular block text-xs leading-tight text-fraco mt-0.5">
                     {e.semEstacao ? "sem dados" : `${e.inicio} → ${e.fim}`}
                   </span>
                 </>
@@ -440,7 +440,7 @@ export default function App({ dados }) {
                   title="Abrir coordenadas decimais no Google Maps"
                 >
                   <span>📍 {Number(estacao.lat).toFixed(4)}, {Number(estacao.lon).toFixed(4)}</span>
-                  <span className="text-[0.68rem] text-fraco">(Google Maps ↗)</span>
+                  <span className="text-xs text-fraco">(Google Maps ↗)</span>
                 </a>
               </>
             )}
