@@ -363,7 +363,7 @@ export default function App({ dados }) {
                         ativo ? "font-semibold text-med" : "text-texto"
                       }`}
                     >
-                      {e.nome}
+                      {e.nome.replace(/\s*\(NASA POWER\)/i, "")}
                       {!e.semEstacao && (
                         <span className="tabular ml-1.5 text-[0.7rem] font-normal text-fraco">
                           {anosFechados(e.anos_completos)}
