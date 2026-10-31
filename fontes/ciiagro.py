@@ -1,18 +1,23 @@
-"""Fonte CIIAGRO: catálogo de estações e série diária/mensal.
+"""Fonte CIIAGRO: catálogo de estações e série diária/mensal do CIIAGRO/IAC.
 
-Endpoints verificados em 2026-10-30 (detalhes e armadilhas em PLANO.md):
+Natureza: PÁGINAS WEB HTML (Raspagem / Web Scraping). Não existe API REST.
+Os números vêm embutidos no HTML em scripts JavaScript com blocos `data.addRows(...)`.
 
-    POST /cbhrb/estacoes/diario/cdiaria   data=dd/mm/aaaa   todas as estações
-    POST /cbhrb/estacoes/mensal/cmensal   parametro=mm/aaaa
-    GET  /cbhrb/estacoes/calendario                         nome + início
-    GET  /cbhrb/estacoes/diario/periodo                     nome -> código
-    GET  /cbhrb/estacoes/                                   lat/lon nos marcadores
+URLs de conferência no navegador e formulários:
+- Mapa com coordenadas e marcadores:
+  GET http://www.ciiagro.org.br/cbhrb/estacoes/
+- Relação de estações e códigos numéricos:
+  GET http://www.ciiagro.org.br/cbhrb/estacoes/diario/periodo
+- Calendário com data de início declarada:
+  GET http://www.ciiagro.org.br/cbhrb/estacoes/calendario
+- Série mensal (POST com form 'parametro=MM/AAAA'):
+  POST http://www.ciiagro.org.br/cbhrb/estacoes/mensal/cmensal
+  Exemplo curl: curl -d "parametro=10/2026" http://www.ciiagro.org.br/cbhrb/estacoes/mensal/cmensal
+- Série diária (POST com form 'data=DD/MM/AAAA'):
+  POST http://www.ciiagro.org.br/cbhrb/estacoes/diario/cdiaria
+  Exemplo curl: curl -d "data=01/10/2026" http://www.ciiagro.org.br/cbhrb/estacoes/diario/cdiaria
 
-Não existe API: os números vêm embutidos no HTML como
-`data.addRows([['Registro',17.1,21.5,25.9], ...])`. Regex, sem parser de HTML.
-
-`horario.php?codigo=N` também responde, mas devolve janela rolante de 7 dias e
-ignora qualquer parâmetro de data — não serve para série histórica.
+Nota: `horario.php?codigo=N` devolve janela rolante de 7 dias e ignora datas.
 """
 from __future__ import annotations
 

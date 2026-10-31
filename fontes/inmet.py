@@ -1,6 +1,23 @@
 """Fonte INMET: estações meteorológicas automáticas do Instituto Nacional de Meteorologia.
 
-Catálogo via API pública (/estacoes/T). Série horária agregada em diária ou mensal.
+Natureza: API REST OFICIAL (JSON) + DADOS ABERTOS EM LOTE (ZIP/CSV).
+Rede: Estações automáticas de superfície (EMA).
+
+URLs de conferência no navegador e API:
+- Catálogo de todas as estações automáticas (aberto, público sem token):
+  GET https://apitempo.inmet.gov.br/estacoes/T
+  (Retorna JSON com as 669 estações do Brasil, incluindo A712-Iguape, A746-Barra do Turvo e A766-Registro)
+- Dados históricos em lote por ano (portal público):
+  https://portal.inmet.gov.br/dadoshistoricos (arquivos ZIP anuais com CSVs das medições)
+- API de medições horárias por estação e período:
+  Sem token (recente/limitado): GET https://apitempo.inmet.gov.br/estacao/{data_inicio}/{data_fim}/{codigo}
+  Com token pessoal: GET https://apitempo.inmet.gov.br/token/estacao/{data_inicio}/{data_fim}/{codigo}/{token}
+  (O token é obtido gratuitamente após cadastro no portal do INMET e pode ser passado via variável `INMET_TOKEN`).
+
+Estações no território:
+- A712: Iguape (lat -24.6716, lon -47.5458, início 2006-07-20)
+- A746: Barra do Turvo (lat -24.9627, lon -48.4163, início 2008-07-03)
+- A766: Registro (lat -24.5330, lon -47.8641, início 2017-02-08)
 """
 from __future__ import annotations
 

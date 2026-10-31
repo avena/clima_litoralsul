@@ -1,7 +1,22 @@
-"""Fonte NASA POWER: reanálise diária e mensal para municípios sem estação de superfície.
+"""Fonte NASA POWER: reanálise meteorológica diária e mensal para municípios sem estação física.
 
-API: https://power.larc.nasa.gov/api/temporal/daily/point
-Grade: 0.5° × 0.5° (~55 km). Não substitui medição física em superfície.
+Natureza: API REST OFICIAL (JSON). Totalmente pública e aberta (sem token ou chave).
+Modelo: Reanálise global MERRA-2 e satélites CERES (resolução espacial 0.5° × 0.5° ≈ 55 km).
+
+URLs de conferência no navegador e API:
+- Documentação da API:
+  https://power.larc.nasa.gov/docs/services/api/temporal/daily/
+- Endpoint base:
+  GET https://power.larc.nasa.gov/api/temporal/daily/point
+- Exemplo de conferência direta no navegador ou curl (Itanhaém: lat -24.18, lon -46.79):
+  curl "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2M_MAX,T2M_MIN,RH2M,PRECTOTCORR&community=AG&longitude=-46.79&latitude=-24.18&start=20240101&end=20240110&format=JSON"
+
+Parâmetros meteorológicos requisitados:
+- T2M: Temperatura média a 2 metros (°C)
+- T2M_MIN: Temperatura mínima a 2 metros (°C)
+- T2M_MAX: Temperatura máxima a 2 metros (°C)
+- RH2M: Umidade relativa do ar a 2 metros (%)
+- PRECTOTCORR: Precipitação total diária corrigida (mm/dia)
 """
 from __future__ import annotations
 
