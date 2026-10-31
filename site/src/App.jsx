@@ -327,7 +327,15 @@ export default function App({ dados }) {
             Série histórica de estações de superfície e reanálise meteorológica segregada, sem interpolação sintética.
           </p>
         </div>
-        <p className="tabular text-xs text-fraco">exportado em {dados.gerado}</p>
+        <div className="flex flex-col items-start sm:items-end gap-1">
+          <p className="tabular text-xs text-fraco">exportado em {dados.gerado}</p>
+          <a
+            href="inmet.html"
+            className="text-xs text-sky-400 font-medium underline-offset-2 hover:underline inline-flex items-center gap-1"
+          >
+            <span>Dados Históricos INMET (Lote)</span> →
+          </a>
+        </div>
       </header>
 
       <section className="mt-6 rounded-xl border border-borda bg-painel p-3">

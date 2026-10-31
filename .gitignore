@@ -7,5 +7,10 @@ relatorios/
 site/node_modules/
 site/dist/
 
+# zips e bancos brutos de dados historicos do INMET
+dadoshistoricosinmet/zips/
+dadoshistoricosinmet/*.sqlite
+dadoshistoricosinmet/*.db
+
 # material de terceiros, guardado só como evidência da revisão em .planning/PLANO.md
 .planning/arquivo/

@@ -3,16 +3,29 @@
 Natureza: API REST OFICIAL (JSON) + DADOS ABERTOS EM LOTE (ZIP/CSV).
 Rede: Estações automáticas de superfície (EMA).
 
+Onde se cadastrar para obter o token da API (Passo a Passo):
+1. Acesse o portal oficial do INMET:
+   https://portal.inmet.gov.br
+2. Manual de uso e regras da API:
+   https://portal.inmet.gov.br/manual/manual-de-uso-da-api-estacoes
+3. Cadastro gratuito de usuário / desenvolvedor:
+   No portal do INMET, acesse o menu superior ou o link de cadastro em:
+   https://portal.inmet.gov.br (clique em 'Acesso a Dados' -> 'API de Dados Meteorológicos')
+   ou diretamente no formulário de cadastro de desenvolvedor.
+4. Após o cadastro e validação do e-mail, seu token pessoal será exibido no painel.
+5. Para usar o token no coletor do projeto, defina no seu terminal:
+   export INMET_TOKEN="seu_token_aqui"
+   python3 coletor.py coletar --fonte inmet --desde 2023-01 --ate 2023-12
+
 URLs de conferência no navegador e API:
-- Catálogo de todas as estações automáticas (aberto, público sem token):
+- Catálogo de todas as estações automáticas (aberto, público sem necessidade de token):
   GET https://apitempo.inmet.gov.br/estacoes/T
   (Retorna JSON com as 669 estações do Brasil, incluindo A712-Iguape, A746-Barra do Turvo e A766-Registro)
-- Dados históricos em lote por ano (portal público):
-  https://portal.inmet.gov.br/dadoshistoricos (arquivos ZIP anuais com CSVs das medições)
+- Dados históricos em lote por ano (portal público, sem token):
+  https://portal.inmet.gov.br/dadoshistoricos (arquivos ZIP anuais com CSVs de todas as estações)
 - API de medições horárias por estação e período:
-  Sem token (recente/limitado): GET https://apitempo.inmet.gov.br/estacao/{data_inicio}/{data_fim}/{codigo}
+  Sem token: GET https://apitempo.inmet.gov.br/estacao/{data_inicio}/{data_fim}/{codigo} (retorna 204 para períodos históricos)
   Com token pessoal: GET https://apitempo.inmet.gov.br/token/estacao/{data_inicio}/{data_fim}/{codigo}/{token}
-  (O token é obtido gratuitamente após cadastro no portal do INMET e pode ser passado via variável `INMET_TOKEN`).
 
 Estações no território:
 - A712: Iguape (lat -24.6716, lon -47.5458, início 2006-07-20)

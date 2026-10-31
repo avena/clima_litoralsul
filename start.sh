@@ -19,13 +19,44 @@ with socket.socket() as s:
 PY
 )}"
 
+# Porta opcional dedicada para a página do INMET (pode vir de PORT_INMET ou argumento)
+PORT_INMET="${PORT_INMET:-}"
+if [ "${1:-}" = "--inmet-porta" ] && [ -n "${2:-}" ]; then
+  PORT_INMET="$2"
+  shift 2
+fi
+
 IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
-echo "Linux/WSL:  http://localhost:$PORT"
-[ -n "$IP" ] && echo "Windows:    http://$IP:$PORT"
+
+echo "================================================================"
+echo "  Observatório Agroclimático do Litoral Sul e Vale do Ribeira   "
+echo "================================================================"
+echo "Painel Climatológico (25 municípios):"
+echo "  -> Linux/WSL:  http://localhost:$PORT"
+[ -n "$IP" ] && echo "  -> Windows:    http://$IP:$PORT"
+echo
+echo "Dados Históricos INMET (A712, A746, A766):"
+echo "  -> Linux/WSL:  http://localhost:$PORT/inmet.html"
+[ -n "$IP" ] && echo "  -> Windows:    http://$IP:$PORT/inmet.html"
+
+if [ -n "$PORT_INMET" ]; then
+  echo
+  echo "Servidor Dedicado INMET (porta alternativa):"
+  echo "  -> Linux/WSL:  http://localhost:$PORT_INMET"
+  [ -n "$IP" ] && echo "  -> Windows:    http://$IP:$PORT_INMET"
+fi
+echo
 echo "Ctrl+C para parar."
+echo "================================================================"
 echo
 
 python3 relatorio.py
+
+# Garante que o JSON do INMET histórico está disponível na pasta pública
+if [ ! -f site/public/inmet_regional.json ] && [ -f dadoshistoricosinmet/inmet_regional.json ]; then
+  cp dadoshistoricosinmet/inmet_regional.json site/public/inmet_regional.json
+fi
+
 [ -d site/node_modules ] || npm --prefix site install --no-fund --no-audit
 
 if [ "${1:-}" = "--dev" ]; then
@@ -33,4 +64,11 @@ if [ "${1:-}" = "--dev" ]; then
 fi
 
 npm --prefix site run build
+
+if [ -n "$PORT_INMET" ]; then
+  # Sobe servidor dedicado na outra porta
+  trap 'kill $(jobs -p) 2>/dev/null' EXIT
+  python3 -m http.server "$PORT_INMET" --bind 0.0.0.0 --directory site/dist &
+fi
+
 exec python3 -m http.server "$PORT" --bind 0.0.0.0 --directory site/dist
