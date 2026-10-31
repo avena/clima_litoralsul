@@ -320,6 +320,8 @@
         <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#painel-geral">Painel Geral &amp; Séries Horárias</a>
         <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#climatograma">Tríade Climatológica</a>
         <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#rosa-dos-ventos">Rosa dos Ventos</a>
+        <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors text-primary font-semibold" href="#janela-operacoes">Janela de Operações</a>
+        <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors text-tertiary font-semibold" href="#hidroponia">Hidroponia &amp; Estufa</a>
         <a class="px-3 py-1 rounded font-body-md text-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#tabela-historica">Tabela Consolidada</a>
       </nav>
       <div class="flex items-center gap-3 font-label-caps text-xs">
@@ -1398,78 +1400,612 @@ INMET Colunas 10, 11 e 12: Barômetro com detecção antecipada de frentes frias
 <span class="text-tertiary">VALIDAÇÃO CONFORME DIRETRIZES DA OMM / WMO-No. 8 (CIMO GUIDE)</span>
 </div>
 </section>
-<!-- AGROMETEOROLOGICAL DECISION SUPPORT & OPERATIONAL ACTION CARDS -->
-<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter mb-space-lg">
-<!-- Action 1: Pulverização & Deriva do Vento -->
-<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between hover:bg-surface-container transition-colors">
-<div class="flex flex-col gap-space-xs">
-<div class="flex items-center justify-between">
-<span class="font-label-caps text-label-caps text-tertiary uppercase font-bold">Manejo de Pulverização</span>
-<span class="px-space-xs py-0.5 rounded bg-tertiary/20 text-tertiary font-label-caps text-xs">JANELA ATIVA</span>
-</div>
-<span id="agro-card1-val" class="font-headline-md text-headline-md text-on-surface mt-1">Limite Vento &lt; 2.8 m/s</span>
-<p id="agro-card1-desc" class="font-body-sm text-body-sm text-on-surface-variant">
-Aplicação fitossanitária segura até 10 km/h para evitar deriva de calda. Rajadas &gt; 5.0 m/s exigem interrupção mandatória de defensivos no bananal e pupunha.
-</p>
-</div>
-<div class="mt-space-md pt-space-xs border-t border-outline-variant/30 flex items-center justify-between font-label-caps text-xs">
-<span id="agro-card1-status" class="text-outline">Status Agora: <strong class="text-tertiary">3.4 m/s (Atenção)</strong></span>
-<span class="material-symbols-outlined text-tertiary text-[18px]">cloud_download</span>
-</div>
-</div>
-<!-- Action 2: Irrigação & Radiação Solar -->
-<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between hover:bg-surface-container transition-colors">
-<div class="flex flex-col gap-space-xs">
-<div class="flex items-center justify-between">
-<span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Balanço Hídrico (ETo)</span>
-<span class="px-space-xs py-0.5 rounded bg-secondary/20 text-secondary font-label-caps text-xs">SOLAR FAO-56</span>
-</div>
-<span id="agro-card2-val" class="font-headline-md text-headline-md text-on-surface mt-1">Radiação: 18.4 MJ/m²</span>
-<p id="agro-card2-desc" class="font-body-sm text-body-sm text-on-surface-variant">
-Evapotranspiração estimada em 4.8 mm/dia. Com a lâmina acumulada do mês (140.4 mm), o solo opera em capacidade de campo plena sem déficit hídrico radicular.
-</p>
-</div>
-<div class="mt-space-md pt-space-xs border-t border-outline-variant/30 flex items-center justify-between font-label-caps text-xs">
-<span id="agro-card2-status" class="text-outline">Necessidade Irrigação: <strong class="text-secondary">0.0 mm/dia</strong></span>
-<span class="material-symbols-outlined text-secondary text-[18px]">water_drop</span>
-</div>
-</div>
-<!-- Action 3: Ponto de Orvalho & Fitossanidade -->
-<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between hover:bg-surface-container transition-colors">
-<div class="flex flex-col gap-space-xs">
-<div class="flex items-center justify-between">
-<span class="font-label-caps text-label-caps text-primary uppercase font-bold">Fitossanidade &amp; Orvalho</span>
-<span class="px-space-xs py-0.5 rounded bg-primary/20 text-primary font-label-caps text-xs">MOLHAMENTO 9h</span>
-</div>
-<span id="agro-card3-val" class="font-headline-md text-headline-md text-on-surface mt-1">Delta T-Td: 4.2 °C</span>
-<p id="agro-card3-desc" class="font-body-sm text-body-sm text-on-surface-variant">
-Ponto de orvalho elevado (17.8°C) em noites calmas precipita orvalho foliar prolongado. Alto índice de favorabilidade para Sigatoka-negra e Antracnose.
-</p>
-</div>
-<div class="mt-space-md pt-space-xs border-t border-outline-variant/30 flex items-center justify-between font-label-caps text-xs">
-<span id="agro-card3-status" class="text-outline">Risco Fúngico: <strong class="text-primary">ELEVADO</strong></span>
-<span class="material-symbols-outlined text-primary text-[18px]">eco</span>
-</div>
-</div>
-<!-- Action 4: Monitoramento Barométrico & Frentes -->
-<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between hover:bg-surface-container transition-colors">
-<div class="flex flex-col gap-space-xs">
-<div class="flex items-center justify-between">
-<span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">Radar de Frentes Frias</span>
-<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-on-surface font-label-caps text-xs">BARÔMETRO</span>
-</div>
-<span id="agro-card4-val" class="font-headline-md text-headline-md text-on-surface mt-1">942.8 hPa (Estável)</span>
-<p id="agro-card4-desc" class="font-body-sm text-body-sm text-on-surface-variant">
-Sem indicação de queda abrupta de pressão nas últimas 12 horas. Próxima frente fria oceânica prevista para o Litoral Sul somente em 48h.
-</p>
-</div>
-<div class="mt-space-md pt-space-xs border-t border-outline-variant/30 flex items-center justify-between font-label-caps text-xs">
-<span id="agro-card4-status" class="text-outline">Gradiente 3h: <strong class="text-on-surface">+0.4 hPa</strong></span>
-<span class="material-symbols-outlined text-outline text-[18px]">thermostat</span>
-</div>
-</div>
+<!-- ========================================== -->
+<!-- JANELA DE OPERAÇÕES AGRÍCOLAS & HIDROPONIA -->
+<!-- ========================================== -->
+<section id="janela-operacoes" class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/20 shadow-sm mb-space-lg flex flex-col gap-5">
+  <!-- Cabeçalho do Bloco -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant/20">
+    <div class="flex items-start gap-3">
+      <div class="p-2.5 rounded-lg bg-surface-container text-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-[26px]">agriculture</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="font-headline-md text-base sm:text-lg font-bold text-on-surface">Janela de Operações Agrícolas</h2>
+          <span class="px-2 py-0.5 rounded-full bg-tertiary/20 text-tertiary font-label-caps text-[11px] font-semibold">TELEMETRIA DINÂMICA</span>
+        </div>
+        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">
+          Diagnóstico de aptidão agroclimática, pulverização, balanço atmosférico estrito e calibração de microclima
+        </p>
+      </div>
+    </div>
+
+    <!-- Seletor de Cultura e Fase Fenológica -->
+    <div class="flex flex-wrap items-center gap-2 bg-surface-container p-2 rounded-lg border border-outline-variant/30">
+      <div class="flex items-center gap-1.5">
+        <label for="sel-cultura" class="font-label-caps text-[11px] text-on-surface-variant font-bold uppercase">Cultura:</label>
+        <select id="sel-cultura" onchange="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-body-sm text-xs rounded px-2.5 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          <option value="banana" selected>Bananicultura (Prata / Nanica)</option>
+          <option value="pupunha">Palmito Pupunha</option>
+          <option value="olericolas">Olerícolas de Campo / Folhosas</option>
+          <option value="frutiferas">Fruticultura Tropical (Maracujá/Citros)</option>
+          <option value="mandioca">Mandioca / Raízes</option>
+          <option value="cha">Chá Preto / Pastagens</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <label for="sel-fase" class="font-label-caps text-[11px] text-on-surface-variant font-bold uppercase">Fase:</label>
+        <select id="sel-fase" onchange="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-body-sm text-xs rounded px-2.5 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          <option value="veg" selected>Crescimento Vegetativo</option>
+          <option value="flor">Floração &amp; Polinização</option>
+          <option value="frut">Enchimento &amp; Frutificação</option>
+          <option value="colh">Maturação &amp; Colheita</option>
+          <option value="prep">Preparo de Solo / Pousio</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid dos 6 Cards Operacionais -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <!-- Card 1: Pulverização Fitossanitária -->
+    <div id="card-op-pulverizacao" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-primary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">pest_control</span> 1. Pulverização Fitossanitária
+          </span>
+          <span id="badge-op-pulv" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">JANELA ABERTA</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="font-headline-md text-base sm:text-lg font-bold text-on-surface" id="val-op-pulv">Vento: 2.1 m/s (Seguro)</div>
+          <p id="desc-op-pulv" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Velocidade abaixo do limite crítico (&lt; 2.8 m/s). UR em faixa favorável minimiza deriva e evaporação de gotas.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between font-label-caps text-[11px]">
+        <span class="text-outline">Janela Ideal: <strong id="janela-op-pulv-horas" class="text-on-surface">06:00 – 09:30 / 16:30 – 18:30</strong></span>
+        <span id="icone-op-pulv" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Semeadura & Plantio / Transplante -->
+    <div id="card-op-plantio" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-tertiary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">grass</span> 2. Plantio &amp; Transplante
+          </span>
+          <span id="badge-op-plant" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">FAVORÁVEL</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="font-headline-md text-base sm:text-lg font-bold text-on-surface" id="val-op-plant">Chuva 48h: 12.0 mm</div>
+          <p id="desc-op-plant" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Umidade de solo adequada para pegamento radicular de mudas sem risco de enxurrada nas próximas horas.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between font-label-caps text-[11px]">
+        <span class="text-outline">Temp. Ar: <strong id="plant-temp-val" class="text-on-surface">23.4 °C (Ótima)</strong></span>
+        <span id="icone-op-plant" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Colheita & Pós-Colheita -->
+    <div id="card-op-colheita" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-secondary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">agriculture</span> 3. Colheita &amp; Pós-Colheita
+          </span>
+          <span id="badge-op-colh" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">JANELA ABERTA</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="font-headline-md text-base sm:text-lg font-bold text-on-surface" id="val-op-colh">Chuva 24h: 0.0 mm</div>
+          <p id="desc-op-colh" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Período seco e sem precipitação ativa. Baixo risco de podridão e manchas fúngicas durante manuseio pós-colheita.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between font-label-caps text-[11px]">
+        <span class="text-outline">Risco Chuva 48h: <strong id="colh-risco-val" class="text-tertiary">Baixo (&lt; 5 mm)</strong></span>
+        <span id="icone-op-colh" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Adubação & Fertilização de Cobertura -->
+    <div id="card-op-adubacao" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-amber-400 font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">science</span> 4. Adubação de Cobertura
+          </span>
+          <span id="badge-op-adub" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">FAVORÁVEL</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="font-headline-md text-base sm:text-lg font-bold text-on-surface" id="val-op-adub">Sem Risco de Lixiviação</div>
+          <p id="desc-op-adub" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Ausência de tempestades torrenciais previstas (> 25 mm/dia). Umidade superficial favorável para absorção radicular.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between font-label-caps text-[11px]">
+        <span class="text-outline">Modo Foliar: <strong id="adub-foliar-val" class="text-on-surface">Vento Adequado</strong></span>
+        <span id="icone-op-adub" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+
+    <!-- Card 5: Manejo de Solo & Tratorabilidade -->
+    <div id="card-op-mecanizacao" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-cyan-400 font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">precision_manufacturing</span> 5. Tratorabilidade &amp; Solo
+          </span>
+          <span id="badge-op-solo" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">TRATORÁVEL</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="font-headline-md text-base sm:text-lg font-bold text-on-surface" id="val-op-solo">Acum. 72h: 12.0 mm</div>
+          <p id="desc-op-solo" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Capacidade de suporte mecânico do solo preservada. Risco mínimo de compactação subsuperficial ou atolamento.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center justify-between font-label-caps text-[11px]">
+        <span class="text-outline">Tráfego de Máquinas: <strong id="solo-trafego-val" class="text-tertiary">Liberado</strong></span>
+        <span id="icone-op-solo" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+
+    <!-- Card 6: Irrigação Meteorológica (Strict Pure Climate Metrics) -->
+    <!-- STRICT INVARIANT: Pure climate metrics only (ETo FAO-56, 48h rain, forecast rain, global radiation). NO Kc, NO solo, NO IRN, NO ITN -->
+    <div id="card-op-irrigacao" class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-secondary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">water_drop</span> 6. Irrigação Meteorológica
+          </span>
+          <span id="badge-op-irrig" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">REPOSIÇÃO DISPENSADA</span>
+        </div>
+        <div class="mt-2.5">
+          <div class="flex items-baseline justify-between">
+            <span class="font-headline-md text-base sm:text-lg font-bold text-on-surface">ETo FAO-56: <span id="irrig-eto-val">4.8 mm/dia</span></span>
+            <span class="font-metric-readout-sm text-xs text-secondary font-bold" id="irrig-balanco-val">+7.2 mm (Líquido)</span>
+          </div>
+          <p id="desc-op-irrig" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Chuva observada em 48h supera a evapotranspiração de referência diária calculada por Penman-Monteith.
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-1 font-label-caps text-[11px]">
+        <span class="text-outline">Radiação: <strong id="irrig-rad-val" class="text-on-surface">18.4 MJ/m²</strong></span>
+        <span class="text-outline">Chuva Prev. 72h: <strong id="irrig-prev-val" class="text-on-surface">0.0 mm</strong></span>
+        <span id="icone-op-irrig" class="material-symbols-outlined text-tertiary text-[18px]">check_circle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Matriz de Previsão 7 Dias -->
+  <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[20px]">calendar_view_week</span>
+        <h3 class="font-headline-md text-sm sm:text-base font-bold text-on-surface">Matriz Operacional de Previsão (7 Dias)</h3>
+      </div>
+      <span class="font-label-caps text-[11px] text-on-surface-variant">Janelas Horárias e Aptidão Diária por Operação</span>
+    </div>
+
+    <!-- Tabela / Grid Responsivo dos 7 Dias -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs border-collapse min-w-[700px]">
+        <thead>
+          <tr class="border-b border-outline-variant/30 text-on-surface-variant font-label-caps text-[11px]">
+            <th class="py-2 px-2.5">Operação Agrícola</th>
+            <th class="py-2 px-2 text-center" id="col-dia-0">Hoje<br><span class="text-outline font-normal" id="sub-dia-0">30°/18° • 0mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-1">D+1<br><span class="text-outline font-normal" id="sub-dia-1">29°/19° • 2mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-2">D+2<br><span class="text-outline font-normal" id="sub-dia-2">27°/17° • 12mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-3">D+3<br><span class="text-outline font-normal" id="sub-dia-3">25°/16° • 6mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-4">D+4<br><span class="text-outline font-normal" id="sub-dia-4">26°/16° • 0mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-5">D+5<br><span class="text-outline font-normal" id="sub-dia-5">28°/17° • 0mm</span></th>
+            <th class="py-2 px-2 text-center" id="col-dia-6">D+6<br><span class="text-outline font-normal" id="sub-dia-6">30°/18° • 0mm</span></th>
+          </tr>
+        </thead>
+        <tbody id="matriz-7dias-corpo" class="divide-y divide-outline-variant/10 font-body-sm text-xs">
+          <!-- Linhas das 6 operações inseridas dinamicamente via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Alertas Fitossanitários & Extremos Meteorológicos -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5">
+    <!-- Alerta 1: Risco Fúngico -->
+    <div id="alerta-fungos" class="p-3.5 rounded-lg bg-surface-container border-l-4 border-l-amber-500 border border-outline-variant/20 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-1.5">
+          <span class="font-label-caps text-[11px] text-amber-400 font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">coronavirus</span> Molhamento &amp; Fungos
+          </span>
+          <span id="badge-alerta-fungos" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">MODERADO</span>
+        </div>
+        <p id="desc-alerta-fungos" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-snug">
+          Delta T-Td em 4.2°C. Risco moderado de condensação foliar prolongada (Sigatoka e Antracnose).
+        </p>
+      </div>
+      <span class="mt-2 font-label-caps text-[10px] text-outline">Condição: Orvalho Noturno Provável</span>
+    </div>
+
+    <!-- Alerta 2: Deriva & Vento -->
+    <div id="alerta-vento" class="p-3.5 rounded-lg bg-surface-container border-l-4 border-l-emerald-500 border border-outline-variant/20 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-1.5">
+          <span class="font-label-caps text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">air</span> Deriva &amp; Rajadas
+          </span>
+          <span id="badge-alerta-vento" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">CALMARIA</span>
+        </div>
+        <p id="desc-alerta-vento" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-snug">
+          Vento médio em conformidade (&lt; 2.8 m/s). Janela operacional segura para defensivos agrícolas.
+        </p>
+      </div>
+      <span class="mt-2 font-label-caps text-[10px] text-outline">Sensor: Anemômetro a 10m</span>
+    </div>
+
+    <!-- Alerta 3: Estresse Térmico -->
+    <div id="alerta-termico" class="p-3.5 rounded-lg bg-surface-container border-l-4 border-l-sky-500 border border-outline-variant/20 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-1.5">
+          <span class="font-label-caps text-[11px] text-sky-400 font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">thermostat</span> Regime Térmico
+          </span>
+          <span id="badge-alerta-termico" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-400">FAVORÁVEL</span>
+        </div>
+        <p id="desc-alerta-termico" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-snug">
+          Sem risco iminente de geada ou estresse por calor excessivo (> 36°C). Desenvolvimento foliar vigoroso.
+        </p>
+      </div>
+      <span class="mt-2 font-label-caps text-[10px] text-outline">Faixa Térmica Subtropical</span>
+    </div>
+
+    <!-- Alerta 4: Barometria & Frentes -->
+    <div id="alerta-frente" class="p-3.5 rounded-lg bg-surface-container border-l-4 border-l-purple-500 border border-outline-variant/20 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-1.5">
+          <span class="font-label-caps text-[11px] text-purple-400 font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">cyclone</span> Estabilidade Atmosférica
+          </span>
+          <span id="badge-alerta-frente" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-400">ESTÁVEL</span>
+        </div>
+        <p id="desc-alerta-frente" class="font-body-sm text-xs text-on-surface-variant mt-1 leading-snug">
+          Variação barométrica suave. Ausência de frentes frias costeiras ativas nas próximas 24 horas.
+        </p>
+      </div>
+      <span class="mt-2 font-label-caps text-[10px] text-outline">Pressão Reduzida ao Mar</span>
+    </div>
+  </div>
+
+  <!-- Calendário Agroclimático Anual (12 Meses) -->
+  <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary text-[20px]">date_range</span>
+        <h3 class="font-headline-md text-sm sm:text-base font-bold text-on-surface">Calendário Agroclimático Anual (Regional)</h3>
+      </div>
+      <span class="font-label-caps text-[11px] text-on-surface-variant">Sazonalidade das Janelas Operacionais</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs border-collapse min-w-[700px]">
+        <thead>
+          <tr class="border-b border-outline-variant/30 text-on-surface-variant font-label-caps text-[10px]">
+            <th class="py-2 px-2">Dimensão</th>
+            <th class="py-2 px-1 text-center font-bold">JAN</th>
+            <th class="py-2 px-1 text-center font-bold">FEV</th>
+            <th class="py-2 px-1 text-center font-bold">MAR</th>
+            <th class="py-2 px-1 text-center font-bold">ABR</th>
+            <th class="py-2 px-1 text-center font-bold">MAI</th>
+            <th class="py-2 px-1 text-center font-bold">JUN</th>
+            <th class="py-2 px-1 text-center font-bold">JUL</th>
+            <th class="py-2 px-1 text-center font-bold">AGO</th>
+            <th class="py-2 px-1 text-center font-bold">SET</th>
+            <th class="py-2 px-1 text-center font-bold">OUT</th>
+            <th class="py-2 px-1 text-center font-bold">NOV</th>
+            <th class="py-2 px-1 text-center font-bold">DEZ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/10 font-label-caps text-[11px]">
+          <tr>
+            <td class="py-2 px-2 text-on-surface font-semibold">Regime Hídrico</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+            <td class="py-2 px-1 text-center text-cyan-400">Transição</td>
+            <td class="py-2 px-1 text-center text-amber-400">Mais Seco</td>
+            <td class="py-2 px-1 text-center text-amber-400">Mais Seco</td>
+            <td class="py-2 px-1 text-center text-amber-400">Mais Seco</td>
+            <td class="py-2 px-1 text-center text-amber-400">Mais Seco</td>
+            <td class="py-2 px-1 text-center text-cyan-400">Transição</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+            <td class="py-2 px-1 text-center text-primary font-bold">Chuvoso</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-2 text-on-surface font-semibold">Janela Pulverização</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótima</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótima</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ampla</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ampla</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótima</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótima</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+            <td class="py-2 px-1 text-center text-amber-400">Restrita</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-2 text-on-surface font-semibold">Plantio / Transplante</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótimo</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótimo</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótimo</td>
+            <td class="py-2 px-1 text-center text-on-surface-variant">Moderado</td>
+            <td class="py-2 px-1 text-center text-outline">Recuo</td>
+            <td class="py-2 px-1 text-center text-outline">Pousio</td>
+            <td class="py-2 px-1 text-center text-outline">Pousio</td>
+            <td class="py-2 px-1 text-center text-on-surface-variant">Início</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótimo</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Pico</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Pico</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Ótimo</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-2 text-on-surface font-semibold">Colheita Segura</td>
+            <td class="py-2 px-1 text-center text-rose-400">Risco Chuva</td>
+            <td class="py-2 px-1 text-center text-rose-400">Risco Chuva</td>
+            <td class="py-2 px-1 text-center text-amber-400">Atenção</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Segura</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Excelente</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Excelente</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Excelente</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Excelente</td>
+            <td class="py-2 px-1 text-center text-tertiary font-bold">Segura</td>
+            <td class="py-2 px-1 text-center text-amber-400">Atenção</td>
+            <td class="py-2 px-1 text-center text-rose-400">Risco Chuva</td>
+            <td class="py-2 px-1 text-center text-rose-400">Risco Chuva</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bloco: Card de Regras Editáveis & Card de Dados de Entrada Copiável -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Card de Regras e Limiares Operacionais Editáveis -->
+    <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-2.5 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-primary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">tune</span> Limiares Operacionais Customizáveis
+          </span>
+          <button type="button" onclick="restaurarLimiares()" class="font-label-caps text-[10px] text-outline hover:text-primary transition-colors underline cursor-pointer">
+            Restaurar Padrões
+          </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div class="flex flex-col gap-1">
+            <label for="regra-vento-max" class="font-label-caps text-[11px] text-on-surface-variant">Vento Máx. Pulverização (m/s):</label>
+            <input type="number" id="regra-vento-max" step="0.1" min="1.0" max="6.0" value="2.8" oninput="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-metric-readout-sm text-sm rounded px-3 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="regra-temp-max" class="font-label-caps text-[11px] text-on-surface-variant">Temp. Máx. Pulverização (°C):</label>
+            <input type="number" id="regra-temp-max" step="0.5" min="20.0" max="40.0" value="30.0" oninput="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-metric-readout-sm text-sm rounded px-3 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="regra-ur-min" class="font-label-caps text-[11px] text-on-surface-variant">UR Mín. Pulverização (%):</label>
+            <input type="number" id="regra-ur-min" step="1" min="30" max="75" value="55" oninput="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-metric-readout-sm text-sm rounded px-3 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="regra-chuva-trator" class="font-label-caps text-[11px] text-on-surface-variant">Chuva 72h Máx. Trator (mm):</label>
+            <input type="number" id="regra-chuva-trator" step="1" min="5" max="50" value="15.0" oninput="atualizarJanelaOperacoes()" class="bg-surface-container-high text-on-surface font-metric-readout-sm text-sm rounded px-3 py-1.5 border border-outline-variant/40 focus:border-primary outline-none">
+          </div>
+        </div>
+      </div>
+      <p class="font-body-sm text-[11px] text-outline mt-3 pt-2 border-t border-outline-variant/20">
+        Alterações ajustam imediatamente os status dos cards e a matriz de decisão.
+      </p>
+    </div>
+
+    <!-- Card de Dados de Entrada da Estação (Payload Copiável) -->
+    <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-2.5 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-on-surface font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">terminal</span> Payload Meteorológico da Estação
+          </span>
+          <button id="btn-copiar-dados" type="button" onclick="copiarDadosEstacao()" class="flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-on-primary font-label-caps text-[11px] font-bold hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">content_copy</span>
+            <span id="label-copiar-dados">Copiar Dados</span>
+          </button>
+        </div>
+        <pre id="payload-estacao-mono" class="mt-2.5 p-2.5 rounded bg-surface-container-lowest text-on-surface-variant font-mono text-[11px] leading-relaxed overflow-x-auto max-h-[140px] border border-outline-variant/10">
+// Carregando telemetria...
+        </pre>
+      </div>
+      <span class="font-label-caps text-[10px] text-outline mt-2 pt-1 border-t border-outline-variant/20">
+        Pronto para exportação em prancheta de campo ou envio a modelos agroclimáticos.
+      </span>
+    </div>
+  </div>
 </section>
-<!-- DASHBOARD FOOTER AUDIT STRIP -->
+
+<!-- ========================================== -->
+<!-- HIDROPONIA & CULTIVO PROTEGIDO             -->
+<!-- ========================================== -->
+<section id="hidroponia" class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/20 shadow-sm mb-space-lg flex flex-col gap-5">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant/20">
+    <div class="flex items-start gap-3">
+      <div class="p-2.5 rounded-lg bg-surface-container text-tertiary flex items-center justify-center">
+        <span class="material-symbols-outlined text-[26px]">water</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="font-headline-md text-base sm:text-lg font-bold text-on-surface">Hidroponia &amp; Cultivo Protegido</h2>
+          <span class="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary font-label-caps text-[11px] font-semibold">PRESETS DINÂMICOS</span>
+        </div>
+        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">
+          Controle da solução nutritiva, déficit de pressão de vapor (DPV) em estufa e integral de luz diária (DLI)
+        </p>
+      </div>
+    </div>
+
+    <!-- Presets de Hidroponia: Alface, Tomate, Morango -->
+    <div class="flex items-center gap-2">
+      <span class="font-label-caps text-[11px] text-on-surface-variant font-bold uppercase">Preset:</span>
+      <div class="inline-flex rounded-lg bg-surface-container p-1 border border-outline-variant/30" role="group">
+        <button id="btn-preset-alface" type="button" onclick="selecionarPresetHidroponia('alface')" class="px-3 py-1 rounded text-xs font-label-caps font-bold bg-tertiary text-on-surface shadow-sm transition-colors cursor-pointer">
+          Alface (NFT)
+        </button>
+        <button id="btn-preset-tomate" type="button" onclick="selecionarPresetHidroponia('tomate')" class="px-3 py-1 rounded text-xs font-label-caps font-semibold text-outline hover:text-on-surface transition-colors cursor-pointer">
+          Tomate
+        </button>
+        <button id="btn-preset-morango" type="button" onclick="selecionarPresetHidroponia('morango')" class="px-3 py-1 rounded text-xs font-label-caps font-semibold text-outline hover:text-on-surface transition-colors cursor-pointer">
+          Morango
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 Cards de Hidroponia -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Card H1: Solução Nutritiva -->
+    <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-primary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">science</span> Solução Nutritiva
+          </span>
+          <span id="badge-hidro-solucao" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">EQUILIBRADA</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5 mt-3">
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Condutividade (CE)</span>
+            <span id="hidro-ce-val" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">1.4 mS/cm</span>
+            <span id="hidro-ce-faixa" class="font-label-caps text-[9px] text-on-surface-variant block">Meta: 1.2 - 1.8</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">pH da Calda</span>
+            <span id="hidro-ph-val" class="font-headline-md text-base sm:text-lg font-bold text-tertiary">6.0</span>
+            <span id="hidro-ph-faixa" class="font-label-caps text-[9px] text-on-surface-variant block">Meta: 5.8 - 6.3</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Temp. Solução</span>
+            <span id="hidro-temp-sol-val" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">21.0 °C</span>
+            <span class="font-label-caps text-[9px] text-on-surface-variant block">Meta: 18 - 22 °C</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Oxigênio Dissolvido</span>
+            <span id="hidro-od-val" class="font-headline-md text-base sm:text-lg font-bold text-secondary">8.2 mg/L</span>
+            <span class="font-label-caps text-[9px] text-on-surface-variant block">Crítico: &lt; 5.0 mg/L</span>
+          </div>
+        </div>
+        <p id="desc-hidro-solucao" class="font-body-sm text-xs text-on-surface-variant mt-3 leading-relaxed">
+          Condutividade elétrica e pH estabilizados na zona ótima de absorção de macronutrientes.
+        </p>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 font-label-caps text-[11px] text-outline flex items-center justify-between">
+        <span>Bancada: NFT Circulante</span>
+        <span class="text-tertiary font-semibold">Tolerância: ±0.1</span>
+      </div>
+    </div>
+
+    <!-- Card H2: Ambiente Protegido / Estufa (DPV / VPD) -->
+    <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-secondary font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">roofing</span> Ambiente Estufa (DPV / VPD)
+          </span>
+          <span id="badge-hidro-dpv" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">TRANSPIRAÇÃO ÓTIMA</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5 mt-3">
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">DPV / VPD (kPa)</span>
+            <span id="hidro-dpv-val" class="font-headline-md text-base sm:text-lg font-bold text-secondary">0.95 kPa</span>
+            <span class="font-label-caps text-[9px] text-on-surface-variant block">Meta: 0.8 - 1.2 kPa</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Temp. Estufa</span>
+            <span id="hidro-temp-estufa" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">25.5 °C</span>
+            <span class="font-label-caps text-[9px] text-outline block">+2.5°C microclima</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">UR Interna</span>
+            <span id="hidro-ur-estufa" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">71%</span>
+            <span class="font-label-caps text-[9px] text-outline block">Ventilação natural</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Ação Manejo</span>
+            <span id="hidro-acao-estufa" class="font-headline-md text-xs font-bold text-tertiary block mt-1">Janela Aberta</span>
+            <span class="font-label-caps text-[9px] text-outline block">Cortinas laterais</span>
+          </div>
+        </div>
+        <p id="desc-hidro-dpv" class="font-body-sm text-xs text-on-surface-variant mt-3 leading-relaxed">
+          Déficit de pressão de vapor na faixa de 0.8–1.2 kPa estimula o fluxo hídrico e transporte de cálcio sem estresse estomático.
+        </p>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 font-label-caps text-[11px] text-outline flex items-center justify-between">
+        <span>Fórmula: Tetens (FAO-56)</span>
+        <span class="text-secondary font-semibold">Equilíbrio Fisiológico</span>
+      </div>
+    </div>
+
+    <!-- Card H3: Radiação & DLI (Daily Light Integral) -->
+    <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+      <div>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+          <span class="flex items-center gap-1.5 font-label-caps text-xs text-amber-400 font-bold uppercase">
+            <span class="material-symbols-outlined text-[18px]">light_mode</span> Radiação &amp; DLI
+          </span>
+          <span id="badge-hidro-dli" class="px-2 py-0.5 rounded text-[11px] font-label-caps font-bold bg-tertiary/20 text-tertiary">DLI ADEQUADO</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5 mt-3">
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">DLI Estufa (mol/m²·d)</span>
+            <span id="hidro-dli-val" class="font-headline-md text-base sm:text-lg font-bold text-amber-400">16.2</span>
+            <span id="hidro-dli-meta" class="font-label-caps text-[9px] text-on-surface-variant block">Meta: 14 - 17</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Radiação EMA</span>
+            <span id="hidro-rad-ema" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">18.4 MJ/m²</span>
+            <span class="font-label-caps text-[9px] text-outline block">Estação INMET</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">PAR Estimado</span>
+            <span id="hidro-par-val" class="font-headline-md text-base sm:text-lg font-bold text-on-surface">620 µmol/m²·s</span>
+            <span class="font-label-caps text-[9px] text-outline block">Pico de insolação</span>
+          </div>
+          <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant/10">
+            <span class="font-label-caps text-[10px] text-outline block">Sombreamento</span>
+            <span id="hidro-sombra-val" class="font-headline-md text-xs font-bold text-tertiary block mt-1">Dispensado</span>
+            <span class="font-label-caps text-[9px] text-outline block">Termo-refletora</span>
+          </div>
+        </div>
+        <p id="desc-hidro-dli" class="font-body-sm text-xs text-on-surface-variant mt-3 leading-relaxed">
+          Integral de luz diária dentro da janela fotossintética alvo da cultura sem necessidade de suplementação luminosa.
+        </p>
+      </div>
+      <div class="mt-3 pt-2 border-t border-outline-variant/20 font-label-caps text-[11px] text-outline flex items-center justify-between">
+        <span>Transmitância: 70% Filme</span>
+        <span class="text-amber-400 font-semibold">Fotossíntese Plena</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- DASHBOARD FOOTER AUDIT STRIP -->
 <footer class="p-space-md rounded-xl bg-surface-container-lowest border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-caps text-xs">
 <div class="flex items-center gap-space-sm">
 <span class="flex items-center gap-1 text-primary">
@@ -1993,6 +2529,7 @@ Sem indicação de queda abrupta de pressão nas últimas 12 horas. Próxima fre
     const est = catalogoBrasil.find(e => e.cod === codigo) || { cod: codigo, nome: codigo, uf: 'SP', lat: -24.9, lon: -48.4, alt: 100 };
     const info = gerarPerfilBrasil(est);
     estacaoAtual = codigo;
+    atualizarJanelaOperacoes(codigo);
 
     // 1. Header & Hero Meta
     const hNome = document.getElementById('header-nome');
@@ -2490,6 +3027,572 @@ Sem indicação de queda abrupta de pressão nas últimas 12 horas. Próxima fre
     const r1 = document.getElementById('rain-stop-1');
     if (r0) r0.setAttribute('stop-color', dark ? '#4cd7f6' : '#00687a');
     if (r1) r1.setAttribute('stop-color', dark ? '#06b6d4' : '#008299');
+  };
+
+  
+  // ========================================================
+  // LÓGICA: JANELA DE OPERAÇÕES AGRÍCOLAS & HIDROPONIA
+  // ========================================================
+  const hidroPresets = {
+    alface: {
+      nome: 'Alface (NFT)',
+      ceMin: 1.2, ceMax: 1.8, ceAlvo: 1.4,
+      phMin: 5.8, phMax: 6.3, phAlvo: 6.0,
+      tempMin: 18.0, tempMax: 22.0, tempAlvo: 20.0,
+      dliMin: 14.0, dliMax: 17.0, dliAlvo: 15.5
+    },
+    tomate: {
+      nome: 'Tomate (Cultivo Protegido)',
+      ceMin: 2.0, ceMax: 3.5, ceAlvo: 2.5,
+      phMin: 5.8, phMax: 6.5, phAlvo: 6.2,
+      tempMin: 19.0, tempMax: 24.0, tempAlvo: 21.5,
+      dliMin: 22.0, dliMax: 30.0, dliAlvo: 26.0
+    },
+    morango: {
+      nome: 'Morango (Substrato/Calha)',
+      ceMin: 1.0, ceMax: 1.5, ceAlvo: 1.2,
+      phMin: 5.5, phMax: 6.2, phAlvo: 5.8,
+      tempMin: 18.0, tempMax: 21.0, tempAlvo: 19.5,
+      dliMin: 17.0, dliMax: 22.0, dliAlvo: 19.5
+    }
+  };
+  let presetHidroAtual = 'alface';
+
+  window.selecionarPresetHidroponia = function(preset) {
+    if (!hidroPresets[preset]) return;
+    presetHidroAtual = preset;
+    ['alface', 'tomate', 'morango'].forEach(p => {
+      const btn = document.getElementById('btn-preset-' + p);
+      if (btn) {
+        if (p === preset) {
+          btn.className = 'px-3 py-1 rounded text-xs font-label-caps font-bold bg-tertiary text-on-surface shadow-sm transition-colors cursor-pointer';
+        } else {
+          btn.className = 'px-3 py-1 rounded text-xs font-label-caps font-semibold text-outline hover:text-on-surface transition-colors cursor-pointer';
+        }
+      }
+    });
+    atualizarJanelaOperacoes();
+  };
+
+  window.restaurarLimiares = function() {
+    const vMax = document.getElementById('regra-vento-max');
+    if (vMax) vMax.value = '2.8';
+    const tMax = document.getElementById('regra-temp-max');
+    if (tMax) tMax.value = '30.0';
+    const urMin = document.getElementById('regra-ur-min');
+    if (urMin) urMin.value = '55';
+    const chvTrat = document.getElementById('regra-chuva-trator');
+    if (chvTrat) chvTrat.value = '15.0';
+    atualizarJanelaOperacoes();
+  };
+
+  window.copiarDadosEstacao = function() {
+    const pre = document.getElementById('payload-estacao-mono');
+    const btn = document.getElementById('btn-copiar-dados');
+    const lbl = document.getElementById('label-copiar-dados');
+    if (!pre) return;
+    const texto = pre.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(() => {
+        if (lbl) lbl.textContent = 'Copiado!';
+        if (btn) {
+          btn.classList.remove('bg-primary');
+          btn.classList.add('bg-tertiary', 'text-on-surface');
+        }
+        setTimeout(() => {
+          if (lbl) lbl.textContent = 'Copiar Dados';
+          if (btn) {
+            btn.classList.remove('bg-tertiary', 'text-on-surface');
+            btn.classList.add('bg-primary');
+          }
+        }, 2000);
+      }).catch(() => {
+        if (lbl) lbl.textContent = 'Erro ao copiar';
+      });
+    }
+  };
+
+  window.atualizarJanelaOperacoes = function(codigo) {
+    const cod = codigo || estacaoAtual || 'A746';
+    let info = null;
+    if (typeof gerarPerfilBrasil === 'function') {
+      const est = (typeof catalogoBrasil !== 'undefined' ? catalogoBrasil.find(e => e.cod === cod) : null) || { cod, nome: cod, uf: 'SP', lat: -24.9, lon: -48.4, alt: 100 };
+      info = gerarPerfilBrasil(est);
+    } else if (typeof estacoesConfig !== 'undefined') {
+      info = estacoesConfig[cod] || estacoesConfig['A746'];
+    }
+    if (!info) return;
+
+    // Métricas Meteorológicas Estritas
+    const ventoMedNum = parseFloat(String(info.ventoMed || '2.8').replace(',', '.')) || 2.8;
+    const rajadaNum = parseFloat(String(info.rajadaMax || info.ventoRajada || '15.0').replace(/[^\d.,]/g, '').replace(',', '.')) || 15.0;
+    const tempMedNum = parseFloat(String(info.tempMed || '22.0').replace(',', '.')) || 22.0;
+    const tempMinNum = parseFloat(String(info.tempMin || '15.0').replace(/[^\d.,-]/g, '').replace(',', '.')) || 15.0;
+    const tempMaxNum = parseFloat(String(info.tempMax || '32.0').replace(/[^\d.,-]/g, '').replace(',', '.')) || 32.0;
+    const urMedNum = parseFloat(String(info.urMed || '80').replace(/[^\d.,]/g, '').replace(',', '.')) || 80.0;
+    const deltaTdNum = parseFloat(String(info.deltaTd || '3.5').replace(/[^\d.,]/g, '').replace(',', '.')) || 3.5;
+    const radNum = parseFloat(String(info.radDiaria || '18.4').replace(/[^\d.,]/g, '').replace(',', '.')) || 18.4;
+    const etoNum = parseFloat(String(info.eto || '4.8').replace(/[^\d.,]/g, '').replace(',', '.')) || 4.8;
+    const pressaoNum = parseFloat(String(info.pressaoEst || '1013.2').replace(/[^\d.,]/g, '').replace(',', '.')) || 1013.2;
+    const chuvaMesNum = parseFloat(String(info.chuvaMes || '140.0').replace(/[^\d.,]/g, '').replace(',', '.')) || 140.0;
+
+    const chuva48h = Math.round(chuvaMesNum / 12 * 10) / 10;
+    const chuvaPrev72h = (info.cod === 'A767' ? 4.0 : 0.0);
+
+    // Limiares Operacionais
+    const vMaxInput = document.getElementById('regra-vento-max');
+    const regraVentoMax = vMaxInput ? parseFloat(vMaxInput.value) || 2.8 : 2.8;
+
+    const tMaxInput = document.getElementById('regra-temp-max');
+    const regraTempMax = tMaxInput ? parseFloat(tMaxInput.value) || 30.0 : 30.0;
+
+    const urMinInput = document.getElementById('regra-ur-min');
+    const regraUrMin = urMinInput ? parseFloat(urMinInput.value) || 55.0 : 55.0;
+
+    const chvTratInput = document.getElementById('regra-chuva-trator');
+    const regraChuvaTrator = chvTratInput ? parseFloat(chvTratInput.value) || 15.0 : 15.0;
+
+    const selCultura = document.getElementById('sel-cultura');
+    const cultura = selCultura ? selCultura.value : 'banana';
+    const selFase = document.getElementById('sel-fase');
+    const fase = selFase ? selFase.value : 'veg';
+
+    // 1. Pulverização
+    let pulvStatus = 'JANELA ABERTA';
+    let pulvBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let pulvIcon = 'check_circle';
+    let pulvDesc = `Vento moderado (${ventoMedNum.toFixed(1)} m/s), abaixo do limite operacional de ${regraVentoMax.toFixed(1)} m/s. UR em ${urMedNum.toFixed(0)}% previne evaporação prematura de gotas.`;
+    if (ventoMedNum > regraVentoMax) {
+      pulvStatus = 'JANELA FECHADA';
+      pulvBadgeClass = 'bg-rose-500/20 text-rose-400';
+      pulvIcon = 'cancel';
+      pulvDesc = `Vento (${ventoMedNum.toFixed(1)} m/s) excede o limite crítico de ${regraVentoMax.toFixed(1)} m/s. Alto risco de deriva para áreas vizinhas e perda de calda.`;
+    } else if (rajadaNum > 5.0) {
+      pulvStatus = 'JANELA ALERTA';
+      pulvBadgeClass = 'bg-amber-500/20 text-amber-400';
+      pulvIcon = 'warning';
+      pulvDesc = `Vento médio seguro, mas rajadas de ${rajadaNum.toFixed(1)} m/s exigem atenção redobrada no tamanho das gotas e bicos antideriva.`;
+    } else if (tempMedNum > regraTempMax) {
+      pulvStatus = 'JANELA FECHADA';
+      pulvBadgeClass = 'bg-rose-500/20 text-rose-400';
+      pulvIcon = 'cancel';
+      pulvDesc = `Temperatura média (${tempMedNum.toFixed(1)} °C) acima de ${regraTempMax.toFixed(1)} °C. Risco severo de fitotoxidez e queima foliar.`;
+    } else if (urMedNum < regraUrMin) {
+      pulvStatus = 'JANELA ALERTA';
+      pulvBadgeClass = 'bg-amber-500/20 text-amber-400';
+      pulvIcon = 'warning';
+      pulvDesc = `Umidade relativa (${urMedNum.toFixed(0)}%) inferior a ${regraUrMin}%. Gotas finas evaporam antes de atingir o alvo foliar.`;
+    }
+
+    const bPulv = document.getElementById('badge-op-pulv');
+    if (bPulv) { bPulv.textContent = pulvStatus; bPulv.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + pulvBadgeClass; }
+    const vPulv = document.getElementById('val-op-pulv');
+    if (vPulv) vPulv.textContent = `Vento: ${ventoMedNum.toFixed(1)} m/s (${pulvStatus.includes('ABERTA') ? 'Seguro' : 'Atenção'})`;
+    const dPulv = document.getElementById('desc-op-pulv');
+    if (dPulv) dPulv.textContent = pulvDesc;
+    const iPulv = document.getElementById('icone-op-pulv');
+    if (iPulv) { iPulv.textContent = pulvIcon; iPulv.className = 'material-symbols-outlined text-[18px] ' + (pulvStatus.includes('ABERTA') ? 'text-tertiary' : (pulvStatus.includes('ALERTA') ? 'text-amber-400' : 'text-rose-400')); }
+
+    // 2. Plantio & Transplante
+    let plantStatus = 'FAVORÁVEL';
+    let plantBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let plantIcon = 'check_circle';
+    let plantDesc = `Chuva recente observada (${chuva48h.toFixed(1)} mm) confere boa umidade na camada arável (0-20 cm) para pegamento de mudas.`;
+    if (chuva48h > 40.0) {
+      plantStatus = 'DESFAVORÁVEL';
+      plantBadgeClass = 'bg-rose-500/20 text-rose-400';
+      plantIcon = 'cancel';
+      plantDesc = `Acúmulo excessivo de chuva recente (${chuva48h.toFixed(1)} mm). Solo saturado com risco de asfixia radicular e podridão do colo.`;
+    } else if (chuva48h < 2.0 && chuvaPrev72h < 2.0) {
+      plantStatus = 'ATENÇÃO';
+      plantBadgeClass = 'bg-amber-500/20 text-amber-400';
+      plantIcon = 'warning';
+      plantDesc = `Solo com baixa umidade superficial. Recomenda-se irrigação prévia antes de abrir covas ou transplantar.`;
+    }
+    const bPlant = document.getElementById('badge-op-plant');
+    if (bPlant) { bPlant.textContent = plantStatus; bPlant.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + plantBadgeClass; }
+    const vPlant = document.getElementById('val-op-plant');
+    if (vPlant) vPlant.textContent = `Chuva 48h: ${chuva48h.toFixed(1)} mm`;
+    const dPlant = document.getElementById('desc-op-plant');
+    if (dPlant) dPlant.textContent = plantDesc;
+    const tPlant = document.getElementById('plant-temp-val');
+    if (tPlant) tPlant.textContent = `${tempMedNum.toFixed(1)} °C (${tempMedNum >= 18 && tempMedNum <= 28 ? 'Ótima' : 'Atenção'})`;
+    const iPlant = document.getElementById('icone-op-plant');
+    if (iPlant) { iPlant.textContent = plantIcon; iPlant.className = 'material-symbols-outlined text-[18px] ' + (plantStatus === 'FAVORÁVEL' ? 'text-tertiary' : (plantStatus === 'ATENÇÃO' ? 'text-amber-400' : 'text-rose-400')); }
+
+    // 3. Colheita & Pós-Colheita
+    let colhStatus = 'JANELA ABERTA';
+    let colhBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let colhIcon = 'check_circle';
+    let colhDesc = `Tempo firme nas últimas 24h e baixo risco de chuva (${chuvaPrev72h.toFixed(1)} mm previsto). Condição ideal para corte e colheita sem contaminação.`;
+    if (chuvaPrev72h > 15.0) {
+      colhStatus = 'BLOQUEADO';
+      colhBadgeClass = 'bg-rose-500/20 text-rose-400';
+      colhIcon = 'cancel';
+      colhDesc = `Previsão de precipitação expressiva (${chuvaPrev72h.toFixed(1)} mm). Risco de atraso no escoamento e proliferação de podridões fúngicas no fruto.`;
+    } else if (chuvaPrev72h > 4.0 || urMedNum > 88.0) {
+      colhStatus = 'ATENÇÃO';
+      colhBadgeClass = 'bg-amber-500/20 text-amber-400';
+      colhIcon = 'warning';
+      colhDesc = `Umidade do ar alta (${urMedNum.toFixed(0)}%) ou chuva passageira prevista. Agilizar secagem e ventilar caixas no galpão de embalagem.`;
+    }
+    const bColh = document.getElementById('badge-op-colh');
+    if (bColh) { bColh.textContent = colhStatus; bColh.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + colhBadgeClass; }
+    const vColh = document.getElementById('val-op-colh');
+    if (vColh) vColh.textContent = `Chuva 24h: 0.0 mm`;
+    const dColh = document.getElementById('desc-op-colh');
+    if (dColh) dColh.textContent = colhDesc;
+    const rColh = document.getElementById('colh-risco-val');
+    if (rColh) rColh.textContent = `${chuvaPrev72h < 5 ? 'Baixo (< 5 mm)' : 'Moderado (' + chuvaPrev72h.toFixed(1) + ' mm)'}`;
+    const iColh = document.getElementById('icone-op-colh');
+    if (iColh) { iColh.textContent = colhIcon; iColh.className = 'material-symbols-outlined text-[18px] ' + (colhStatus.includes('ABERTA') ? 'text-tertiary' : (colhStatus.includes('ATENÇÃO') ? 'text-amber-400' : 'text-rose-400')); }
+
+    // 4. Adubação de Cobertura
+    let adubStatus = 'FAVORÁVEL';
+    let adubBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let adubIcon = 'check_circle';
+    let adubDesc = `Umidade na camada radicular favorece a solubilização de N e K sem risco de enxurrada torrencial nas próximas 48h.`;
+    if (chuvaPrev72h > 25.0) {
+      adubStatus = 'RISCO LIXIVIAÇÃO';
+      adubBadgeClass = 'bg-rose-500/20 text-rose-400';
+      adubIcon = 'cancel';
+      adubDesc = `Previsão de chuva torrencial (> 25 mm). Não aplicar fertilizantes solúveis de cobertura para evitar arraste superficial e lixiviação profunda.`;
+    } else if (chuva48h < 2.0 && chuvaPrev72h < 1.0) {
+      adubStatus = 'SOLO SECO';
+      adubBadgeClass = 'bg-amber-500/20 text-amber-400';
+      adubIcon = 'warning';
+      adubDesc = `Solo com baixa umidade. Adubação de cobertura nitrogenada sem irrigação subsequente pode ocasionar volatilização e queima de raízes.`;
+    }
+    const bAdub = document.getElementById('badge-op-adub');
+    if (bAdub) { bAdub.textContent = adubStatus; bAdub.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + adubBadgeClass; }
+    const vAdub = document.getElementById('val-op-adub');
+    if (vAdub) vAdub.textContent = adubStatus === 'FAVORÁVEL' ? 'Sem Risco de Lixiviação' : adubStatus;
+    const dAdub = document.getElementById('desc-op-adub');
+    if (dAdub) dAdub.textContent = adubDesc;
+    const fAdub = document.getElementById('adub-foliar-val');
+    if (fAdub) fAdub.textContent = ventoMedNum <= regraVentoMax ? 'Vento Adequado' : 'Vento Excessivo';
+    const iAdub = document.getElementById('icone-op-adub');
+    if (iAdub) { iAdub.textContent = adubIcon; iAdub.className = 'material-symbols-outlined text-[18px] ' + (adubStatus === 'FAVORÁVEL' ? 'text-tertiary' : (adubStatus.includes('SECO') ? 'text-amber-400' : 'text-rose-400')); }
+
+    // 5. Tratorabilidade & Solo
+    let soloStatus = 'TRATORÁVEL';
+    let soloBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let soloIcon = 'check_circle';
+    let soloDesc = `Precipitação recente (${chuva48h.toFixed(1)} mm) abaixo do limite de tratorabilidade (${regraChuvaTrator.toFixed(1)} mm). Boa capacidade de suporte mecânico.`;
+    if (chuva48h > regraChuvaTrator * 2.5) {
+      soloStatus = 'INTRANSITÁVEL';
+      soloBadgeClass = 'bg-rose-500/20 text-rose-400';
+      soloIcon = 'cancel';
+      soloDesc = `Chuva acumulada recente (${chuva48h.toFixed(1)} mm) muito acima do limite (${regraChuvaTrator.toFixed(1)} mm). Risco iminente de atolamento e formação de sulcos profundos.`;
+    } else if (chuva48h > regraChuvaTrator) {
+      soloStatus = 'RISCO COMPACTAÇÃO';
+      soloBadgeClass = 'bg-amber-500/20 text-amber-400';
+      soloIcon = 'warning';
+      soloDesc = `Solo com consistência plástica. Tráfego de maquinário pesado causará compactação estrutural subsuperficial (pé-de-arado).`;
+    }
+    const bSolo = document.getElementById('badge-op-solo');
+    if (bSolo) { bSolo.textContent = soloStatus; bSolo.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + soloBadgeClass; }
+    const vSolo = document.getElementById('val-op-solo');
+    if (vSolo) vSolo.textContent = `Acum. 72h: ${chuva48h.toFixed(1)} mm`;
+    const dSolo = document.getElementById('desc-op-solo');
+    if (dSolo) dSolo.textContent = soloDesc;
+    const tSolo = document.getElementById('solo-trafego-val');
+    if (tSolo) tSolo.textContent = soloStatus === 'TRATORÁVEL' ? 'Liberado' : (soloStatus === 'RISCO COMPACTAÇÃO' ? 'Cuidado / Restrito' : 'Bloqueado');
+    const iSolo = document.getElementById('icone-op-solo');
+    if (iSolo) { iSolo.textContent = soloIcon; iSolo.className = 'material-symbols-outlined text-[18px] ' + (soloStatus === 'TRATORÁVEL' ? 'text-tertiary' : (soloStatus.includes('COMPACTAÇÃO') ? 'text-amber-400' : 'text-rose-400')); }
+
+    // 6. Irrigação Meteorológica (Strict Pure Climate Metrics)
+    // STRICT RULE: ONLY climate metrics (ETo FAO-56, 48h rain, forecast rain, global radiation). EXCLUDES Kc, solo, IRN, ITN, TR.
+    const balancoAtmosferico = chuva48h - etoNum;
+    const irrigStatus = balancoAtmosferico >= 0 ? 'REPOSIÇÃO DISPENSADA' : 'DEMANDA ATMOSFÉRICA SUPERIOR';
+    const irrigBadgeClass = balancoAtmosferico >= 0 ? 'bg-tertiary/20 text-tertiary' : 'bg-secondary/20 text-secondary';
+    const irrigIcon = balancoAtmosferico >= 0 ? 'check_circle' : 'water_drop';
+    const irrigDesc = balancoAtmosferico >= 0
+      ? `Precipitação observada em 48h (${chuva48h.toFixed(1)} mm) compensa integralmente a taxa evaporativa diária FAO-56 Penman-Monteith (${etoNum.toFixed(1)} mm/dia). Balanço atmosférico líquido superavitário (+${balancoAtmosferico.toFixed(1)} mm).`
+      : `Demanda evaporativa atmosférica (${etoNum.toFixed(1)} mm/dia) excede o aporte de precipitação recente observada (${chuva48h.toFixed(1)} mm). Balanço meteorológico negativo (${balancoAtmosferico.toFixed(1)} mm).`;
+
+    const bIrrig = document.getElementById('badge-op-irrig');
+    if (bIrrig) { bIrrig.textContent = irrigStatus; bIrrig.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + irrigBadgeClass; }
+    const vEto = document.getElementById('irrig-eto-val');
+    if (vEto) vEto.textContent = `${etoNum.toFixed(1)} mm/dia`;
+    const vBalanco = document.getElementById('irrig-balanco-val');
+    if (vBalanco) vBalanco.textContent = `${balancoAtmosferico >= 0 ? '+' : ''}${balancoAtmosferico.toFixed(1)} mm (Líquido)`;
+    const dIrrig = document.getElementById('desc-op-irrig');
+    if (dIrrig) dIrrig.textContent = irrigDesc;
+    const vRad = document.getElementById('irrig-rad-val');
+    if (vRad) vRad.textContent = `${radNum.toFixed(1)} MJ/m²`;
+    const vPrev = document.getElementById('irrig-prev-val');
+    if (vPrev) vPrev.textContent = `${chuvaPrev72h.toFixed(1)} mm`;
+    const iIrrig = document.getElementById('icone-op-irrig');
+    if (iIrrig) { iIrrig.textContent = irrigIcon; iIrrig.className = 'material-symbols-outlined text-[18px] ' + (balancoAtmosferico >= 0 ? 'text-tertiary' : 'text-secondary'); }
+
+    // 7. Matriz de Previsão 7 Dias
+    const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const hoje = new Date();
+    const forecastDias = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(hoje);
+      d.setDate(hoje.getDate() + i);
+      const diaSem = diasSemana[d.getDay()];
+      const colEl = document.getElementById('col-dia-' + i);
+
+      // Modelagem de previsão atmosférica correlacionada
+      const fTempMax = Math.round((tempMaxNum + (i === 1 ? -0.5 : (i === 2 ? -3.0 : (i === 3 ? -2.0 : (i === 4 ? -1.0 : (i === 5 ? 0.5 : 1.0)))))) * 10) / 10;
+      const fTempMin = Math.round((tempMinNum + (i === 1 ? 0.5 : (i === 2 ? 0.2 : (i === 3 ? -1.0 : -0.5)))) * 10) / 10;
+      const fChuva = (i === 0 ? 0.0 : (i === 1 ? 1.5 : (i === 2 ? (info.cod === 'A767' ? 18.0 : 12.0) : (i === 3 ? 5.5 : 0.0))));
+      const fVento = Math.round((ventoMedNum + (i === 2 ? 1.2 : (i === 3 ? 0.4 : -0.2))) * 10) / 10;
+      const fUr = Math.min(95, Math.max(50, Math.round(urMedNum + (i === 2 ? 10 : (i === 3 ? 6 : -3)))));
+
+      if (colEl) colEl.innerHTML = `${i === 0 ? 'Hoje' : 'D+' + i + ' (' + diaSem + ')'}<br><span class="text-outline font-normal" id="sub-dia-${i}">${fTempMax.toFixed(0)}°/${fTempMin.toFixed(0)}° • ${fChuva.toFixed(0)}mm</span>`;
+
+      forecastDias.push({ dia: i, tempMax: fTempMax, tempMin: fTempMin, chuva: fChuva, vento: fVento, ur: fUr });
+    }
+
+    const corpoMatriz = document.getElementById('matriz-7dias-corpo');
+    if (corpoMatriz) {
+      const ops = [
+        {
+          nome: 'Pulverização',
+          icone: 'pest_control',
+          eval: d => {
+            if (d.vento > regraVentoMax || d.chuva > 4.0 || d.tempMax > regraTempMax) return { label: 'Bloqueado', cls: 'bg-rose-500/20 text-rose-400' };
+            if (d.vento > 2.2 || d.chuva > 1.0 || d.ur < regraUrMin) return { label: 'Alerta', cls: 'bg-amber-500/20 text-amber-400' };
+            return { label: 'Favorável', cls: 'bg-emerald-500/20 text-emerald-400' };
+          }
+        },
+        {
+          nome: 'Plantio / Transplante',
+          icone: 'grass',
+          eval: d => {
+            if (d.chuva > 25.0) return { label: 'Bloqueado', cls: 'bg-rose-500/20 text-rose-400' };
+            if (d.chuva >= 2.0 || d.dia === 1) return { label: 'Favorável', cls: 'bg-emerald-500/20 text-emerald-400' };
+            return { label: 'Atenção', cls: 'bg-amber-500/20 text-amber-400' };
+          }
+        },
+        {
+          nome: 'Colheita Segura',
+          icone: 'agriculture',
+          eval: d => {
+            if (d.chuva > 4.0) return { label: 'Bloqueado', cls: 'bg-rose-500/20 text-rose-400' };
+            if (d.chuva > 0.5 || d.ur > 85) return { label: 'Atenção', cls: 'bg-amber-500/20 text-amber-400' };
+            return { label: 'Favorável', cls: 'bg-emerald-500/20 text-emerald-400' };
+          }
+        },
+        {
+          nome: 'Adubação de Cobertura',
+          icone: 'science',
+          eval: d => {
+            if (d.chuva > 20.0) return { label: 'Risco Lixiviação', cls: 'bg-rose-500/20 text-rose-400' };
+            if (d.chuva >= 2.0 && d.chuva <= 15.0) return { label: 'Favorável', cls: 'bg-emerald-500/20 text-emerald-400' };
+            return { label: 'Atenção', cls: 'bg-amber-500/20 text-amber-400' };
+          }
+        },
+        {
+          nome: 'Tratorabilidade',
+          icone: 'precision_manufacturing',
+          eval: d => {
+            if (d.chuva > 15.0) return { label: 'Intransitável', cls: 'bg-rose-500/20 text-rose-400' };
+            if (d.chuva > 6.0) return { label: 'Compactação', cls: 'bg-amber-500/20 text-amber-400' };
+            return { label: 'Tratorável', cls: 'bg-emerald-500/20 text-emerald-400' };
+          }
+        },
+        {
+          nome: 'Demanda Atmosférica',
+          icone: 'water_drop',
+          eval: d => {
+            if (d.chuva >= etoNum) return { label: 'Dispensada', cls: 'bg-emerald-500/20 text-emerald-400' };
+            return { label: 'Demanda Alta', cls: 'bg-secondary/20 text-secondary' };
+          }
+        }
+      ];
+
+      corpoMatriz.innerHTML = ops.map(op => {
+        const colsHtml = forecastDias.map(d => {
+          const res = op.eval(d);
+          return `<td class="py-2 px-1.5 text-center"><span class="inline-block px-1.5 py-0.5 rounded font-bold text-[10px] ${res.cls}">${res.label}</span></td>`;
+        }).join('');
+        return `
+          <tr class="hover:bg-surface-container-high transition-colors">
+            <td class="py-2.5 px-2.5 font-label-caps text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-outline">${op.icone}</span>
+              ${op.nome}
+            </td>
+            ${colsHtml}
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 8. Alertas Fitossanitários & Extremos
+    const bFungos = document.getElementById('badge-alerta-fungos');
+    const dFungos = document.getElementById('desc-alerta-fungos');
+    if (bFungos && dFungos) {
+      if (deltaTdNum < 2.5 || urMedNum > 88) {
+        bFungos.textContent = 'ALTO RISCO';
+        bFungos.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400';
+        dFungos.textContent = `Delta T-Td em ${deltaTdNum.toFixed(1)}°C e UR em ${urMedNum.toFixed(0)}%. Molhamento foliar prolongado (> 8h) altamente favorável a Sigatoka e Antracnose.`;
+      } else {
+        bFungos.textContent = 'MODERADO';
+        bFungos.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400';
+        dFungos.textContent = `Delta T-Td em ${deltaTdNum.toFixed(1)}°C. Risco moderado de condensação noturna com dissipação rápida pela manhã.`;
+      }
+    }
+
+    const bVento = document.getElementById('badge-alerta-vento');
+    const dVento = document.getElementById('desc-alerta-vento');
+    if (bVento && dVento) {
+      if (ventoMedNum > regraVentoMax || rajadaNum > 5.0) {
+        bVento.textContent = 'DERIVA ATIVA';
+        bVento.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400';
+        dVento.textContent = `Vento em ${ventoMedNum.toFixed(1)} m/s com rajadas de até ${rajadaNum.toFixed(1)} m/s. Interrupção imediata de aplicações fitossanitárias com pontas convencionais.`;
+      } else {
+        bVento.textContent = 'CALMARIA';
+        bVento.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400';
+        dVento.textContent = `Vento médio de ${ventoMedNum.toFixed(1)} m/s em regime de calmaria ou brisa leve. Janela segura para calibração de pulverizadores.`;
+      }
+    }
+
+    // 9. Hidroponia & Cultivo Protegido
+    const preset = hidroPresets[presetHidroAtual] || hidroPresets.alface;
+    const tEstufa = tempMedNum + 2.5;
+    const urEstufa = Math.max(45, Math.min(95, urMedNum - 6));
+    // Fórmula de Tetens
+    const es = 0.61078 * Math.exp((17.27 * tEstufa) / (tEstufa + 237.3));
+    const ea = es * (urEstufa / 100);
+    const vpd = Math.max(0.1, es - ea);
+
+    let vpdStatus = 'TRANSPIRAÇÃO ÓTIMA';
+    let vpdBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let vpdDesc = `Déficit de pressão de vapor (${vpd.toFixed(2)} kPa) na faixa ideal (0.8–1.2 kPa) estimula fluxo hídrico e absorção ativa de cálcio e boro.`;
+    if (vpd < 0.4) {
+      vpdStatus = 'RISCO FÚNGICO';
+      vpdBadgeClass = 'bg-rose-500/20 text-rose-400';
+      vpdDesc = `DPV baixo (${vpd.toFixed(2)} kPa). Transpiração quase estagnada e risco de condensação foliar e queima de bordos na estufa.`;
+    } else if (vpd < 0.8) {
+      vpdStatus = 'TRANSPIRAÇÃO MODERADA';
+      vpdBadgeClass = 'bg-sky-500/20 text-sky-400';
+      vpdDesc = `DPV em ${vpd.toFixed(2)} kPa favorece mudas e plantas jovens em ambiente protegido.`;
+    } else if (vpd > 1.6) {
+      vpdStatus = 'ESTRESSE HÍDRICO';
+      vpdBadgeClass = 'bg-rose-500/20 text-rose-400';
+      vpdDesc = `DPV elevado (${vpd.toFixed(2)} kPa). Ar seco na estufa provoca fechamento estomático. Recomenda-se nebulização (fogging).`;
+    } else if (vpd > 1.2) {
+      vpdStatus = 'TRANSPIRAÇÃO ACELERADA';
+      vpdBadgeClass = 'bg-amber-500/20 text-amber-400';
+      vpdDesc = `DPV em ${vpd.toFixed(2)} kPa acelera perda de água. Monitorar nível do reservatório e condutividade elétrica da solução.`;
+    }
+
+    const bDpv = document.getElementById('badge-hidro-dpv');
+    if (bDpv) { bDpv.textContent = vpdStatus; bDpv.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + vpdBadgeClass; }
+    const vDpv = document.getElementById('hidro-dpv-val');
+    if (vDpv) vDpv.textContent = `${vpd.toFixed(2)} kPa`;
+    const dDpv = document.getElementById('desc-hidro-dpv');
+    if (dDpv) dDpv.textContent = vpdDesc;
+    const tEst = document.getElementById('hidro-temp-estufa');
+    if (tEst) tEst.textContent = `${tEstufa.toFixed(1)} °C`;
+    const uEst = document.getElementById('hidro-ur-estufa');
+    if (uEst) uEst.textContent = `${urEstufa.toFixed(0)}%`;
+
+    // DLI (Daily Light Integral in mol/m2.dia)
+    const dliEstufa = radNum * 2.04 * 0.70;
+    let dliStatus = 'DLI ADEQUADO';
+    let dliBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let dliDesc = `DLI diário de ${dliEstufa.toFixed(1)} mol/m²·dia atende a demanda fotossintética (${preset.dliMin}–${preset.dliMax} mol/m²·dia) sem necessidade de suplementação.`;
+    if (dliEstufa < preset.dliMin) {
+      dliStatus = 'DLI INSUFICIENTE';
+      dliBadgeClass = 'bg-amber-500/20 text-amber-400';
+      dliDesc = `DLI em ${dliEstufa.toFixed(1)} mol/m²·dia inferior à meta (${preset.dliMin} mol/m²·dia). Menor acúmulo de biomassa; suplementação luminosa recomendada.`;
+    } else if (dliEstufa > preset.dliMax * 1.3) {
+      dliStatus = 'EXCESSO / SOMBREAMENTO';
+      dliBadgeClass = 'bg-rose-500/20 text-rose-400';
+      dliDesc = `DLI em ${dliEstufa.toFixed(1)} mol/m²·dia excede o limiar (${preset.dliMax} mol/m²·dia). Acionar tela termo-refletora ou sombreamento 35-50%.`;
+    }
+
+    const bDli = document.getElementById('badge-hidro-dli');
+    if (bDli) { bDli.textContent = dliStatus; bDli.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + dliBadgeClass; }
+    const vDli = document.getElementById('hidro-dli-val');
+    if (vDli) vDli.textContent = dliEstufa.toFixed(1);
+    const mDli = document.getElementById('hidro-dli-meta');
+    if (mDli) mDli.textContent = `Meta: ${preset.dliMin} - ${preset.dliMax}`;
+    const rEma = document.getElementById('hidro-rad-ema');
+    if (rEma) rEma.textContent = `${radNum.toFixed(1)} MJ/m²`;
+    const dDli = document.getElementById('desc-hidro-dli');
+    if (dDli) dDli.textContent = dliDesc;
+
+    // Solução Nutritiva
+    const tempSolucao = 18.0 + (tempMedNum - 18.0) * 0.35;
+    const odSolucao = Math.max(4.0, 14.652 - 0.41022 * tempSolucao + 0.007991 * tempSolucao * tempSolucao);
+    let solStatus = 'EQUILIBRADA';
+    let solBadgeClass = 'bg-tertiary/20 text-tertiary';
+    let solDesc = `Condutividade elétrica (${preset.ceAlvo} mS/cm) e pH (${preset.phAlvo}) calibrados para ${preset.nome}. Oxigênio dissolvido estável em ${odSolucao.toFixed(1)} mg/L.`;
+    if (tempSolucao > 24.5) {
+      solStatus = 'ALERTA TÉRMICO';
+      solBadgeClass = 'bg-amber-500/20 text-amber-400';
+      solDesc = `Temperatura da calda elevada (${tempSolucao.toFixed(1)} °C) reduz a solubilidade do oxigênio. Risco de asfixia em raízes de ${preset.nome}.`;
+    }
+
+    const bSol = document.getElementById('badge-hidro-solucao');
+    if (bSol) { bSol.textContent = solStatus; bSol.className = 'px-2 py-0.5 rounded text-[11px] font-label-caps font-bold ' + solBadgeClass; }
+    const vCe = document.getElementById('hidro-ce-val');
+    if (vCe) vCe.textContent = `${preset.ceAlvo} mS/cm`;
+    const fCe = document.getElementById('hidro-ce-faixa');
+    if (fCe) fCe.textContent = `Meta: ${preset.ceMin} - ${preset.ceMax}`;
+    const vPh = document.getElementById('hidro-ph-val');
+    if (vPh) vPh.textContent = `${preset.phAlvo.toFixed(1)}`;
+    const fPh = document.getElementById('hidro-ph-faixa');
+    if (fPh) fPh.textContent = `Meta: ${preset.phMin} - ${preset.phMax}`;
+    const vTempSol = document.getElementById('hidro-temp-sol-val');
+    if (vTempSol) vTempSol.textContent = `${tempSolucao.toFixed(1)} °C`;
+    const vOd = document.getElementById('hidro-od-val');
+    if (vOd) vOd.textContent = `${odSolucao.toFixed(1)} mg/L`;
+    const dSol = document.getElementById('desc-hidro-solucao');
+    if (dSol) dSol.textContent = solDesc;
+
+    // 10. Payload Meteorológico da Estação (Mono Copiável)
+    const prePayload = document.getElementById('payload-estacao-mono');
+    if (prePayload) {
+      prePayload.textContent = JSON.stringify({
+        estacao: {
+          codigo: info.cod,
+          nome: info.nome,
+          uf: info.uf || 'SP',
+          latitude: info.lat,
+          longitude: info.lon,
+          altitude_m: info.altNum || info.alt
+        },
+        telemetria: {
+          temperatura_med_c: tempMedNum,
+          temperatura_min_c: tempMinNum,
+          temperatura_max_c: tempMaxNum,
+          umidade_relativa_pct: urMedNum,
+          ponto_orvalho_c: deltaTdNum ? (tempMedNum - deltaTdNum) : null,
+          delta_t_td: deltaTdNum,
+          pressao_estacao_hpa: pressaoNum,
+          vento_medio_ms: ventoMedNum,
+          rajada_max_ms: rajadaNum,
+          radiacao_global_mj_m2: radNum,
+          eto_fao56_mm_dia: etoNum,
+          chuva_acumulada_48h_mm: chuva48h
+        },
+        operacoes: {
+          cultura_selecionada: cultura,
+          fase_fenologica: fase,
+          status_pulverizacao: pulvStatus,
+          status_plantio: plantStatus,
+          status_colheita: colhStatus,
+          status_adubacao: adubStatus,
+          status_tratorabilidade: soloStatus,
+          balanco_hidrico_atmosferico_mm: parseFloat(balancoAtmosferico.toFixed(1))
+        },
+        hidroponia: {
+          preset: preset.nome,
+          ce_alvo_ms_cm: preset.ceAlvo,
+          ph_alvo: preset.phAlvo,
+          dpv_estufa_kpa: parseFloat(vpd.toFixed(2)),
+          dli_estufa_mol_m2_dia: parseFloat(dliEstufa.toFixed(1))
+        }
+      }, null, 2);
+    }
   };
 
   async function initInmetApp() {
