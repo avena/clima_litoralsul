@@ -24,10 +24,15 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from fontes import ciiagro
+from fontes import ciiagro, inmet, nasa_power
 from municipios import todos
 
 DB = Path(__file__).with_name("dados") / "clima.sqlite"
+MODULOS_FONTES = {
+    "ciiagro": ciiagro,
+    "inmet": inmet,
+    "nasa_power": nasa_power,
+}
 
 ESQUEMA = """
 CREATE TABLE IF NOT EXISTS municipio(
@@ -42,7 +47,8 @@ CREATE TABLE IF NOT EXISTS ponto(
     municipio_id INTEGER REFERENCES municipio(id),
     lat REAL, lon REAL,
     inicio_auto TEXT,
-    primeiro_fato TEXT
+    primeiro_fato TEXT,
+    tipo TEXT DEFAULT 'estacao'
 );
 CREATE TABLE IF NOT EXISTS fato(
     ponto_id TEXT NOT NULL REFERENCES ponto(id),
@@ -80,22 +86,33 @@ def abrir(caminho: Path = DB) -> sqlite3.Connection:
     if "microrregiao" in colunas and "regiao" not in colunas:
         conn.execute("ALTER TABLE municipio RENAME COLUMN microrregiao TO regiao")
         conn.commit()
+
+    colunas_ponto = {r["name"] for r in conn.execute("PRAGMA table_info(ponto)")}
+    if "tipo" not in colunas_ponto:
+        conn.execute("ALTER TABLE ponto ADD COLUMN tipo TEXT DEFAULT 'estacao'")
+        conn.commit()
+
+    tem_legado = conn.execute("SELECT 1 FROM ponto WHERE id NOT LIKE '%:%' LIMIT 1").fetchone()
+    if tem_legado:
+        conn.execute("PRAGMA foreign_keys = OFF")
+        conn.execute("BEGIN TRANSACTION")
+        conn.execute("UPDATE ponto SET id = 'ciiagro:' || id WHERE id NOT LIKE '%:%'")
+        conn.execute("UPDATE fato SET ponto_id = 'ciiagro:' || ponto_id WHERE ponto_id NOT LIKE '%:%'")
+        conn.execute("COMMIT")
+        conn.execute("PRAGMA foreign_keys = ON")
+
     return conn
 
 
-def catalogo(conn: sqlite3.Connection) -> None:
-    """Sincroniza `municipio` e `ponto` com o CSV local e com o CIIAGRO.
-
-    Faz três requisições ao CIIAGRO (calendário, códigos, mapa). Os municípios
-    vêm de `municipios.csv`, que é a lista canônica: estação cujo nome não casa
-    com nenhum deles entra com `municipio_id = NULL` e continua utilizável como
-    referência.
+def catalogo(conn: sqlite3.Connection, fonte: str = "todas") -> None:
+    """Sincroniza `municipio` e `ponto` com o CSV local e com as fontes configuradas.
 
     Args:
         conn: conexão aberta por `abrir`.
+        fonte: 'todas', 'ciiagro', 'inmet' ou 'nasa_power'.
 
     Efeitos:
-        UPSERT em `municipio` (por nome) e em `ponto` (por código da estação).
+        UPSERT em `municipio` (por nome) e em `ponto` (por id prefixado).
         Não toca em `fato`; recolher o catálogo não apaga série.
     """
     conn.executemany(
@@ -104,21 +121,28 @@ def catalogo(conn: sqlite3.Connection) -> None:
         [(m["nome"], m["regiao"]) for m in todos()],
     )
     ids = {r["nome"]: r["id"] for r in conn.execute("SELECT id, nome FROM municipio")}
-    pontos = ciiagro.pontos()
-    for p in pontos:
-        conn.execute(
-            "INSERT INTO ponto(id, fonte, nome, municipio_id, lat, lon, inicio_auto) "
-            "VALUES(?, ?, ?, ?, ?, ?, ?) "
-            "ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, "
-            "municipio_id = excluded.municipio_id, lat = excluded.lat, "
-            "lon = excluded.lon, inicio_auto = excluded.inicio_auto",
-            (p["id"], ciiagro.FONTE, p["nome"],
-             ids.get(p["municipio"]), p["lat"], p["lon"], p["inicio_auto"]),
-        )
+    modulos = [mod for k, mod in MODULOS_FONTES.items() if fonte in ("todas", k)]
+
+    total_pontos = 0
+    total_dentro = 0
+    for mod in modulos:
+        pontos = mod.pontos()
+        for p in pontos:
+            conn.execute(
+                "INSERT INTO ponto(id, fonte, nome, municipio_id, lat, lon, inicio_auto, tipo) "
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?) "
+                "ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, "
+                "municipio_id = excluded.municipio_id, lat = excluded.lat, "
+                "lon = excluded.lon, inicio_auto = excluded.inicio_auto, tipo = excluded.tipo",
+                (p["id"], mod.FONTE, p["nome"],
+                 ids.get(p["municipio"]), p["lat"], p["lon"], p["inicio_auto"], p.get("tipo", "estacao")),
+            )
+        total_pontos += len(pontos)
+        total_dentro += sum(p["municipio"] is not None for p in pontos)
+
     conn.commit()
-    dentro = sum(p["municipio"] is not None for p in pontos)
-    print(f"{len(ids)} municípios, {len(pontos)} estações "
-          f"({dentro} dentro, {len(pontos) - dentro} fora do escopo)")
+    print(f"{len(ids)} municípios, {total_pontos} pontos "
+          f"({total_dentro} dentro, {total_pontos - total_dentro} fora do escopo)")
 
 
 def substituir_granularidade(conn: sqlite3.Connection, pontos_meses: set[tuple[str, str]],
@@ -153,29 +177,20 @@ def atualizar_primeiro_fato(conn: sqlite3.Connection) -> None:
         "(SELECT MIN(f.data) FROM fato f WHERE f.ponto_id = ponto.id)")
 
 
-def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> None:
-    """Baixa um intervalo do CIIAGRO e grava em `fato`.
-
-    Uma requisição por período (não por estação): `diario/cdiaria` devolve
-    todas as estações de uma data e `mensal/cmensal` todas de um mês.
+def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool, fonte: str = "todas") -> None:
+    """Baixa um intervalo das fontes climáticas e grava em `fato`.
 
     Args:
         conn: conexão aberta por `abrir`.
         desde: `AAAA-MM` (mensal) ou `AAAA-MM-DD` (diário), inclusivo.
         ate: mesmo formato de `desde`, inclusivo.
-        diario: usa `cdiaria` (1 req/dia) em vez de `cmensal` (1 req/mês).
-            O diário custa ~25x mais requisições e só compensa quando a
-            análise precisa de veranico ou dias secos.
+        diario: usa observações diárias em vez de mensais.
+        fonte: 'todas', 'ciiagro', 'inmet' ou 'nasa_power'.
 
     Efeitos:
         UPSERT em `fato` com `COALESCE` (valor novo ausente não apaga o antigo),
         remoção da granularidade oposta para cada mês coletado (ver
         `substituir_granularidade`) e atualização de `ponto.primeiro_fato`.
-
-    Nota:
-        Estação que não está no catálogo é ignorada com aviso — rode `catalogo`
-        antes. Intervalo sem nenhum dado imprime erro em stderr: costuma ser
-        data inválida, não seca.
     """
     por_nome = {r["nome"]: r["id"] for r in conn.execute("SELECT id, nome FROM ponto")}
     sql = ("INSERT INTO fato(ponto_id, data, " + ", ".join(CAMPOS) + ") "
@@ -183,32 +198,32 @@ def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool) -> Non
            "ON CONFLICT(ponto_id, data) DO UPDATE SET "
            + ", ".join(f"{c} = COALESCE(excluded.{c}, {c})" for c in CAMPOS))
 
+    modulos = [mod for k, mod in MODULOS_FONTES.items() if fonte in ("todas", k)]
     lote: list[tuple] = []
     ignorados: set[str] = set()
-    vazio = 0
-    for f in ciiagro.fatos(desde, ate, diario=diario):
-        ponto = por_nome.get(f["nome"])
-        if ponto is None:
-            ignorados.add(f["nome"])
-            continue
-        lote.append((ponto, f["data"], *(f[c] for c in CAMPOS)))
+
+    for mod in modulos:
+        for f in mod.fatos(desde, ate, diario=diario):
+            ponto = f.get("ponto_id") or por_nome.get(f["nome"])
+            if ponto is None:
+                ignorados.add(f"{mod.FONTE}:{f['nome']}")
+                continue
+            lote.append((ponto, f["data"], *(f[c] for c in CAMPOS)))
+
     if not lote:
-        # Um período sem nenhuma estação é sinal de data inválida, não de seca.
-        vazio = 1
+        print("NENHUM dado nesse período — confira o intervalo e parâmetros", file=sys.stderr)
+        return
 
     # Invariante: para cada (ponto, mês) existe OU uma linha mensal OU os dias.
-    # Sem isso, um SUM por mês somaria o total do mês com os dias do mesmo mês.
     substituir_granularidade(conn, {(p, d[:7]) for p, d, *_ in lote}, diario)
     conn.executemany(sql, lote)
     atualizar_primeiro_fato(conn)
     conn.commit()
     unidade = "dias" if diario else "meses"
-    print(f"{len(lote)} linhas em {len({p for p, *_ in lote})} estações "
-          f"({desde} a {ate}, {unidade})")
+    print(f"{len(lote)} linhas em {len({p for p, *_ in lote})} pontos "
+          f"({desde} → {ate}, {unidade})")
     if ignorados:
         print("fora do catálogo (rode `catalogo`): " + ", ".join(sorted(ignorados)))
-    if vazio:
-        print("NENHUM dado nesse período — confira o intervalo", file=sys.stderr)
 
 
 def auditar(conn: sqlite3.Connection) -> None:
@@ -221,15 +236,15 @@ def auditar(conn: sqlite3.Connection) -> None:
         conn: conexão aberta por `abrir`.
 
     Alertas emitidos:
-        - `dado antes do início`: `primeiro_fato` anterior a `inicio_auto`
-          (o site serve série antes de a estação existir).
-        - `início suspeito (site)`: `inicio_auto` antes de 1970 (epoch do site).
-        - `umidade toda 0 (ausente)`: todas as linhas com `urmed = 0`, que no
-          CIIAGRO significa sensor ausente, não 0 %.
-        - `chuva toda 0`: possível estação seca ou coluna quebrada.
+    - `dado antes do início`: `primeiro_fato` anterior a `inicio_auto`
+      (o site serve série antes de a estação existir).
+    - `início suspeito (site)`: `inicio_auto` antes de 1970 (epoch do site).
+    - `umidade toda 0 (ausente)`: todas as linhas com `urmed = 0`, que no
+      CIIAGRO significa sensor ausente, não 0 %.
+    - `chuva toda 0`: possível estação seca ou coluna quebrada.
     """
     print(f"{'estação':<22}{'município':<18}{'início':<12}{'1º fato':<10}"
-          f"{'linhas':>7}  alertas")
+          f"{'linhas':>7} alertas")
     print("-" * 96)
     for r in conn.execute("""
         SELECT p.nome, COALESCE(m.nome, '-') AS municipio, p.inicio_auto, p.primeiro_fato,
@@ -252,7 +267,32 @@ def auditar(conn: sqlite3.Connection) -> None:
         if r["n"] and r["chuva_zero"] == r["n"]:
             alertas.append("chuva toda 0")
         print(f"{r['nome']:<22}{r['municipio']:<18}{r['inicio_auto'] or '-':<12}"
-              f"{r['primeiro_fato'] or '-':<10}{r['n']:>7}  {'; '.join(alertas)}")
+              f"{r['primeiro_fato'] or '-':<10}{r['n']:>7} {'; '.join(alertas)}")
+
+    # Auditoria cruzada entre estações sobrepostas (CIIAGRO e INMET)
+    divergencias = conn.execute("""
+        SELECT f1.data, p1.nome AS nome1, p2.nome AS nome2,
+               f1.chuva AS ch1, f2.chuva AS ch2,
+               f1.tmed AS t1, f2.tmed AS t2
+        FROM fato f1
+        JOIN ponto p1 ON p1.id = f1.ponto_id AND p1.fonte = 'ciiagro'
+        JOIN fato f2 ON f2.data = f1.data AND length(f1.data) = 7
+        JOIN ponto p2 ON p2.id = f2.ponto_id AND p2.fonte = 'inmet'
+        WHERE p1.municipio_id = p2.municipio_id
+          AND (
+            (f1.chuva IS NOT NULL AND f2.chuva IS NOT NULL
+             AND abs(f1.chuva - f2.chuva) > 0.25 * max(f1.chuva, f2.chuva)
+             AND max(f1.chuva, f2.chuva) > 50)
+            OR (f1.tmed IS NOT NULL AND f2.tmed IS NOT NULL AND abs(f1.tmed - f2.tmed) > 2.0)
+          )
+        ORDER BY f1.data
+    """).fetchall()
+    if divergencias:
+        print("\nAuditoria cruzada CIIAGRO vs INMET (meses com divergência > 25% chuva ou > 2°C temp):")
+        for d in divergencias[:10]:
+            print(f"  {d['data']} {d['nome1']} vs {d['nome2']}: chuva {d['ch1']} vs {d['ch2']} mm, temp {d['t1']} vs {d['t2']} °C")
+        if len(divergencias) > 10:
+            print(f"  ... e mais {len(divergencias) - 10} meses divergentes.")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -268,19 +308,21 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--db", type=Path, default=DB)
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("catalogo", help="baixa municípios e estações (3 requisições)")
-    c = sub.add_parser("coletar", help="baixa a série do CIIAGRO")
+    cat = sub.add_parser("catalogo", help="baixa municípios e catálogo de pontos")
+    cat.add_argument("--fonte", choices=["todas", "ciiagro", "inmet", "nasa_power"], default="todas")
+    c = sub.add_parser("coletar", help="baixa série das fontes climáticas")
     c.add_argument("--desde", required=True, help="AAAA-MM ou AAAA-MM-DD")
     c.add_argument("--ate", required=True, help="AAAA-MM ou AAAA-MM-DD")
     c.add_argument("--diario", action="store_true", help="dia em vez de mês")
+    c.add_argument("--fonte", choices=["todas", "ciiagro", "inmet", "nasa_power"], default="todas")
     sub.add_parser("auditar", help="cobertura e valores suspeitos")
 
     a = p.parse_args(argv)
     conn = abrir(a.db)
     if a.cmd == "catalogo":
-        catalogo(conn)
+        catalogo(conn, fonte=a.fonte)
     elif a.cmd == "coletar":
-        coletar(conn, a.desde, a.ate, a.diario)
+        coletar(conn, a.desde, a.ate, a.diario, fonte=a.fonte)
     else:
         auditar(conn)
     return 0

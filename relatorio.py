@@ -65,7 +65,8 @@ def slug(nome: str) -> str:
         Sem acento para o link poder ser digitado e colado sem `%C3%A7`.
     """
     plano = unicodedata.normalize("NFKD", nome).encode("ascii", "ignore").decode()
-    return "-".join(plano.lower().replace("-", " ").split())
+    limpo = "".join(c if c.isalnum() or c.isspace() else " " for c in plano)
+    return "-".join(limpo.lower().split())
 
 
 def _ok(valor: float | None, lo: float, hi: float) -> bool:
@@ -527,8 +528,12 @@ def _estacao(conn: sqlite3.Connection, p: sqlite3.Row) -> dict | None:
     validada = not (p["primeiro_fato"] and p["inicio_auto"]
                     and p["primeiro_fato"][:7] < p["inicio_auto"][:7])
     total = sum(ag["descartes"].values())
+    fonte = p["fonte"] if "fonte" in p.keys() else "ciiagro"
+    tipo = p["tipo"] if "tipo" in p.keys() and p["tipo"] else "estacao"
     campos = {
         "id": p["id"],
+        "fonte": fonte,
+        "tipo": tipo,
         "nome": p["nome"],
         "inicio": ag["inicio"],
         "fim": ag["fim"],
@@ -537,7 +542,7 @@ def _estacao(conn: sqlite3.Connection, p: sqlite3.Row) -> dict | None:
         "normal": normal(ag, validada),
         "rotulo": rotulo(ag, validada),
         "aviso": (None if validada else
-                  f"Série começa antes do início declarado pelo CIIAGRO "
+                  f"Série começa antes do início declarado pelo {fonte.upper()} "
                   f"({p['inicio_auto']}). Pode ser registro histórico convencional "
                   f"ou reconstrução — não validado, e por isso não recebe o rótulo "
                   f"de normal climatológica."),
@@ -546,6 +551,8 @@ def _estacao(conn: sqlite3.Connection, p: sqlite3.Row) -> dict | None:
                            f"da média ("
                            + ", ".join(f"{n} {v}" for n, v in ag["descartes"].items() if v)
                            + "); o banco as preserva."),
+        "aviso_reanalise": ("Reanálise Global NASA POWER (Resolução 0.5° × 0.5°) · Não substitui pluviômetro de superfície"
+                            if tipo == "reanalise" else None),
         "anos_completos": ag["anos_completos"],
         "meses": ag["por_mes"],
     }
@@ -588,7 +595,7 @@ def exportar(conn: sqlite3.Connection) -> dict:
             "SELECT id, nome, regiao FROM municipio ORDER BY nome"):
         estacoes = []
         for p in conn.execute(
-                "SELECT id, nome, inicio_auto, primeiro_fato FROM ponto "
+                "SELECT id, nome, inicio_auto, primeiro_fato, fonte, tipo FROM ponto "
                 "WHERE municipio_id = ? ORDER BY nome", (mun_id,)):
             estacao = _estacao(conn, p)
             if estacao:
@@ -600,7 +607,8 @@ def exportar(conn: sqlite3.Connection) -> dict:
     # Ordem do CSV: agrupa na tela sem o front ter de saber a ordem das regiões.
     ordem = {r: i for i, r in enumerate(grupos())}
     municipios.sort(key=lambda m: (ordem.get(m["regiao"], len(ordem)), m["nome"]))
-    return {"gerado": date.today().isoformat(), "fonte": "CIIAGRO",
+    return {"gerado": date.today().isoformat(), "fonte": "CIIAGRO, INMET, NASA POWER",
+            "fontes": ["ciiagro", "inmet", "nasa_power"],
             "regioes": list(grupos()), "regiao": {"uso": USO_GERAL},
             "municipios": municipios}
 

@@ -42,7 +42,7 @@ def regioes() -> tuple[str, ...]:
 
 
 def resolver(nome_estacao: str) -> str | None:
-    """Nome da estação -> município canônico, ou None se estiver fora dos 17."""
+    """Nome da estação -> município canônico, ou None se estiver fora dos 25."""
     alvo = normalizar(nome_estacao)
     candidatos = {normalizar(m["nome"]): m["nome"] for m in todos()}
     if alvo in candidatos:

@@ -28,6 +28,29 @@ const mesLongo = (m) => NOMES[m] ?? m;
 const anosFechados = (n) =>
   n ? `(${n} ${n === 1 ? "ano" : "anos"})` : "(sem ano fechado)";
 
+const FONTE_ROTULO = {
+  ciiagro: "CIIAGRO",
+  inmet: "INMET",
+  nasa_power: "NASA POWER",
+};
+
+const FONTE_BADGE = {
+  ciiagro: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+  inmet: "border-sky-500/30 bg-sky-500/10 text-sky-400",
+  nasa_power: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+};
+
+function FonteBadge({ fonte, tipo }) {
+  const rotulo = FONTE_ROTULO[fonte] ?? fonte?.toUpperCase() ?? "FONTE";
+  const estilo = FONTE_BADGE[fonte] ?? "border-borda bg-painel-alto text-fraco";
+  return (
+    <span className={`shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[0.62rem] font-medium uppercase tracking-wider border ${estilo}`}>
+      {rotulo}
+      {tipo === "reanalise" ? " · Reanálise" : ""}
+    </span>
+  );
+}
+
 // Séries do climatograma; a legenda é o filtro. `alto` só muda o formato do
 // quadradinho (barra) contra o traço das linhas.
 const SERIES = [
@@ -271,14 +294,17 @@ export default function App({ dados }) {
     return () => removeEventListener("hashchange", aoTrocar);
   }, []);
 
-  // A rota é da estação (`#/registro-unesp`); o slug do município só serve para
-  // chegar ao aviso de "sem estação". Sem hash, abre a primeira estação.
-  const semEstacao = municipios.find((m) => m.slug === slug && !m.estacoes.length);
+  // A rota é da estação (`#/registro-unesp`); se o hash for o slug do município (`#/itanhaem`),
+  // abre a primeira estação dele. Sem hash ou hash não encontrado, abre a primeira estação.
+  const munPorSlug = municipios.find((m) => m.slug === slug);
+  const semEstacao = munPorSlug && !munPorSlug.estacoes.length;
   const estacao =
-    estacoes.find((e) => e.slug === slug) ?? (semEstacao ? null : estacoes[0]);
+    estacoes.find((e) => e.slug === slug) ??
+    (munPorSlug?.estacoes?.length ? munPorSlug.estacoes[0] : null) ??
+    (semEstacao ? null : estacoes[0]);
   const municipio = estacao ? estacao.municipio : semEstacao?.nome ?? municipios[0].nome;
   const mes = fixo ?? foco;
-  const chave = estacao?.slug ?? semEstacao?.slug;
+  const chave = estacao?.slug ?? munPorSlug?.slug;
   // Registro tem "Registro" e "Registro Unesp": o nome da estação precisa aparecer.
   const titulo = estacao
     ? estacao.nome === estacao.municipio
@@ -292,13 +318,13 @@ export default function App({ dados }) {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-fraco sm:text-[0.72rem]">
-            Litoral Sul e Vale do Ribeira · CIIAGRO
+            Litoral Sul e Vale do Ribeira · CIIAGRO · INMET · NASA POWER
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
             Climatologia das estações
           </h1>
           <p className="mt-1 text-base text-fraco sm:text-sm">
-            Série mensal medida pelo CIIAGRO, sem interpolação e sem estimativa.
+            Série histórica de estações de superfície e reanálise meteorológica segregada, sem interpolação sintética.
           </p>
         </div>
         <p className="tabular text-xs text-fraco">exportado em {dados.gerado}</p>
@@ -323,20 +349,25 @@ export default function App({ dados }) {
                 : "border-borda/60 hover:border-borda hover:bg-painel-alto";
               const texto = (
                 <>
-                  <span
-                    className={`block text-base leading-snug ${
-                      ativo ? "font-semibold text-med" : "text-texto"
-                    }`}
-                  >
-                    {e.nome}
-                    {!e.semEstacao && (
-                      <span className="tabular ml-1.5 text-[0.7rem] font-normal text-fraco">
-                        {anosFechados(e.anos_completos)}
-                      </span>
+                  <div className="flex items-center justify-between gap-1.5">
+                    <span
+                      className={`block text-base leading-snug truncate ${
+                        ativo ? "font-semibold text-med" : "text-texto"
+                      }`}
+                    >
+                      {e.nome}
+                      {!e.semEstacao && (
+                        <span className="tabular ml-1.5 text-[0.7rem] font-normal text-fraco">
+                          {anosFechados(e.anos_completos)}
+                        </span>
+                      )}
+                    </span>
+                    {!e.semEstacao && e.fonte && (
+                      <FonteBadge fonte={e.fonte} tipo={e.tipo} />
                     )}
-                  </span>
-                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs">
-                    {e.semEstacao ? "sem estação no CIIAGRO" : `${e.inicio} → ${e.fim}`}
+                  </div>
+                  <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs mt-0.5">
+                    {e.semEstacao ? "sem dados" : `${e.inicio} → ${e.fim}`}
                   </span>
                 </>
               );
@@ -388,17 +419,29 @@ export default function App({ dados }) {
       </section>
 
       {estacao && (
-        <p className="tabular mt-3 text-xs text-fraco">
-          estação {estacao.id} · {estacao.inicio} → {estacao.fim} ·{" "}
-          {estacao.total_meses} meses
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <FonteBadge fonte={estacao.fonte} tipo={estacao.tipo} />
+          <p className="tabular text-xs text-fraco">
+            estação {estacao.id} · {estacao.inicio} → {estacao.fim} ·{" "}
+            {estacao.total_meses} meses
+          </p>
+        </div>
+      )}
+
+      {estacao?.aviso_reanalise && (
+        <div className="mt-4 rounded-lg border-l-4 border-amber-500 bg-amber-500/10 p-3.5 text-sm text-amber-200">
+          <p className="font-semibold text-amber-300">
+            Reanálise Global NASA POWER (0.5° × 0.5°)
+          </p>
+          <p className="mt-1 text-xs text-amber-200/90 leading-relaxed">
+            {estacao.aviso_reanalise}. Dados derivados de modelo atmosférico e sensoriamento remoto, sem pluviômetro local de superfície.
+          </p>
+        </div>
       )}
 
       {!estacao && (
         <p className="mt-4 border-l-2 border-quente bg-painel px-4 py-3 text-sm text-quente/90">
-          Nenhuma estação do CIIAGRO neste município. Itanhaém, Mongaguá, Ilha
-          Comprida e Peruíbe não têm série na rede usada por este painel — os
-          outros 21 municípios têm.
+          Nenhum dado cadastrado para este município.
         </p>
       )}
 
@@ -574,7 +617,7 @@ export default function App({ dados }) {
           <p className="mt-4 text-xs text-fraco">
             {estacao.aviso_descarte ??
               "Nenhuma leitura excluída: tudo o que está no gráfico entrou na média."}{" "}
-            Fonte: CIIAGRO (IAC), chuva é o total do mês.
+            Fonte: {estacao.fonte === "nasa_power" ? "NASA POWER (Reanálise)" : estacao.fonte === "inmet" ? "INMET" : "CIIAGRO (IAC)"}, chuva é o total do mês.
           </p>
         </>
       )}
@@ -582,12 +625,20 @@ export default function App({ dados }) {
       <footer className="mt-8 border-t border-borda pt-4 text-xs text-fraco">
         <dl className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <dt className="text-fraco/70">Fonte</dt>
+            <dt className="text-fraco/70">Fontes integradas</dt>
             <dd>
               <a className="text-med underline-offset-2 hover:underline" href="http://www.ciiagro.org.br">
-                CIIAGRO (IAC)
+                CIIAGRO
               </a>{" "}
-              · chuva em mm, temperatura em °C, UR em %
+              ·{" "}
+              <a className="text-med underline-offset-2 hover:underline" href="https://portal.inmet.gov.br">
+                INMET
+              </a>{" "}
+              ·{" "}
+              <a className="text-med underline-offset-2 hover:underline" href="https://power.larc.nasa.gov">
+                NASA POWER
+              </a>
+              {" "}· chuva em mm, temp em °C, UR em %
             </dd>
           </div>
           <div>

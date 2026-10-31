@@ -37,14 +37,41 @@ const checagens = [
   [registro.includes("polygon"), "envelope térmico presente"],
   [registro.includes("Matriz mensal"), "tabela presente"],
   [registro.includes("Janeiro (248,4 mm)"), "mês do pico traduzido"],
-  [itanhaem.includes("Nenhuma estação do CIIAGRO"), "município sem estação avisa"],
+  [
+    itanhaem.includes("Itanhaém") &&
+      itanhaem.includes("NASA POWER") &&
+      itanhaem.includes("Reanálise"),
+    "rota de município abre estação correspondente com aviso de reanálise",
+  ],
   [p2.includes("Pariquera-Açu 2") && p2.includes("299"), "URL #/pariquera-acu-2 abre a estação 299"],
   [
     (registro.match(/href="#\//g) || []).length ===
       dados.municipios.reduce((n, m) => n + m.estacoes.length, 0),
     "um link por estação",
   ],
-  [(registro.match(/aria-disabled="true"/g) || []).length === 4, "os 4 municípios sem estação ficam desativados"],
+  [
+    (registro.match(/aria-disabled="true"/g) || []).length === 0,
+    "todos os 25 municípios possuem estação ou ponto ativo (nenhum desativado)",
+  ],
+  [
+    registro.includes("CIIAGRO") && itanhaem.includes("NASA POWER"),
+    "badges de proveniência presentes no dashboard",
+  ],
+  [
+    dados.municipios.every((m) =>
+      m.estacoes.every(
+        (e) =>
+          typeof e.fonte === "string" &&
+          e.fonte.length > 0 &&
+          ["estacao", "reanalise"].includes(e.tipo),
+      ),
+    ),
+    "contrato EGM: todas as estações trazem fonte e tipo válidos",
+  ],
+  [
+    dados.municipios.reduce((n, m) => n + m.estacoes.length, 0) >= 27,
+    "cobertura de 27+ estações/pontos ativos",
+  ],
   [
     registro.includes("(29 anos)") && registro.includes("(14 anos)"),
     "lista de estações mostra quantos anos fechados cada uma tem",

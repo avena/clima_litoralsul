@@ -1,202 +1,151 @@
-# clima_litoralsul
+# clima_litoralsul Blueprint
 
 Série climática dos **25 municípios do Litoral Sul Paulista e Vale do Ribeira**
-(Litoral Sul, Vale do Ribeira e Alto Vale/Cabeceiras), a partir das estações do
-[CIIAGRO](http://www.ciiagro.org.br).
+(Litoral Sul, Vale do Ribeira e Alto Vale/Cabeceiras), integrando estações de superfície do
+[CIIAGRO](http://www.ciiagro.org.br) e [INMET](https://portal.inmet.gov.br), e reanálise meteorológica global segregada via [NASA POWER](https://power.larc.nasa.gov).
 
 Coleta em **Python 3.12 só com stdlib** (`urllib`, `sqlite3`, `re`, `json`,
 `unittest`). O painel é um **SPA React + Tailwind v4** em `site/`, buildado com
 Vite. Sem banco externo, sem servidor de aplicação, sem CDN em runtime.
 
-## Onde está cada coisa
+## System Overview
 
-| Arquivo | Responsável por | Como rodar |
-|---|---|---|
-| `municipios.csv` | os 25 municípios (nome, região) em 3 grupos canônicos — lista fixa de entrada | — |
-| `municipios.py` | lê o CSV e cria/atualiza `municipio` | chamado por `coletor.py` |
-| `coletor.py` | **CLI e banco**: schema, `abrir`, `catalogo`, `coletar`, `auditar` e a consolidação (`substituir_granularidade`, `atualizar_primeiro_fato`) | `python3 coletor.py …` |
-| `fontes/ciiagro.py` | **raspagem**: POST nos endpoints, regex no `addRows` do HTML, devolve `{estação: {coluna: valor}}`. Não conhece `sqlite3` | chamado por `coletor.py` |
-| `relatorio.py` | **agregação e export**: médias por mês do ano, chuva anual, estações do ano com total/%, solstícios, texto de uso no planejamento, faixa de sanidade, rótulo "normal climatológica" → `site/public/dados.json` | `python3 relatorio.py` |
-| `site/` | **render**: SPA React (um único `dados.json`, troca de município sem recarregar) + Tailwind v4 | `npm --prefix site run dev` |
-| `start.sh` | exporta, builda e serve numa porta livre em `0.0.0.0` | `./start.sh` |
-| `deploy.sh` | exporta, testa, builda, commita o `dados.json` e faz push (= deploy) | `./deploy.sh` |
-| `latex/gerar.py` | **ficha A4**: lê `site/public/dados.json` e escreve `latex/fichas/<slug>.tex`, uma página por estação (23 estações, médias de vários anos, tabela mensal, sazonal, solstícios e uso no planejamento) | `python3 latex/gerar.py`, depois pdfLaTeX/tectonic |
-| `tests/` | 31 testes Python sobre HTML real em `tests/fixtures/` | `python3 -m unittest discover -s tests` |
-| `dados/clima.sqlite` | banco (gitignorado, gerado pela coleta) | — |
-| `.planning/` | plano, tarefas e catálogo de testes — comece por `.planning/PLANO.md` | — |
-
-O fluxo é sempre o mesmo, e cada etapa é um arquivo separado:
+O projeto opera como uma esteira unidirecional desacoplada de dados climáticos:
 
 ```
-CIIAGRO (HTML)
-   │  fontes/ciiagro.py        raspagem: urllib + regex no addRows
-   ▼
-dados/clima.sqlite             coletor.py: schema, upsert, consolidação
-   │  relatorio.py            agregação + faixa de sanidade
-   ▼
-site/public/dados.json         (versionado: é o que o deploy usa)
-   │  site/ (Vite + React)    render
-   ▼
-site/dist/                     estático: Netlify, Vercel ou qualquer host
+Fontes Meteorológicas
+├── CIIAGRO (HTML)       ──► fontes/ciiagro.py (urllib + regex) ──┐
+├── INMET (API REST)     ──► fontes/inmet.py (JSON / estações)  ──┼──► coletor.py: schema, upsert, consolidação
+└── NASA POWER (API)     ──► fontes/nasa_power.py (reanálise)   ──┘        │
+                                                                           ▼
+                                                                  dados/clima.sqlite
+                                                                           │ relatorio.py: agregação + faixa de sanidade
+                                                                           ▼
+                                                                  site/public/dados.json (versionado para deploy)
+                                                                  ├── site/ (Vite + React)  ──► dashboard web estático
+                                                                  └── latex/gerar.py (tectonic) ──► fichas A4 PDF (27 fichas)
 ```
 
-## Começar
+## Local Interface & Invariants
+
+### Scripts e Módulos Raiz
+- `coletor.py`: CLI de coleta e gestão do banco de dados SQLite (`dados/clima.sqlite`).
+  - Suporta a flag `--fonte {todas,ciiagro,inmet,nasa_power}` em `catalogo` e `coletar`.
+  - `abrir(caminho) -> sqlite3.Connection`: Inicializa SQLite com schema multi-fonte e row factory.
+  - `catalogo(conn, fonte)`: Sincroniza os 25 municípios de `municipios.csv` e vincula as estações físicas e pontos de reanálise com namespacing (`ciiagro:`, `inmet:`, `nasa:`).
+  - `coletar(conn, desde, ate, diario, fonte)`: Coleta série mensal ou diária com rate-limiting interno (`PAUSA`).
+  - `substituir_granularidade(conn, pontos_meses, diario)`: Remove granularidade oposta para cada mês.
+  - `atualizar_primeiro_fato(conn)`: Recalcula a menor data de registro por estação.
+  - `auditar(conn)`: Inspeciona cobertura temporal e desvios de sanidade multi-fonte sem escrever no banco.
+- `relatorio.py`: Agregação estatística e geração de `site/public/dados.json`.
+  - `exportar(conn) -> dict`: Agrupa estações pelas 3 regiões canônicas e calcula métricas sazonais, preservando proveniência e avisos de reanálise.
+  - `escrever(conn, destino) -> Path`: Serializa `dados.json`.
+  - `agregado(conn, ponto_id)`: Aplica faixas de sanidade (`LIMITES`) e computa médias mensais.
+  - `resumo(ag)`: Calcula total anual, extremos de precipitação e distribuição sazonal (DJF, MAM, JJA, SON).
+  - `solsticios(meses, chuva_ano)`: Calcula acumulados que antecedem os solstícios de inverno e verão.
+  - `uso_local(dados)`: Gera diagnósticos agronômicos locais para preparo de solo, calagem e plantio.
+  - `janela_seca(pm, seco, limite)` / `inicio_das_chuvas(...)`: Detecta meses secos e retorno das precipitações.
+  - `rotulo(ag, validada)` / `normal(ag, validada)`: Assegura honestidade metodológica (restringe "normal climatológica" a séries válidas ≥ 30 anos).
+  - `slug(nome)`: Converte nomes de estações e municípios em identificadores de URL amigáveis.
+- `municipios.py`: Resolução de nomes e mapeamento regional dos 25 municípios.
+  - `todos() -> tuple[dict[str, str], ...]`: Retorna a lista dos 25 municípios na ordem do CSV.
+  - `regioes() -> tuple[str, ...]`: Retorna as 3 regiões canônicas (`Litoral Sul`, `Vale do Ribeira`, `Alto Vale e Cabeceiras`).
+  - `resolver(nome_estacao: str) -> str | None`: Normaliza nomes com sufixos institucionais para municípios canônicos.
+  - `normalizar(nome: str) -> str`: Remove acentos, hífens e formata em minúsculas para correspondência.
+- `deploy.sh`: Pipeline de publicação que executa geração de PDFs, `relatorio.py`, testes unitários, checagens do SPA e build do Vite.
+- `start.sh`: Servidor estático local em porta livre (0.0.0.0).
+
+## Subdirectories & System Boundaries
+
+- [fontes](./fontes/README.md): Módulos extratores de rede (CIIAGRO, INMET, NASA POWER) sem dependência de banco de dados nem bibliotecas externas.
+- [latex](./latex/README.md): Gerador de código LaTeX e compilador tectonic de fichas A4 monocromáticas de página única com notas de proveniência.
+- [site](./site/README.md): Aplicação cliente SPA em React, Tailwind CSS v4, e harness de verificação headless DOM SSR.
+
+## Global Invariants
+
+1. **Granularidade em `data`**: `length(data)` define a granularidade (`AAAA-MM-DD` = 10 para dias, `AAAA-MM` = 7 para meses). Um mês possui exclusivamente o registro mensal ou os registros diários (`substituir_granularidade`), evitando dupla contagem em agregações.
+2. **Ausente é `NULL`, nunca `0`**: Leituras não registradas ou sensores inoperantes são gravados como `NULL`. Sentinelas de APIs (ex.: `-999.0` da NASA POWER) são convertidos para `None`. O valor `0` é estritamente restrito a medições físicas de fato nulas (ex.: chuva 0.0 mm).
+3. **Segregação Estrita de Reanálise**: Dados de reanálise meteorológica global (NASA POWER) cobrem os municípios costeiros sem estação física de superfície (Itanhaém, Mongaguá, Peruíbe, Ilha Comprida), marcados com `tipo = "reanalise"`. Não há interpolação sintética, mesclagem estatística ou médias compostas entre reanálise e medições físicas de superfície. O painel e as fichas exibem avisos e badges de proveniência explícitos.
+4. **Desacoplamento Fonte-Banco**: O módulo `fontes/` desconhece SQLite; retorna apenas dicionários canônicos de pontos e observações. O banco resolve vínculos e persistência no coletor.
+5. **Honestidade Estatística**: Nenhuma série com menos de 30 anos completos ou anterior à automação sem validação formal recebe o título de "normal climatológica".
+6. **Determinismo de Artefatos**: A compilação de PDFs fixa `SOURCE_DATE_EPOCH` na data de `dados.json`, gerando binários idênticos e evitando diffs falsos no repositório.
+
+## Global Side Effects
+
+- **Persistência SQLite**: `dados/clima.sqlite` armazena pontos, municípios e fatos climáticos.
+- **Requisições de Rede**: Chamadas HTTP para `http://www.ciiagro.org.br`, `https://apitempo.inmet.gov.br` e `https://power.larc.nasa.gov` durante `catalogo` e `coletar`.
+- **Geração de Arquivos**: Produz `site/public/dados.json`, `latex/fichas/*.tex`, `site/public/fichas/*.pdf` e `site/dist/`.
+- **Publicação Git**: O script `deploy.sh` adiciona os arquivos gerados versionados e dispara o deploy remoto.
+
+## System Verification
+
+- Testes unitários do pipeline Python (39 testes):
+  ```bash
+  python3 -m unittest discover -s tests
+  ```
+- Verificação de renderização do SPA e contratos DOM:
+  ```bash
+  npm --prefix site run check
+  ```
+- Build de produção do cliente web:
+  ```bash
+  npm --prefix site run build
+  ```
+- Compilação e validação de páginas das fichas PDF:
+  ```bash
+  python3 latex/gerar.py --pdf
+  ```
+
+---
+
+## Guia de Operação e Uso
+
+### Coleta e Atualização de Dados
 
 ```bash
-python3 coletor.py catalogo                                    # 3 requisições
-python3 coletor.py coletar --desde 2000-01 --ate 2026-10       # mensal, ~2 min
-python3 coletor.py auditar                                     # cobertura; não escreve
-python3 relatorio.py                                           # gera dados.json
+# Sincroniza catálogo de municípios e pontos de todas as fontes (ou use --fonte ciiagro/inmet/nasa_power)
+python3 coletor.py catalogo
+
+# Coleta série histórica mensal (todas as fontes ou fonte específica)
+python3 coletor.py coletar --desde 2000-01 --ate 2026-10
+python3 coletor.py coletar --fonte nasa_power --desde 1995-01 --ate 2026-10
+
+# Inspeciona cobertura, desvios e valores suspeitos
+python3 coletor.py auditar
+
+# Agrega métricas e gera site/public/dados.json
+python3 relatorio.py
 ```
 
-`coletar` sem `catalogo` não grava nada: o banco resolve a estação **por nome**,
-e o que não estiver em `ponto` é ignorado com aviso "fora do catálogo".
-
-Mês anterior a 2000 responde em ~1,5 s (contra ~0,24 s dos recentes), então
-varredura longa precisa rodar em background — `timeout` no meio não dá erro, só
-trunca a série.
-
-## Ver o painel
+### Visualização Local
 
 ```bash
-./start.sh                # export + build + http.server em porta livre
-./start.sh --dev          # Vite dev com hot reload
-PORT=8000 ./start.sh      # porta fixa
+./start.sh        # export + build + http.server em porta livre
+./start.sh --dev  # Vite dev com hot reload
 ```
 
-O script imprime a URL de `localhost` e a do IP do WSL; escuta em `0.0.0.0`,
-então o navegador do Windows alcança. Precisa de Node 20+ só para o `site/`; a
-coleta continua sem dependência nenhuma.
-
-O painel abre com os 25 municípios agrupados em 3 regiões (Litoral Sul, Vale do
-Ribeira, Alto Vale e Cabeceiras): clicar troca a cidade sem recarregar e sem piscar, e a URL guarda a
-escolha (`#/registro`) para poder ser compartilhada. Abaixo vêm os cards de KPI
-(chuva anual, temperatura média, amplitude sazonal, UR), o climatograma de eixo
-duplo (chuva em barras, T mín/méd/máx em linhas, faixa térmica sombreada), a
-distribuição sazonal da chuva, a matriz mensal com micro-barras e o ranking de
-chuva anual das estações (da maior para a menor). A legenda do climatograma é um
-filtro: marque só `chuva` e o gráfico mostra os mm de cada mês; só `t máx`, só as
-máximas. Layout de uma coluna no celular; no gráfico, o toque fixa o mês que o
-hover mostra no desktop.
-
-No rodapé ficam a data de sincronização do `dados.json`, o período coberto, o
-hash do build e do commit inicial, o link do repositório e o resumo do ambiente.
-
-## Fichas em PDF (uma página por estação)
-
-```bash
-python3 latex/gerar.py --pdf            # .tex + PDF em site/public/fichas/
-python3 latex/gerar.py                  # só os .tex
-tectonic -X compile latex/fichas/registro.tex    # um PDF avulso
-```
-
-O painel linka a ficha **na mesma linha do título do climatograma** ("ficha em
-PDF"): o link é a rota da estação, não a do município — `#/registro-unesp` abre
-`fichas/registro-unesp.pdf`.
-
-O PDF é versionado em `site/public/fichas/`, porque o Netlify não tem TeX e o
-`vite build` só copia `public/` para `dist/`. `SOURCE_DATE_EPOCH` fixa o carimbo
-do PDF na data do `dados.json`: sem isso cada build geraria 23 binários novos
-sem uma vírgula de diferença.
-
-Cada ficha cabe em **uma folha A4** e é **preto e branco estrito**: a paleta é a
-escala `gray` do `xcolor` (barras `gray 0.15`, contorno `gray 0.75`, fundo de
-cartão `gray 0.98`, caixa de aviso `gray 0.94`, texto secundário `gray 0.35`).
-Matiz não sobrevive à impressão em toner — o azul do painel viraria cinza médio e
-sumiria contra a barra.
-
-O conteúdo vem inteiro do `dados.json`: médias mensais, estações do ano,
-acumulados antes dos solstícios e o texto de uso no planejamento que também
-aparece no painel. A ficha só tipografa, então não tem como discordar do site.
-
-## Deploy (Netlify ou Vercel)
+### Deploy (Netlify ou Vercel)
 
 Build estático, sem backend. `dados.json` é **versionado** justamente porque o
 deploy não tem acesso ao banco (que é gitignorado):
 
 ```bash
-./deploy.sh                # relatorio.py + testes + build + commit do JSON + push
+./deploy.sh
 ```
 
-O push é o deploy. `deploy.sh` só commita `site/public/dados.json`; se houver
-código pendente ele aborta pedindo commit, em vez de misturar as coisas.
+### Fichas em PDF (uma página por estação/ponto)
 
-- **Netlify**: `netlify.toml` já define base `site`, `npm run build`, publish
-  `dist`. Conecte o repositório e pronto — passo a passo em
-  `netlify.readme.md` (o campo **Base directory** precisa ser `site`).
-- **Vercel**: `vercel.json` roda `cd site && npm run build` e publica
-  `site/dist`.
-- **Hook manual** (`.github/workflows/deploy.yml`): criado para forçar o build
-  da plataforma quando os dados mudam sem mudar código. Salve a URL do hook em
-  `NETLIFY_DEPLOY_HOOK_URL` e/ou `VERCEL_DEPLOY_HOOK_URL` nos *Secrets* do
-  GitHub; o passo correspondente só roda se o secret existir.
+```bash
+python3 latex/gerar.py --pdf                      # .tex + PDF em site/public/fichas/
+tectonic -X compile latex/fichas/registro.tex     # compilação avulsa
+```
 
-Rota é hash (`#/pariquera-acu`), então não precisa de rewrite no servidor.
+Cada ficha cabe em **uma folha A4** e é **preto e branco estrito**: paleta na
+escala `gray` do `xcolor` (barras `gray 0.15`, contorno `gray 0.75`, fundo de
+cartão `gray 0.98`, caixa de aviso `gray 0.94`, texto secundário `gray 0.35`).
 
-## O que a fonte entrega
+### Cobertura Integral (27 estações/pontos ativos, 25 municípios)
 
-| Endpoint | Conteúdo |
-|---|---|
-| `diario/cdiaria` (POST `data=dd/mm/aaaa`) | **todas** as estações num dia: T e UR mín/média/máx, chuva |
-| `mensal/cmensal` (POST `parametro=mm/aaaa`) | agregados mensais, todas as estações |
-| `horario.php?codigo=N` | janela rolante de 7 dias — **sem histórico**, por mais que pareça a página certa |
-
-Não há API. Os números vêm em `data.addRows([['Registro',17.1,21.5,25.9],…])`
-dentro do HTML; o extrator é regex, testado contra HTML real em `tests/fixtures/`.
-
-## Cobertura medida (do banco, não do calendário do site)
-
-4.914 linhas mensais, `1990-01` a `2026-10`, 23 estações.
-
-- **≥30 anos de dado**: Pariquera-Açu (34,1), Registro (31,6) — só alcançam isso
-  porque o CIIAGRO serve série anterior ao início que ele mesmo declara
-  (`/calendario` diz 2004 e 2005).
-- **20-29 anos**: Miracatu (26,9), Cananéia (26,8), Sete Barras (26,7),
-  Jacupiranga (25,8).
-- **13-19 anos**: Iguape, Ribeira, Tapiraí, Juquitiba, Itariri, Eldorado,
-  Registro Unesp, Apiaí, Cajati, Iporanga, Itaóca, Juquiá.
-- **6-8 anos**: Pedro de Toledo, Pariquera-Açu 2, Barra do Chapéu, Barra do
-  Turvo, Itapirapuã Paulista.
-- **Sem estação CIIAGRO**: Itanhaém, Mongaguá, Ilha Comprida. Peruíbe só na rede
-  principal (`/ema/index.php?id=56`), fora desta versão.
-
-**21 dos 25 municípios** têm estação — 23 é o número de estações, porque Registro
-e Pariquera-Açu têm duas cada. Sem estação no CIIAGRO: Itanhaém, Mongaguá, Ilha
-Comprida e Peruíbe.
-
-## Duas armadilhas que mudam interpretação
-
-1. **O site serve dados antes de a estação existir.** Registro tem 380 mm em
-   `01/1995`, mas começou em 2005. Pode ser registro histórico convencional ou
-   reconstrução — só o cruzamento com o INMET decide. Até lá, série
-   pré-automação é `suspeita` e o `auditar` mostra o caso em cada estação.
-2. **`0` significa "sem medição", não "zero".** Em `01/2001` todas as estações
-   reportam `0.00 %` de umidade. Some com o "vazio" que a página devolve sem
-   motivo aparente e você tem uma seca que nunca aconteceu.
-
-## Banco
-
-`dados/clima.sqlite`, três tabelas: `municipio`, `ponto`, `fato`.
-
-- `ponto.id` é o código da estação no CIIAGRO (ex.: `63` = Registro).
-- `fato.data` em `AAAA-MM-DD` (dia) ou `AAAA-MM` (mês) — `length(data)` é a
-  granularidade, e um mês guarda **ou** o total mensal **ou** os dias.
-- `INSERT … ON CONFLICT DO UPDATE` com `COALESCE`: recoletar não duplica nem
-  apaga.
-
-A faixa de sanidade (T em [-20, 50] °C, UR em [0, 100], chuva/mês ≤ 1000 mm) só
-existe no `relatorio.py`: valor fora fica no banco e sai da média, contado como
-descarte.
-
-## Limitações
-
-- Sem INMET ou NASA POWER: 3 municípios sem estação e séries curtas continuam curtas.
-- Sem insolação (estação automática não mede) e sem ET0.
-- Sem "dias com chuva ≥ 1 mm": o banco é mensal; exige `coletar --diario` antes.
-- Sem normal climatológica publicável: 30 anos de dado medido não é o mesmo que
-  normal 1991-2020 do INMET, e o painel só usa o rótulo quando a série valida.
-- Coleta respeita o servidor: 0,25 s entre requisições, 3 tentativas, User-Agent
-  próprio.
-
-Dados pertencem ao CIIAGRO / Governo do Estado de São Paulo — verifique os
-termos de uso antes de redistribuir.
+- **Litoral Sul (8 municípios, 8 estações/pontos)**: Cananéia, Iguape, Itariri, Pedro de Toledo (CIIAGRO) + Ilha Comprida, Itanhaém, Mongaguá, Peruíbe (NASA POWER Reanálise).
+- **Vale do Ribeira (9 municípios, 11 estações)**: Barra do Turvo, Cajati, Eldorado, Jacupiranga, Juquiá, Miracatu, Pariquera-Açu (2 estações: CIIAGRO 298 e 299), Registro (2 estações: CIIAGRO 108 e 109 Unesp), Sete Barras.
+- **Alto Vale e Cabeceiras (8 municípios, 8 estações)**: Apiaí, Barra do Chapéu, Iporanga, Itaóca, Itapirapuã Paulista, Juquitiba, Ribeira, Tapiraí.

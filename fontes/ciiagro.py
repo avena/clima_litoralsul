@@ -143,7 +143,7 @@ FONTE = "ciiagro"
 
 
 def pontos() -> list[dict]:
-    """Catálogo completo da fonte (23 estações), com município quando for dos 17."""
+    """Catálogo completo da fonte (23 estações), com município quando for dos 25."""
     from municipios import resolver
 
     base = inicios(_get(BASE + "/cbhrb/estacoes/calendario"))
@@ -151,12 +151,13 @@ def pontos() -> list[dict]:
     geo = coordenadas(_get(BASE + "/cbhrb/estacoes/"))
     return [
         {
-            "id": codigo,
+            "id": f"ciiagro:{codigo}",
             "nome": nome,
             "municipio": resolver(nome),
             "lat": geo.get(nome, (None, None))[0],
             "lon": geo.get(nome, (None, None))[1],
             "inicio_auto": base.get(nome),
+            "tipo": "estacao",
         }
         for nome, codigo in ids.items()
     ]

@@ -1,0 +1,53 @@
+[
+  {
+    "CD_OSCAR": "0-2000-0-86922",
+    "DC_NOME": "BARRA DO TURVO",
+    "FL_CAPITAL": null,
+    "DT_FIM_OPERACAO": null,
+    "CD_SITUACAO": "Operante",
+    "TP_ESTACAO": "Automatica",
+    "VL_LATITUDE": "-24.96277777",
+    "CD_WSI": "0-76-0-3505401000000393",
+    "CD_DISTRITO": " 07",
+    "VL_ALTITUDE": "659.89",
+    "SG_ESTADO": "SP",
+    "SG_ENTIDADE": "INMET",
+    "CD_ESTACAO": "A746",
+    "VL_LONGITUDE": "-48.41638888",
+    "DT_INICIO_OPERACAO": "2008-07-02T21:00:00.000-03:00"
+  },
+  {
+    "CD_OSCAR": "0-2000-0-86923",
+    "DC_NOME": "IGUAPE",
+    "FL_CAPITAL": "N",
+    "DT_FIM_OPERACAO": null,
+    "CD_SITUACAO": "Operante",
+    "TP_ESTACAO": "Automatica",
+    "VL_LATITUDE": "-24.67166666",
+    "CD_WSI": "0-76-0-3520301000000088",
+    "CD_DISTRITO": " 07",
+    "VL_ALTITUDE": "2.7",
+    "SG_ESTADO": "SP",
+    "SG_ENTIDADE": "INMET",
+    "CD_ESTACAO": "A712",
+    "VL_LONGITUDE": "-47.54583333",
+    "DT_INICIO_OPERACAO": "2006-07-19T21:00:00.000-03:00"
+  },
+  {
+    "CD_OSCAR": "0-2000-0-86915",
+    "DC_NOME": "REGISTRO",
+    "FL_CAPITAL": "N",
+    "DT_FIM_OPERACAO": null,
+    "CD_SITUACAO": "Pane",
+    "TP_ESTACAO": "Automatica",
+    "VL_LATITUDE": "-24.53305554",
+    "CD_WSI": "0-76-0-3542602000000538",
+    "CD_DISTRITO": " 07",
+    "VL_ALTITUDE": "35",
+    "SG_ESTADO": "SP",
+    "SG_ENTIDADE": "INMET",
+    "CD_ESTACAO": "A766",
+    "VL_LONGITUDE": "-47.86416666",
+    "DT_INICIO_OPERACAO": "2017-02-08T21:00:00.000-03:00"
+  }
+]

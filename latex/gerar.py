@@ -196,6 +196,18 @@ def _kpi(rotulo: str, valor: str, rodape: str) -> str:
     return f"\\kpicard{{{tex(rotulo)}}}{{{tex(valor)}}}{{{tex(rodape)}}}"
 
 
+FONTE_TEX = {
+    "ciiagro": "CIIAGRO/IAC",
+    "inmet": "INMET",
+    "nasa_power": "NASA POWER",
+}
+FONTE_URL = {
+    "ciiagro": ("http://ciiagro.org.br", "ciiagro.org.br"),
+    "inmet": ("https://portal.inmet.gov.br", "portal.inmet.gov.br"),
+    "nasa_power": ("https://power.larc.nasa.gov", "power.larc.nasa.gov"),
+}
+
+
 def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
     """Monta o `.tex` de uma página para uma estação.
 
@@ -227,6 +239,30 @@ def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
         f"medido, não previsão do tempo."
     )
     descarte = (f" {tex(est['aviso_descarte'])}" if est.get("aviso_descarte") else "")
+
+    fonte_id = est.get("fonte", "ciiagro")
+    tipo = est.get("tipo", "estacao")
+    fonte_nome = FONTE_TEX.get(fonte_id, fonte_id.upper())
+    fonte_url, fonte_url_txt = FONTE_URL.get(fonte_id, ("http://ciiagro.org.br", "ciiagro.org.br"))
+
+    is_reanalise = (tipo == "reanalise")
+    if is_reanalise:
+        subcabecalho = f"Ponto de Reanálise Global ({fonte_nome}) {tex(str(est['id']))} \\,\\textbullet\\, {est['total_meses']} meses ({est['inicio']} a {est['fim']})"
+        leia_antes = (
+            r"\textbf{Leia antes de usar:} os números abaixo são \textbf{médias de reanálise meteorológica global} "
+            r"(NASA POWER / MERRA-2, resolução 0.5$^\circ$ $\times$ 0.5$^\circ$ $\approx$ 55 km), "
+            r"para o município sem estação meteorológica física de superfície. "
+            r"\textbf{Não substitui pluviômetro local} nem é previsão do tempo."
+        )
+        nota_rodape = r"Dados de modelo atmosférico e sensoriamento remoto (resolução ~55 km), segregados de medições de superfície. "
+    else:
+        subcabecalho = f"Estação {fonte_nome} {tex(str(est['id']))} \\,\\textbullet\\, {est['total_meses']} meses ({est['inicio']} a {est['fim']})"
+        leia_antes = (
+            rf"\textbf{{Leia antes de usar:}} os números abaixo são \textbf{{médias de vários anos}}, "
+            rf"obtidas das medições mensais do {fonte_nome}. \textbf{{Não é previsão meteorológica}} para "
+            rf"os próximos dias nem para esta safra."
+        )
+        nota_rodape = r"Umidade relativa omitida: a fonte usa \texttt{0} para ``sem sensor''. " if fonte_id == "ciiagro" else ""
 
     chuva = [
         _kpi("Chuva anual média", f"{num(est['chuva_ano'])} mm/ano", "em todo o ano"),
@@ -279,22 +315,19 @@ def ficha(est: dict, gerado: str, regiao: list[dict]) -> str:
 \begin{{document}}
 
 {{\Large\bfseries {titulo} --- climatologia das médias}}\\[2pt]
-{{\small Estação CIIAGRO/IAC {tex(str(est["id"]))} \,\textbullet\,
-{est["total_meses"]} meses medidos ({est["inicio"]} a {est["fim"]})}}\\[1pt]
+{{\footnotesize\color{{cinza}} {subcabecalho}}}\\[1pt]
 {{\footnotesize {ressalva}}}
 
 \vspace{{4pt}}
 \colorbox{{cinzaclaro}}{{%
-\parbox{{\dimexpr\textwidth-2\fboxsep}}{{%
-\footnotesize
-\textbf{{Leia antes de usar:}} os números abaixo são \textbf{{médias de vários anos}},
-obtidas das medições mensais do CIIAGRO. \textbf{{Não é previsão meteorológica}} para
-os próximos dias nem para esta safra.\par\vspace{{2pt}}
-\textbf{{Aplicação prática:}} este é o comportamento médio esperado da estação ---
-base técnica para o calendário agrícola, as janelas de calagem, o preparo do solo e
-o manejo conservacionista.%
-}}}}
-
+  \parbox{{\dimexpr\textwidth-2\fboxsep}}{{%
+    \footnotesize
+    {leia_antes}\par\vspace{{2pt}}
+    \textbf{{Aplicação prática:}} este é o comportamento médio esperado da estação ---
+    base técnica para o calendário agrícola, janelas de calagem, o preparo do solo e
+    o manejo conservacionista.%
+  }}%
+}}
 \vspace{{4pt}}
 \noindent
 {linha_chuva}
@@ -347,12 +380,12 @@ anual.}}
 
 \vspace{{1pt}}
 {{\tiny\color{{cinza}}
-Fonte: CIIAGRO/IAC (\href{{http://ciiagro.org.br}}{{ciiagro.org.br}}), série mensal
-medida; chuva é o total do mês. Painel:
+Fonte: {fonte_nome} (\href{{{fonte_url}}}{{{fonte_url_txt}}}), série mensal;
+chuva é o total do mês. Painel:
 \href{{https://climalitoralsul.netlify.app/\#{est["slug"]}}}%
 {{\texttt{{climalitoralsul.netlify.app/\#{est["slug"]}}}}}.
-Umidade relativa omitida: a fonte usa \texttt{{0}} para ``sem sensor''.
-{tex(est["rotulo"])}.{descarte}
+{nota_rodape}{descarte}
+{tex(est["rotulo"])}.
 Gerado a partir de \texttt{{dados.json}} de {gerado}.}}
 
 \end{{document}}

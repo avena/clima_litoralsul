@@ -251,6 +251,19 @@ class TestBanco(unittest.TestCase):
         self.assertEqual(self.conn.execute("SELECT primeiro_fato FROM ponto").fetchone()[0],
                          "1995-01")
 
+    def test_migracao_legado_prefixa_ciiagro(self):
+        """Ao reabrir banco com ids legados, ponto e fato recebem prefixo 'ciiagro:'."""
+        self._grava("2026-10", 15.0)
+        self.conn.commit()
+        caminho = Path(self.tmp.name) / "t.sqlite"
+        self.conn.close()
+        nova_conn = coletor.abrir(caminho)
+        p = nova_conn.execute("SELECT id FROM ponto").fetchone()[0]
+        f = nova_conn.execute("SELECT ponto_id FROM fato").fetchone()[0]
+        self.assertEqual(p, "ciiagro:63")
+        self.assertEqual(f, "ciiagro:63")
+        self.conn = nova_conn
+
 
 class TestRelatorio(unittest.TestCase):
     """Garante que o relatório não publique número que o dado não sustenta."""
