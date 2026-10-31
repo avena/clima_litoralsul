@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { execSync } from "node:child_process";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -22,6 +23,14 @@ const inicial =
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(import.meta.dirname, "index.html"),
+        inmet: resolve(import.meta.dirname, "inmet.html"),
+      },
+    },
+  },
   // Metadados do rodapé: commit atual, commit raiz e data do build.
   define: {
     __COMMIT__: JSON.stringify(commit),

@@ -535,6 +535,8 @@ def _estacao(conn: sqlite3.Connection, p: sqlite3.Row) -> dict | None:
         "fonte": fonte,
         "tipo": tipo,
         "nome": p["nome"],
+        "lat": p["lat"] if "lat" in p.keys() else None,
+        "lon": p["lon"] if "lon" in p.keys() else None,
         "inicio": ag["inicio"],
         "fim": ag["fim"],
         "total_meses": ag["n_meses"],
@@ -595,7 +597,7 @@ def exportar(conn: sqlite3.Connection) -> dict:
             "SELECT id, nome, regiao FROM municipio ORDER BY nome"):
         estacoes = []
         for p in conn.execute(
-                "SELECT id, nome, inicio_auto, primeiro_fato, fonte, tipo FROM ponto "
+                "SELECT id, nome, inicio_auto, primeiro_fato, fonte, tipo, lat, lon FROM ponto "
                 "WHERE municipio_id = ? ORDER BY nome", (mun_id,)):
             estacao = _estacao(conn, p)
             if estacao:

@@ -370,9 +370,6 @@ export default function App({ dados }) {
                         </span>
                       )}
                     </span>
-                    {!e.semEstacao && e.fonte && (
-                      <FonteBadge fonte={e.fonte} tipo={e.tipo} />
-                    )}
                   </div>
                   <span className="tabular block text-[0.72rem] leading-tight text-fraco sm:text-xs mt-0.5">
                     {e.semEstacao ? "sem dados" : `${e.inicio} → ${e.fim}`}
@@ -432,6 +429,21 @@ export default function App({ dados }) {
           <p className="tabular text-xs text-fraco">
             estação {estacao.id} · {estacao.inicio} → {estacao.fim} ·{" "}
             {estacao.total_meses} meses
+            {estacao.lat != null && estacao.lon != null && (
+              <>
+                {" "}·{" "}
+                <a
+                  href={`https://www.google.com/maps?q=${estacao.lat},${estacao.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sky-400 underline-offset-2 hover:underline inline-flex items-center gap-1"
+                  title="Abrir coordenadas decimais no Google Maps"
+                >
+                  <span>📍 {Number(estacao.lat).toFixed(4)}, {Number(estacao.lon).toFixed(4)}</span>
+                  <span className="text-[0.68rem] text-fraco">(Google Maps ↗)</span>
+                </a>
+              </>
+            )}
           </p>
         </div>
       )}
