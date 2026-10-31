@@ -1,5 +1,272 @@
-<!DOCTYPE html><html class="dark" lang="pt-BR"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-secondary":"#472a00","on-primary-container":"#00424f","on-surface":"#d4e4fa","on-surface-variant":"#bcc9cd","on-primary":"#003640","surface":"#051424","surface-tint":"#4cd7f6","on-tertiary":"#003824","on-secondary-fixed-variant":"#653e00","surface-bright":"#2c3a4c","background":"#051424","inverse-primary":"#00687a","outline-variant":"#3d494c","primary":"#4cd7f6","error-container":"#93000a","tertiary-container":"#1bbd85","surface-container-high":"#1c2b3c","on-secondary-fixed":"#2a1700","inverse-on-surface":"#233143","outline":"#869397","on-tertiary-fixed":"#002113","on-error":"#690005","on-primary-fixed":"#001f26","surface-container":"#122131","tertiary":"#4edea3","on-primary-fixed-variant":"#004e5c","tertiary-fixed-dim":"#4edea3","secondary-fixed":"#ffddb8","on-background":"#d4e4fa","secondary":"#ffb95f","on-tertiary-container":"#00452e","primary-container":"#06b6d4","primary-fixed-dim":"#4cd7f6","inverse-surface":"#d4e4fa","tertiary-fixed":"#6ffbbe","error":"#ffb4ab","surface-dim":"#051424","secondary-container":"#ee9800","on-tertiary-fixed-variant":"#005236","secondary-fixed-dim":"#ffb95f","primary-fixed":"#acedff","on-error-container":"#ffdad6","surface-variant":"#273647","on-secondary-container":"#5b3800","surface-container-highest":"#273647","surface-container-low":"#0d1c2d","surface-container-lowest":"#010f1f"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"margin-mobile":"0.75rem","space-lg":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","space-md":"0.75rem","gutter-compact":"0.5rem","margin":"1.5rem","space-xl":"1.5rem","gutter":"1rem"},"fontFamily":{"headline-md":["Inter"],"metric-readout-lg":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"metric-readout-sm":["JetBrains Mono"],"headline-lg":["Inter"],"display-lg":["JetBrains Mono"],"label-caps":["JetBrains Mono"],"body-lg":["Inter"],"metric-readout-md":["JetBrains Mono"]},"fontSize":{"headline-md":["22px",{"lineHeight":"28px","fontWeight":"600"}],"metric-readout-lg":["32px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"metric-readout-sm":["14px",{"lineHeight":"20px","fontWeight":"500"}],"headline-lg":["28px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"700"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"26px","fontWeight":"400"}],"metric-readout-md":["20px",{"lineHeight":"26px","letterSpacing":"-0.02em","fontWeight":"600"}]}}}};</script></head><body class="bg-background text-base text-on-surface antialiased"><header class="w-full bg-surface-container-lowest border-b border-outline-variant/20 shadow-sm">
+<!DOCTYPE html><html class="dark" lang="pt-BR"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="web_dashboard" name="shell-type">
+  <title>INMET Meteodata Brasil · Rede EMA Nacional (669 Estações)</title>
+  <script>
+    (function() {
+      try {
+        var salvo = localStorage.getItem('inmet_tema');
+        var prefereDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = salvo ? (salvo === 'dark') : (prefereDark !== false);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+
+    /* Paletas de design extraídas de temas/ (Main.dc.html & Light.dc.html) */
+    :root, html.dark {
+      --bg: #051424;
+      --surface: #0d1c2d;
+      --surface-low: #0d1c2d;
+      --surface-lowest: #010f1f;
+      --card: #122131;
+      --cardhi: #1c2b3c;
+      --cardhighest: #273647;
+      --line: #33444f;
+      --text: #d4e4fa;
+      --muted: #bcc9cd;
+      --dim: #9aa9ae;
+      --accent: #4cd7f6;
+      --onaccent: #003640;
+      --ok: #4edea3;
+      --warn: #ffb95f;
+      --stop: #ff9d92;
+      --info: #4cd7f6;
+      --shadow: none;
+
+      /* Coordenadas RGB para suporte à opacidade no Tailwind (<alpha-value>) */
+      --c-bg: 5 20 36;
+      --c-surface: 13 28 45;
+      --c-surface-low: 13 28 45;
+      --c-surface-lowest: 1 15 31;
+      --c-surface-bright: 44 58 76;
+      --c-card: 18 33 49;
+      --c-cardhi: 28 43 60;
+      --c-cardhighest: 39 54 71;
+      --c-line: 51 68 79;
+      --c-text: 212 228 250;
+      --c-muted: 188 201 205;
+      --c-dim: 154 169 174;
+      --c-accent: 76 215 246;
+      --c-onaccent: 0 54 64;
+      --c-on-primary: 0 54 64;
+      --c-on-secondary: 71 42 0;
+      --c-on-tertiary: 0 56 36;
+      --c-on-error: 105 0 5;
+      --c-ok: 78 222 163;
+      --c-warn: 255 185 95;
+      --c-stop: 255 157 146;
+      --c-info: 76 215 246;
+    }
+
+    html.light {
+      --bg: #eef3f7;
+      --surface: #ffffff;
+      --surface-low: #f4f7fa;
+      --surface-lowest: #ffffff;
+      --card: #ffffff;
+      --cardhi: #e6edf3;
+      --cardhighest: #dce5ec;
+      --line: #cbd5dc;
+      --text: #0c1b2a;
+      --muted: #3f505c;
+      --dim: #566872;
+      --accent: #00687a;
+      --onaccent: #ffffff;
+      --ok: #006c49;
+      --warn: #8a5300;
+      --stop: #b3261e;
+      --info: #00687a;
+      --shadow: 0 1px 3px rgba(12, 27, 42, 0.08);
+
+      /* Coordenadas RGB para modo claro */
+      --c-bg: 238 243 247;
+      --c-surface: 255 255 255;
+      --c-surface-low: 244 247 250;
+      --c-surface-lowest: 255 255 255;
+      --c-surface-bright: 255 255 255;
+      --c-card: 255 255 255;
+      --c-cardhi: 230 237 243;
+      --c-cardhighest: 220 229 236;
+      --c-line: 203 213 220;
+      --c-text: 12 27 42;
+      --c-muted: 63 80 92;
+      --c-dim: 86 104 114;
+      --c-accent: 0 104 122;
+      --c-onaccent: 255 255 255;
+      --c-on-primary: 255 255 255;
+      --c-on-secondary: 255 255 255;
+      --c-on-tertiary: 255 255 255;
+      --c-on-error: 255 255 255;
+      --c-ok: 0 108 73;
+      --c-warn: 138 83 0;
+      --c-stop: 179 38 30;
+      --c-info: 0 104 122;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    * { box-sizing: border-box; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .lbl { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* Utilitários semânticos e classes estruturais */
+    .bg-background { background-color: var(--bg) !important; }
+    .bg-surface { background-color: var(--surface) !important; }
+    .bg-surface-container { background-color: var(--card) !important; }
+    .bg-surface-container-high { background-color: var(--cardhi) !important; }
+    .bg-surface-container-highest { background-color: var(--cardhighest) !important; }
+    .bg-surface-container-low { background-color: var(--surface-low) !important; }
+    .bg-surface-container-lowest { background-color: var(--surface-lowest) !important; }
+    .bg-surface-variant { background-color: var(--cardhighest) !important; }
+
+    .text-on-surface { color: var(--text) !important; }
+    .text-on-surface-variant { color: var(--muted) !important; }
+    .text-outline { color: var(--dim) !important; }
+    .text-outline-variant { color: var(--line) !important; }
+
+    .text-primary { color: var(--accent) !important; }
+    .bg-primary { background-color: var(--accent) !important; }
+    .text-on-primary { color: var(--onaccent) !important; }
+
+    .text-secondary { color: var(--warn) !important; }
+    .text-tertiary { color: var(--ok) !important; }
+    .text-error { color: var(--stop) !important; }
+
+    [class*="border-outline-variant"] { border-color: var(--line) !important; }
+    .border-outline-variant\/10 { border-color: rgba(var(--c-line), 0.1) !important; }
+    .border-outline-variant\/20 { border-color: rgba(var(--c-line), 0.2) !important; }
+    .border-outline-variant\/30 { border-color: rgba(var(--c-line), 0.3) !important; }
+    .border-outline-variant\/40 { border-color: rgba(var(--c-line), 0.4) !important; }
+    .border-outline-variant\/50 { border-color: rgba(var(--c-line), 0.5) !important; }
+
+    /* Sombras e destaques para o modo claro */
+    html.light .bg-surface-container,
+    html.light .bg-surface-container-low,
+    html.light .bg-surface-container-high {
+      box-shadow: var(--shadow);
+    }
+    html.light header {
+      box-shadow: 0 1px 3px rgba(12, 27, 42, 0.06);
+    }
+    html.light .estacao-card {
+      border-color: rgba(var(--c-line), 0.7);
+    }
+    html.light .estacao-card[class*="border-primary"] {
+      border-color: var(--accent) !important;
+    }
+
+    /* Cores de alta legibilidade para badges em modo claro */
+    html.light .text-orange-400 { color: #c2410c !important; }
+    html.light .text-cyan-400 { color: #0e7490 !important; }
+    html.light .text-fuchsia-400 { color: #a21caf !important; }
+    html.light .text-emerald-400 { color: #047857 !important; }
+    html.light .text-amber-400 { color: #b45309 !important; }
+
+    select option {
+      background: var(--card);
+      color: var(--text);
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary": "rgb(var(--c-on-secondary) / <alpha-value>)",
+            "on-primary-container": "rgb(var(--c-on-primary) / <alpha-value>)",
+            "on-surface": "rgb(var(--c-text) / <alpha-value>)",
+            "on-surface-variant": "rgb(var(--c-muted) / <alpha-value>)",
+            "on-primary": "rgb(var(--c-onaccent) / <alpha-value>)",
+            "surface": "rgb(var(--c-surface) / <alpha-value>)",
+            "surface-tint": "rgb(var(--c-accent) / <alpha-value>)",
+            "on-tertiary": "rgb(var(--c-on-tertiary) / <alpha-value>)",
+            "surface-bright": "rgb(var(--c-surface-bright) / <alpha-value>)",
+            "background": "rgb(var(--c-bg) / <alpha-value>)",
+            "inverse-primary": "rgb(var(--c-accent) / <alpha-value>)",
+            "outline-variant": "rgb(var(--c-line) / <alpha-value>)",
+            "primary": "rgb(var(--c-accent) / <alpha-value>)",
+            "error-container": "rgb(var(--c-stop) / <alpha-value>)",
+            "tertiary-container": "rgb(var(--c-ok) / <alpha-value>)",
+            "surface-container-high": "rgb(var(--c-cardhi) / <alpha-value>)",
+            "inverse-on-surface": "rgb(var(--c-text) / <alpha-value>)",
+            "outline": "rgb(var(--c-dim) / <alpha-value>)",
+            "on-error": "rgb(var(--c-on-error) / <alpha-value>)",
+            "surface-container": "rgb(var(--c-card) / <alpha-value>)",
+            "tertiary": "rgb(var(--c-ok) / <alpha-value>)",
+            "secondary": "rgb(var(--c-warn) / <alpha-value>)",
+            "primary-container": "rgb(var(--c-accent) / <alpha-value>)",
+            "inverse-surface": "rgb(var(--c-text) / <alpha-value>)",
+            "error": "rgb(var(--c-stop) / <alpha-value>)",
+            "surface-dim": "rgb(var(--c-bg) / <alpha-value>)",
+            "secondary-container": "rgb(var(--c-warn) / <alpha-value>)",
+            "surface-variant": "rgb(var(--c-cardhighest) / <alpha-value>)",
+            "surface-container-highest": "rgb(var(--c-cardhighest) / <alpha-value>)",
+            "surface-container-low": "rgb(var(--c-surface-low) / <alpha-value>)",
+            "surface-container-lowest": "rgb(var(--c-surface-lowest) / <alpha-value>)"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          spacing: {
+            "margin-mobile": "0.75rem",
+            "space-lg": "1rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "gutter-compact": "0.5rem",
+            "margin": "1.5rem",
+            "space-xl": "1.5rem",
+            "gutter": "1rem"
+          },
+          fontFamily: {
+            "headline-md": ["Inter", "sans-serif"],
+            "metric-readout-lg": ["JetBrains Mono", "monospace"],
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "metric-readout-sm": ["JetBrains Mono", "monospace"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "display-lg": ["JetBrains Mono", "monospace"],
+            "label-caps": ["JetBrains Mono", "monospace"],
+            "body-lg": ["Inter", "sans-serif"],
+            "metric-readout-md": ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+</head><body class="bg-background text-base text-on-surface antialiased"><header class="w-full bg-surface-container-lowest border-b border-outline-variant/20 shadow-sm">
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
     <div class="flex flex-wrap items-center gap-3">
       <div class="flex items-center gap-2">
@@ -29,6 +296,12 @@
         <button class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-caps text-xs font-medium" type="button">SI MÉTRICO</button>
         <button class="px-2.5 py-1 rounded text-outline hover:text-on-surface font-label-caps text-xs" type="button">IMPERIAL</button>
       </div>
+      <button id="btn-toggle-tema" type="button" onclick="alternarTema()" aria-label="Alternar modo claro / escuro" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container border border-outline-variant/30 text-on-surface font-label-caps text-xs font-semibold hover:bg-surface-container-high transition-colors shadow-sm cursor-pointer" title="Alternar entre modo claro e modo escuro">
+        <span id="icone-tema" class="inline-flex items-center">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+        </span>
+        <span id="label-tema">Modo claro</span>
+      </button>
       <a href="inmet.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container-high text-tertiary font-label-caps text-xs font-semibold hover:bg-surface-variant border border-tertiary/40 transition-colors" title="Ver Painel Especializado Vale do Ribeira & Litoral Sul SP">
         <span class="material-symbols-outlined text-[16px]">map</span>PAINEL REGIONAL SP
       </a>
@@ -430,8 +703,8 @@
 <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 680 250">
 <defs>
 <linearGradient id="rainBarGrad" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="#4cd7f6" stop-opacity="0.85"></stop>
-<stop offset="100%" stop-color="#06b6d4" stop-opacity="0.2"></stop>
+<stop id="rain-stop-0" offset="0%" stop-color="#4cd7f6" stop-opacity="0.85"></stop>
+<stop id="rain-stop-1" offset="100%" stop-color="#06b6d4" stop-opacity="0.2"></stop>
 </linearGradient>
 <linearGradient id="radSolarArea" x1="0" x2="0" y1="0" y2="1">
 <stop offset="0%" stop-color="#ffb95f" stop-opacity="0.25"></stop>
@@ -439,11 +712,11 @@
 </linearGradient>
 </defs>
 <!-- Horizontal guides -->
-<line opacity="0.4" stroke="#3d494c" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="30" y2="30"></line>
-<line opacity="0.4" stroke="#3d494c" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="75" y2="75"></line>
-<line opacity="0.4" stroke="#3d494c" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="120" y2="120"></line>
-<line opacity="0.4" stroke="#3d494c" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="165" y2="165"></line>
-<line opacity="0.6" stroke="#3d494c" stroke-width="1" x1="40" x2="650" y1="210" y2="210"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="30" y2="30"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="75" y2="75"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="120" y2="120"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="0.75" x1="40" x2="650" y1="165" y2="165"></line>
+<line opacity="0.6" stroke="var(--line)" stroke-width="1" x1="40" x2="650" y1="210" y2="210"></line>
 <!-- Y-axis Left Labels (Chuva mm) -->
 <text class="fill-on-surface-variant font-metric-readout-sm text-xs" text-anchor="end" x="32" y="34">350</text>
 <text class="fill-on-surface-variant font-metric-readout-sm text-xs" text-anchor="end" x="32" y="79">250</text>
@@ -471,24 +744,24 @@
 <rect id="clima-bar-10" fill="url(#rainBarGrad)" height="80" rx="2" width="24" x="573" y="130"><title>NOV: 156.3 mm</title></rect>
 <rect id="clima-bar-11" fill="url(#rainBarGrad)" height="41" rx="2" width="24" x="625" y="169"><title>DEZ: 79.9 mm</title></rect>
 <!-- Temperature Line (T. Máx) -->
-<path id="clima-line-tmax" d="M65,43 L117,43 L169,47 L221,64 L273,69 L325,71 L377,71 L429,41 L481,29 L533,46 L585,21 L637,32" fill="none" stroke="#ffb95f" stroke-linecap="round" stroke-width="2.5"></path>
+<path id="clima-line-tmax" d="M65,43 L117,43 L169,47 L221,64 L273,69 L325,71 L377,71 L429,41 L481,29 L533,46 L585,21 L637,32" fill="none" stroke="var(--warn)" stroke-linecap="round" stroke-width="2.5"></path>
 <!-- Temperature Line (T. Méd) -->
-<path id="clima-line-tmed" d="M65,110 L117,112 L169,109 L221,126 L273,137 L325,148 L377,150 L429,146 L481,136 L533,130 L585,123 L637,116" fill="none" stroke="#4edea3" stroke-dasharray="4,2" stroke-linecap="round" stroke-width="2"></path>
+<path id="clima-line-tmed" d="M65,110 L117,112 L169,109 L221,126 L273,137 L325,148 L377,150 L429,146 L481,136 L533,130 L585,123 L637,116" fill="none" stroke="var(--ok)" stroke-dasharray="4,2" stroke-linecap="round" stroke-width="2"></path>
 <!-- Temperature Line (T. Mín) -->
-<path id="clima-line-tmin" d="M65,160 L117,162 L169,158 L221,202 L273,220 L325,221 L377,234 L429,224 L481,209 L533,178 L585,188 L637,176" fill="none" stroke="#4cd7f6" stroke-linecap="round" stroke-width="1.75"></path>
+<path id="clima-line-tmin" d="M65,160 L117,162 L169,158 L221,202 L273,220 L325,221 L377,234 L429,224 L481,209 L533,178 L585,188 L637,176" fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-width="1.75"></path>
 <!-- Data Point Dots (T. Méd) -->
-<circle id="clima-dot-0" cx="65" cy="110" fill="#ffb95f" r="3"><title>JAN Méd: 21.2°C</title></circle>
-<circle id="clima-dot-1" cx="117" cy="112" fill="#ffb95f" r="3"><title>FEV Méd: 20.8°C</title></circle>
-<circle id="clima-dot-2" cx="169" cy="109" fill="#ffb95f" r="3"><title>MAR Méd: 21.4°C</title></circle>
-<circle id="clima-dot-3" cx="221" cy="126" fill="#ffb95f" r="3"><title>ABR Méd: 18.5°C</title></circle>
-<circle id="clima-dot-4" cx="273" cy="137" fill="#ffb95f" r="3"><title>MAI Méd: 16.5°C</title></circle>
-<circle id="clima-dot-5" cx="325" cy="148" fill="#ffb95f" r="3"><title>JUN Méd: 14.7°C</title></circle>
-<circle id="clima-dot-6" cx="377" cy="150" fill="#ffb95f" r="3"><title>JUL Méd: 14.3°C</title></circle>
-<circle id="clima-dot-7" cx="429" cy="146" fill="#ffb95f" r="3"><title>AGO Méd: 15.0°C</title></circle>
-<circle id="clima-dot-8" cx="481" cy="136" fill="#ffb95f" r="3"><title>SET Méd: 16.7°C</title></circle>
-<circle id="clima-dot-9" cx="533" cy="130" fill="#ffb95f" r="3"><title>OUT Méd: 17.7°C</title></circle>
-<circle id="clima-dot-10" cx="585" cy="123" fill="#ffb95f" r="3"><title>NOV Méd: 19.0°C</title></circle>
-<circle id="clima-dot-11" cx="637" cy="116" fill="#ffb95f" r="3"><title>DEZ Méd: 20.1°C</title></circle>
+<circle id="clima-dot-0" cx="65" cy="110" fill="var(--warn)" r="3"><title>JAN Méd: 21.2°C</title></circle>
+<circle id="clima-dot-1" cx="117" cy="112" fill="var(--warn)" r="3"><title>FEV Méd: 20.8°C</title></circle>
+<circle id="clima-dot-2" cx="169" cy="109" fill="var(--warn)" r="3"><title>MAR Méd: 21.4°C</title></circle>
+<circle id="clima-dot-3" cx="221" cy="126" fill="var(--warn)" r="3"><title>ABR Méd: 18.5°C</title></circle>
+<circle id="clima-dot-4" cx="273" cy="137" fill="var(--warn)" r="3"><title>MAI Méd: 16.5°C</title></circle>
+<circle id="clima-dot-5" cx="325" cy="148" fill="var(--warn)" r="3"><title>JUN Méd: 14.7°C</title></circle>
+<circle id="clima-dot-6" cx="377" cy="150" fill="var(--warn)" r="3"><title>JUL Méd: 14.3°C</title></circle>
+<circle id="clima-dot-7" cx="429" cy="146" fill="var(--warn)" r="3"><title>AGO Méd: 15.0°C</title></circle>
+<circle id="clima-dot-8" cx="481" cy="136" fill="var(--warn)" r="3"><title>SET Méd: 16.7°C</title></circle>
+<circle id="clima-dot-9" cx="533" cy="130" fill="var(--warn)" r="3"><title>OUT Méd: 17.7°C</title></circle>
+<circle id="clima-dot-10" cx="585" cy="123" fill="var(--warn)" r="3"><title>NOV Méd: 19.0°C</title></circle>
+<circle id="clima-dot-11" cx="637" cy="116" fill="var(--warn)" r="3"><title>DEZ Méd: 20.1°C</title></circle>
 <!-- X Axis Month Labels -->
 <text class="fill-on-surface-variant font-label-caps text-xs" text-anchor="middle" x="65" y="230">JAN</text>
 <text class="fill-on-surface-variant font-label-caps text-xs" text-anchor="middle" x="117" y="230">FEV</text>
@@ -570,22 +843,22 @@ CIRCULAÇÃO ANUAL INTEGRADA • RAJADA MÁXIMA 18.6 m/s (INVERNO)
 </linearGradient>
 </defs>
 <!-- Anéis de Velocidade / Rajada com Rótulos -->
-<circle cx="120" cy="120" fill="none" r="100" stroke="#334155" stroke-width="1.2"></circle>
-<circle cx="120" cy="120" fill="none" r="75" stroke="#334155" stroke-dasharray="3,3" stroke-width="1"></circle>
-<circle cx="120" cy="120" fill="none" r="50" stroke="#334155" stroke-dasharray="3,3" stroke-width="1"></circle>
-<circle cx="120" cy="120" fill="none" r="25" stroke="#334155" stroke-dasharray="3,3" stroke-width="1"></circle>
+<circle cx="120" cy="120" fill="none" r="100" stroke="var(--line)" stroke-width="1.2"></circle>
+<circle cx="120" cy="120" fill="none" r="75" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="1"></circle>
+<circle cx="120" cy="120" fill="none" r="50" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="1"></circle>
+<circle cx="120" cy="120" fill="none" r="25" stroke="var(--line)" stroke-dasharray="3,3" stroke-width="1"></circle>
 
 <!-- Rótulos de Rajada nos anéis (m/s) -->
-<text x="122" y="98" fill="#64748b" class="font-mono text-[9px]">5 m/s</text>
-<text x="122" y="73" fill="#64748b" class="font-mono text-[9px]">10 m/s</text>
-<text x="122" y="48" fill="#64748b" class="font-mono text-[9px]">15 m/s</text>
-<text x="122" y="24" fill="#f43f5e" class="font-mono text-[9px] font-bold">20 m/s (Rajada)</text>
+<text x="122" y="98" fill="var(--dim)" class="font-mono text-[9px]">5 m/s</text>
+<text x="122" y="73" fill="var(--dim)" class="font-mono text-[9px]">10 m/s</text>
+<text x="122" y="48" fill="var(--dim)" class="font-mono text-[9px]">15 m/s</text>
+<text x="122" y="24" fill="var(--stop)" class="font-mono text-[9px] font-bold">20 m/s (Rajada)</text>
 
 <!-- Eixos cardeais -->
-<line stroke="#475569" stroke-width="1.2" x1="120" x2="120" y1="12" y2="228"></line>
-<line stroke="#475569" stroke-width="1.2" x1="12" x2="228" y1="120" y2="120"></line>
-<line opacity="0.4" stroke="#475569" stroke-dasharray="2,2" stroke-width="0.75" x1="45" x2="195" y1="45" y2="195"></line>
-<line opacity="0.4" stroke="#475569" stroke-dasharray="2,2" stroke-width="0.75" x1="195" x2="45" y1="45" y2="195"></line>
+<line stroke="var(--line)" stroke-width="1.2" x1="120" x2="120" y1="12" y2="228"></line>
+<line stroke="var(--line)" stroke-width="1.2" x1="12" x2="228" y1="120" y2="120"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="2,2" stroke-width="0.75" x1="45" x2="195" y1="45" y2="195"></line>
+<line opacity="0.4" stroke="var(--line)" stroke-dasharray="2,2" stroke-width="0.75" x1="195" x2="45" y1="45" y2="195"></line>
 
 <!-- PÉTALAS COM CORES DISTINTAS POR TIPO DE FLUXO E RAJADA -->
 <!-- 1. FLUXO CONTINENTAL / PLANALTO (N & NE) - VERDE ESMERALDA (#10b981) - Rajada 13.5 m/s -->
@@ -2182,7 +2455,51 @@ Sem indicação de queda abrupta de pressão nas últimas 12 horas. Próxima fre
     document.body.removeChild(link);
   };
 
+  window.alternarTema = function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    aplicarTema(!isDark);
+  };
+
+  window.aplicarTema = function(dark) {
+    const html = document.documentElement;
+    const icone = document.getElementById('icone-tema');
+    const label = document.getElementById('label-tema');
+    const btn = document.getElementById('btn-toggle-tema');
+
+    if (dark) {
+      html.classList.add('dark');
+      html.classList.remove('light');
+      if (icone) {
+        icone.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>';
+      }
+      if (label) label.textContent = 'Modo claro';
+      if (btn) btn.setAttribute('aria-label', 'Mudar para modo claro');
+      try { localStorage.setItem('inmet_tema', 'dark'); } catch(e){}
+    } else {
+      html.classList.remove('dark');
+      html.classList.add('light');
+      if (icone) {
+        icone.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg>';
+      }
+      if (label) label.textContent = 'Modo escuro';
+      if (btn) btn.setAttribute('aria-label', 'Mudar para modo escuro');
+      try { localStorage.setItem('inmet_tema', 'light'); } catch(e){}
+    }
+
+    const r0 = document.getElementById('rain-stop-0');
+    const r1 = document.getElementById('rain-stop-1');
+    if (r0) r0.setAttribute('stop-color', dark ? '#4cd7f6' : '#00687a');
+    if (r1) r1.setAttribute('stop-color', dark ? '#06b6d4' : '#008299');
+  };
+
   async function initInmetApp() {
+    try {
+      const salvo = localStorage.getItem('inmet_tema');
+      const prefereDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const dark = salvo ? (salvo === 'dark') : (prefereDark !== false);
+      aplicarTema(dark);
+    } catch(e) {}
+
     try {
       const respRegional = await fetch('inmet_regional.json');
       if (respRegional.ok) {
