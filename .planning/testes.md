@@ -40,6 +40,9 @@ quebram, e é isso que se quer.
 | T03.3 | `test_mes_e_dia_nao_convivem_no_mesmo_mes` | coletar diário depois de mensal apaga o total do mês; a soma dos dias continua igual ao total |
 | T03.4 | `test_mensal_apaga_os_dias_do_mes` | a invariante vale nos dois sentidos |
 | T03.5 | `test_primeiro_fato_recalcula_para_tras` | `primeiro_fato` é o menor `data` do banco, mesmo coletado fora de ordem — regressão de `COALESCE` que congelava a data |
+| T03.6 | `test_janela_parte_do_ultimo_mes_gravado` | `atualizar` começa no último mês gravado, não em 2000 — 2 requisições em vez de 315 |
+| T03.7 | `test_janela_para_no_mes_de_ontem` | no dia 1º a janela não pede um mês que ainda não tem dia |
+| T03.8 | `test_banco_vazio_comeca_em_2000` | a primeira execução não cai em 1990, onde cada mês custa 1,5 s |
 
 ## T05 — Relatório
 

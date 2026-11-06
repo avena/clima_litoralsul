@@ -4,6 +4,7 @@
     python3 coletor.py catalogo
     python3 coletor.py coletar --desde 2000-01 --ate 2026-10
     python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-30 --diario
+    python3 coletor.py atualizar        # último mês gravado → ontem
     python3 coletor.py auditar
 
 Banco único em `dados/clima.sqlite`. Nenhuma dependência externa.
@@ -22,6 +23,7 @@ from __future__ import annotations
 import argparse
 import sqlite3
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 from fontes import ciiagro, inmet, nasa_power
@@ -226,6 +228,57 @@ def coletar(conn: sqlite3.Connection, desde: str, ate: str, diario: bool, fonte:
         print("fora do catálogo (rode `catalogo`): " + ", ".join(sorted(ignorados)))
 
 
+def janela_incremental(ultimo: str | None, hoje: date) -> tuple[str, str]:
+    """Primeiro e último mês da coleta incremental.
+
+    Args:
+        ultimo: `AAAA-MM` do mês mais recente já gravado, ou `None` em banco vazio.
+        hoje: dia de referência; a série para no dia anterior.
+
+    Returns:
+        `(desde, ate)` em `AAAA-MM`. `desde` repete o último mês de propósito:
+        ele pode ter sido gravado no meio do mês e estar incompleto.
+    """
+    return (ultimo or "2000-01", (hoje - timedelta(days=1)).strftime("%Y-%m"))
+
+
+def atualizar(conn: sqlite3.Connection, hoje: date | None = None,
+              fonte: str = "todas") -> None:
+    """Raspa só o que falta: do último mês gravado até ontem.
+
+    Args:
+        conn: conexão aberta por `abrir`.
+        hoje: dia de referência; `None` usa `date.today()`. Existe para o teste.
+        fonte: 'todas', 'ciiagro', 'inmet' ou 'nasa_power'.
+
+    Efeitos:
+        Chama `coletar` para uma janela de 1 a 3 meses em vez da série inteira.
+
+    Nota:
+        Mês guardado em dias (`coletar --diario`) faz a janela parar no mês
+        anterior: a coleta é mensal e `substituir_granularidade` apagaria os
+        dias, então a rotina recua em vez de destruir o que já existe.
+    """
+    hoje = hoje or date.today()
+    modulos = [k for k in MODULOS_FONTES if fonte in ("todas", k)]
+    marcas = ",".join("?" * len(modulos))
+    ultimo = conn.execute(
+        "SELECT MAX(substr(f.data, 1, 7)) FROM fato f JOIN ponto p ON p.id = f.ponto_id "
+        f"WHERE length(f.data) = 7 AND p.fonte IN ({marcas})", modulos).fetchone()[0]
+    desde, ate = janela_incremental(ultimo, hoje)
+
+    diario = conn.execute(
+        "SELECT MIN(substr(data, 1, 7)) FROM fato WHERE length(data) = 10").fetchone()[0]
+    if diario and desde <= diario <= ate:
+        ate = (date(int(diario[:4]), int(diario[5:]), 1) - timedelta(days=1)).strftime("%Y-%m")
+        print(f"aviso: {diario} está em dias; a coleta para em {ate}", file=sys.stderr)
+
+    if desde > ate:
+        print(f"nada a coletar: a série já chega a {desde}", file=sys.stderr)
+        return
+    coletar(conn, desde, ate, False, fonte)
+
+
 def auditar(conn: sqlite3.Connection) -> None:
     """Imprime a cobertura por estação e os valores que exigem desconfiança.
 
@@ -316,6 +369,8 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--diario", action="store_true", help="dia em vez de mês")
     c.add_argument("--fonte", choices=["todas", "ciiagro", "inmet", "nasa_power"], default="todas")
     sub.add_parser("auditar", help="cobertura e valores suspeitos")
+    at = sub.add_parser("atualizar", help="raspa só do último mês gravado até ontem")
+    at.add_argument("--fonte", choices=["todas", "ciiagro", "inmet", "nasa_power"], default="todas")
 
     a = p.parse_args(argv)
     conn = abrir(a.db)
@@ -323,6 +378,8 @@ def main(argv: list[str] | None = None) -> int:
         catalogo(conn, fonte=a.fonte)
     elif a.cmd == "coletar":
         coletar(conn, a.desde, a.ate, a.diario, fonte=a.fonte)
+    elif a.cmd == "atualizar":
+        atualizar(conn, fonte=a.fonte)
     else:
         auditar(conn)
     return 0

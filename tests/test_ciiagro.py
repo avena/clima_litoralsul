@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 import coletor
@@ -134,6 +135,25 @@ class TestPeriodos(unittest.TestCase):
         """A contagem de dias atravessa a virada de mês, inclusiva."""
         self.assertEqual(ciiagro._chaves("2026-10-30", "2026-11-01", True),
                          ["2026-10-30", "2026-10-31", "2026-11-01"])
+
+
+class TestIncremental(unittest.TestCase):
+    """Garante que `atualizar` raspa só a ponta da série, não os 26 anos."""
+
+    def test_janela_parte_do_ultimo_mes_gravado(self):
+        """Repetir o último mês é de propósito: ele pode ter sido gravado no meio."""
+        self.assertEqual(coletor.janela_incremental("2026-10", date(2026, 11, 6)),
+                         ("2026-10", "2026-11"))
+
+    def test_janela_para_no_mes_de_ontem(self):
+        """No dia 1º, ontem ainda é o mês anterior — não adianta pedir o mês novo."""
+        self.assertEqual(coletor.janela_incremental("2026-10", date(2026, 11, 1)),
+                         ("2026-10", "2026-10"))
+
+    def test_banco_vazio_comeca_em_2000(self):
+        """Sem série, o piso é 2000-01: mês de 1990 custa 1,5 s contra 0,24 s."""
+        self.assertEqual(coletor.janela_incremental(None, date(2026, 11, 6)),
+                         ("2000-01", "2026-11"))
 
 
 class TestMunicipios(unittest.TestCase):

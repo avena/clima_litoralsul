@@ -107,8 +107,21 @@ rastrear o mínimo incrementalmente — e sempre correto.
 
 ### 03.9 — CLI
 
-`argparse` com `--db`, e subcomandos `catalogo`, `coletar` e `auditar`.
-`--diario` é flag de `coletar`; o padrão é mensal porque custa 25× menos.
+`argparse` com `--db`, e subcomandos `catalogo`, `coletar`, `atualizar` e
+`auditar`. `--diario` é flag de `coletar`; o padrão é mensal porque custa 25×
+menos.
+
+### 03.10 — Coleta incremental (`atualizar`)
+
+`janela_incremental(ultimo, hoje)` devolve do último mês gravado até o **mês de
+ontem**; `atualizar` chama `coletar` só nessa janela. Um a três meses, duas a
+três requisições, 3 s — contra 315 requisições e ~2 min da série inteira.
+
+O último mês é repetido de propósito: ele pode ter sido gravado no meio do mês e
+estar incompleto. Recoletar não piora nada (o UPSERT usa `COALESCE`).
+
+Mês guardado em dias faz a janela recuar para o mês anterior: a coleta é mensal
+e `substituir_granularidade` apagaria os dias.
 
 ## Critério de aceite
 
@@ -125,5 +138,7 @@ rastrear o mínimo incrementalmente — e sempre correto.
   veranico; quando isso for necessário, `--diario` grava no mesmo `fato` e a
   invariante impede a dupla contagem.
 - **`COALESCE` no UPSERT.** Coleta parcial nunca apaga medição boa.
-- **Sem `--retomar`.** O UPSERT é idempotente: repetir o intervalo é mais
-  simples do que calcular onde parou, e custa segundos.
+- **Sem `--retomar` em `coletar`.** O UPSERT é idempotente: pedir um intervalo
+  explícito é mais simples do que calcular onde parou. Para a rotina diária
+  existe `atualizar`, que é onde a janela é calculada — repetir 315 requisições
+  todo dia não se justifica.
