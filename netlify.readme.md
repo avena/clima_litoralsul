@@ -38,12 +38,16 @@ git push
 ## Atualizar os dados depois
 
 ```bash
-python3 coletor.py coletar --desde 2000-01 --ate 2026-10   # ou cron
-./deploy.sh                                                # JSON novo + build + push
+./update-diario.sh        # ou cron
 ```
 
-`./deploy.sh` roda `relatorio.py`, os 26 testes, o `npm run check`, o build,
-commita só `site/public/dados.json` e faz push — a Netlify rebuilda sozinha.
+`./update-diario.sh` roda `coletor.py atualizar` (só o que falta, até ontem) e
+depois `./deploy.sh`, que roda `relatorio.py`, os testes, o `npm run check`, o
+build, commita os gerados (`dados.json`, fichas `.tex` e PDFs) e faz push — a
+Netlify rebuilda sozinha. Para recoletar uma janela específica, use
+`coletor.py coletar --desde … --ate …` antes do `./deploy.sh`.
+
+`set -e` no script: se a coleta falhar, nada é publicado.
 
 A data que aparece no rodapé ("Dados sincronizados em") é a do `dados.json`, não
 a do build. O hash e a hora do rodapé vêm do build (`vite.config.js` lê

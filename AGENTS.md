@@ -11,6 +11,7 @@ python3 coletor.py catalogo                        # 3 requisições; rode antes
 python3 coletor.py coletar --desde 2000-01 --ate 2026-10           # mensal, ~2 min
 python3 coletor.py coletar --desde 2026-10-01 --ate 2026-10-31 --diario
 python3 coletor.py atualizar                       # só do último mês gravado até ontem, ~3 s
+./update-diario.sh                                 # atualizar + build + commit dos dados + push
 python3 coletor.py auditar                         # cobertura + suspeitas; nunca escreve
 python3 relatorio.py                               # site/public/dados.json
 ./start.sh                                         # export + build + porta aleatória, 0.0.0.0
