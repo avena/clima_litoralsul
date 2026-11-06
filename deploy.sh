@@ -4,9 +4,10 @@
 #   ./deploy.sh              # regenera o JSON e empurra para main
 #   ./deploy.sh "mensagem"   # mesma coisa com mensagem de commit própria
 #
-# Commita só o que é gerado: `site/public/dados.json` e os PDFs em
-# `site/public/fichas/`. Alteração de código você commita antes: o script aborta
-# se houver outra coisa pendente, em vez de esconder no commit de dados.
+# Commita só o que é gerado: `site/public/dados.json`, os PDFs em
+# `site/public/fichas/` e as fichas `.tex` de que eles saem. Alteração de código
+# você commita antes: o script aborta se houver outra coisa pendente, em vez de
+# esconder no commit de dados.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -25,7 +26,7 @@ python3 -m unittest discover -s tests -q
 npm --prefix site run check
 npm --prefix site run build
 
-GERADOS='site/public/dados.json site/public/fichas'
+GERADOS='site/public/dados.json site/public/fichas latex/fichas'
 if [ -n "$(git status --porcelain -- . ':!site/public/dados.json' ':!site/public/fichas')" ]; then
   echo "Há alteração pendente fora dos arquivos gerados — commite antes de publicar:" >&2
   git status --short -- . ':!site/public/dados.json' ':!site/public/fichas' >&2
