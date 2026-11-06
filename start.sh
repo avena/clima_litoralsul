@@ -35,7 +35,7 @@ echo "Painel Climatológico (25 municípios):"
 echo "  -> Linux/WSL:  http://localhost:$PORT"
 [ -n "$IP" ] && echo "  -> Windows:    http://$IP:$PORT"
 echo
-echo "Dados Históricos INMET (A712, A746, A766):"
+echo "Dados Históricos INMET (rede nacional, 705 estações):"
 echo "  -> Linux/WSL:  http://localhost:$PORT/inmet.html"
 [ -n "$IP" ] && echo "  -> Windows:    http://$IP:$PORT/inmet.html"
 
@@ -51,11 +51,6 @@ echo "================================================================"
 echo
 
 python3 relatorio.py
-
-# Garante que o JSON do INMET histórico está disponível na pasta pública
-if [ ! -f site/public/inmet_regional.json ] && [ -f dadoshistoricosinmet/inmet_regional.json ]; then
-  cp dadoshistoricosinmet/inmet_regional.json site/public/inmet_regional.json
-fi
 
 [ -d site/node_modules ] || npm --prefix site install --no-fund --no-audit
 
