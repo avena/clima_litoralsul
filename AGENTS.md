@@ -14,7 +14,7 @@ python3 coletor.py auditar                         # cobertura + suspeitas; nunc
 python3 relatorio.py                               # site/public/dados.json
 ./start.sh                                         # export + build + porta aleatória, 0.0.0.0
 ./start.sh --dev                                   # vite dev, hot reload
-python3 -m unittest discover -s tests              # 25 testes, ~2 s, sem rede
+python3 -m unittest discover -s tests              # 43 testes, ~2 s, sem rede
 npm --prefix site run check                        # render do SPA fora do navegador
 python3 -m unittest tests.test_ciiagro.TestBanco.test_upsert_nao_duplica   # um teste só
 ```

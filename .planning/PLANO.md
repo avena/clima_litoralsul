@@ -3,7 +3,8 @@
 Série climática dos 25 municípios do **Litoral Sul Paulista + Vale do Ribeira**
 (faixa costeira, baixo/médio curso e Alto Vale), a partir do CIIAGRO. Escopo
 aprovado: **só CIIAGRO, escopo honesto** — nenhuma estimativa apresentada como
-medição.
+medição. A tarefa 09 acrescenta o arquivo histórico do INMET como segunda
+fonte, nacional e de série longa.
 
 ## Índice
 
@@ -12,6 +13,7 @@ medição.
 | `tarefas/01-catalogo.md` | 17 municípios + 23 estações, coordenadas, datas de início (histórico; hoje 25 + 23) |
 | `tarefas/07-ficha-a4.md` | ficha A4 em LaTeX, preto e branco, e uso no planejamento |
 | `tarefas/08-litoral-e-vale.md` | 25 municípios em 3 regiões: Litoral Sul, Vale do Ribeira, Alto Vale |
+| `tarefas/09-inmet-historico.md` | INMET nacional 2000–2026: mensal/anual, relatório e painel |
 | `tarefas/02-extrator.md` | HTML do CIIAGRO → 8 colunas canônicas |
 | `tarefas/03-coletor.md` | série histórica, UPSERT, invariante mês/dia |
 | `tarefas/04-auditoria.md` | cobertura e valores suspeitos |
@@ -30,6 +32,7 @@ medição.
 | 06 | Painel React | 05 | **feito** |
 | 07 | Ficha A4 | 05, 06 | **feito** (PDF P&B) |
 | 08 | Litoral e Vale | 01, 05, 06, 07 | **feito** (25 municípios, 3 regiões) |
+| 09 | INMET histórico | 05, 06 | **feito** (nacional 2000–2026) |
 
 ---
 

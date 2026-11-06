@@ -3,7 +3,7 @@
 Todo teste tem docstring dizendo **o que ele garante**, não o que ele faz. Um
 teste sem essa frase é um teste que ninguém sabe se pode apagar.
 
-Rodar: `python3 -m unittest discover -s tests -v` (16 testes, ~0,5 s, sem rede).
+Rodar: `python3 -m unittest discover -s tests -v` (43 testes, ~2 s, sem rede).
 
 Os fixtures em `tests/fixtures/` foram baixados do CIIAGRO em 2026-10-30. Eles
 são a única verdade sobre o formato da página: se o site mudar o HTML, os testes
@@ -79,6 +79,18 @@ dá 39,8%).
 | T07.4 | `test_inicio_das_chuvas_e_o_mes_depois_do_seco_nao_janeiro` | a volta das chuvas é o mês seguinte ao mais seco; pegar o primeiro mês úmido do ano civil mandava aplicar calcário em janeiro |
 | T07.5 | `test_regiao_leva_orientacao_geral_no_json` | a orientação que vale para todo município (`regiao.uso`) vai no topo do `dados.json` |
 | T07.6 | `site/check.jsx` | o card de uso, a média sazonal vinda do JSON e os acumulados de solstício aparecem no HTML renderizado, uma vez só; o bloco regional **não** está dentro de `<details>` — conselho escondido atrás de um clique não é lido |
+
+## T08 — Dados históricos INMET
+
+CSV horário de 27 pacotes anuais, agregado em mensal + anual. Testes usam
+SQLite em memória e um CSV sintético: não dependem dos ZIPs nem de rede.
+
+| ID | Teste | O que garante |
+|---|---|---|
+| T08.1 | `test_to_num` | `-9999`, campo vazio e vírgula decimal são lidos sem virar medição — ausência nunca vira `0` |
+| T08.2 | `test_parse_csv_estacao` | um dia inteiro em `-9999` sai com `NULL`; o dia com leitura soma a chuva e tira média só do que existe |
+| T08.3 | `test_pico_fora_da_serie_do_mes_vira_null` | Belém 45,0 °C em 12/2005 é anulado como máxima **e** como mínima, sem tocar em `tmed` nem em chuva |
+| T08.4 | `test_frio_real_abaixo_de_menos_cinco_fica` | mínima de −5 °C dentro da variabilidade da própria estação continua sendo clima — o filtro é estatístico, não uma faixa fixa |
 
 ## O que não está testado, e por quê
 
