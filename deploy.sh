@@ -27,9 +27,9 @@ npm --prefix site run check
 npm --prefix site run build
 
 GERADOS='site/public/dados.json site/public/fichas latex/fichas'
-if [ -n "$(git status --porcelain -- . ':!site/public/dados.json' ':!site/public/fichas')" ]; then
+if [ -n "$(git status --porcelain -- . ':!site/public/dados.json' ':!site/public/fichas' ':!latex/fichas')" ]; then
   echo "Há alteração pendente fora dos arquivos gerados — commite antes de publicar:" >&2
-  git status --short -- . ':!site/public/dados.json' ':!site/public/fichas' >&2
+  git status --short -- . ':!site/public/dados.json' ':!site/public/fichas' ':!latex/fichas' >&2
   exit 1
 fi
 
