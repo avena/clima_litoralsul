@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="INMET — médias anuais e acumulados do período histórico por estação (2000–2026)">
   <meta name="theme-color" content="#eef3f7">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23eef3f7'/><path d='M16 6c4.2 5.2 7.4 8.6 7.4 12a7.4 7.4 0 1 1-14.8 0C8.6 14.6 11.8 11.2 16 6z' fill='%2300687a'/></svg>">
   <title>INMET · Médias e acumulados históricos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -131,7 +132,7 @@
       align-items: start;
     }
     @media (max-width: 980px) {
-      .layout { grid-template-columns: 1fr; padding: 16px; }
+      .layout { grid-template-columns: minmax(0, 1fr); padding: 16px; }
     }
 
     aside {
@@ -426,7 +427,8 @@
         if (!termo) return true;
         return (e.nome + ' ' + e.cod).toLowerCase().includes(termo);
       });
-      el('contador').textContent = `${lista.length} estação${lista.length === 1 ? '' : 'ões'}`;
+      el('contador').textContent =
+        `${lista.length} ${lista.length === 1 ? 'estação' : 'estações'}`;
       return lista;
     }
 
