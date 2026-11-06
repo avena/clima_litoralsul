@@ -73,6 +73,9 @@ Tailwind pelo CDN e só conhecia A712/A746/A766).
 - Seletor Brasil + filtro UF + busca, tira de cobertura com 27 células, tiles
   em 3 blocos (6, 3 e 2 colunas), climatograma, série anual, tabela e CSV.
 - Lê `inmet_catalogo.json` e `inmet_series.json` de `site/public/`.
+- Ao lado de Lat/Lon, um link `https://www.google.com/maps?q=<lat>,<lon>` abre
+  a estação no mapa (mesmo link nas duas páginas; coordenada crua na URL, não
+  a formatada em pt-BR).
 
 `site/inmettodas.html` foi **apagado**: gerava perfis sintéticos a partir de
 latitude/longitude (`gerarPerfilBrasil`) e não podia ser publicado como dado do

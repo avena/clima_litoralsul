@@ -121,6 +121,8 @@
     .hero .cod { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-left: 8px; }
     .hero .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 11px; color: var(--muted); }
     .hero .meta b { color: var(--text); font-weight: 600; }
+    .hero .meta a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .hero .meta a:hover { text-decoration: underline; }
     .badge {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 5px 10px; border-radius: 999px;
@@ -546,6 +548,11 @@
       el('hero-nome').innerHTML = `${esc(est.nome)}<span class="cod">${esc(est.cod)}</span>`;
       el('hero-meta').innerHTML = [
         `<span>UF <b>${esc(est.uf || '—')}</b></span>`,
+        `<span>Lat <b>${num(est.lat, 3)}°</b></span>`,
+        `<span>Lon <b>${num(est.lon, 3)}°</b></span>`,
+        est.lat != null && est.lon != null
+          ? `<span><a href="https://www.google.com/maps?q=${est.lat},${est.lon}" target="_blank" rel="noopener">Google Maps ↗</a></span>`
+          : '',
         `<span>Cultura <b>${esc(c.nome)}</b></span>`,
         `<span>Mês <b>${MESES[mes - 1]}</b></span>`,
         d ? `<span>Normal <b>${num(d.chuva)} mm · ${num(d.tmed, 1)} °C · UR ${num(d.ur)}%</b></span>` : '<span>Estação sem normal mensal</span>',
