@@ -111,7 +111,7 @@ export default function Climatograma({
         const y = db - frac * (db - dt);
         return (
           <g key={i}>
-            <line x1={dl} x2={dr} y1={y} y2={y} stroke="#1d2740" strokeDasharray="3 5" />
+            <line x1={dl} x2={dr} y1={y} y2={y} stroke="#3a5063" strokeOpacity="0.55" strokeDasharray="3 5" />
             <text x={dl - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#4cd7f6">
               {Math.round(topoChuva * frac)}
             </text>

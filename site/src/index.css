@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-fundo: #080d1a;
-  --color-painel: #0f172b;
-  --color-painel-alto: #131d33;
-  --color-borda: #1d2740;
-  --color-texto: #dae2fd;
-  --color-fraco: #93a0bd;
+  --color-fundo: #101d2c;
+  --color-painel: #17283a;
+  --color-painel-alto: #1b2e42;
+  --color-borda: #3a5063;
+  --color-texto: #d7e5f5;
+  --color-fraco: #b3c2cf;
   --color-chuva: #4cd7f6;
   --color-med: #b4c5ff;
   --color-quente: #ffb690;
