@@ -1,6 +1,8 @@
 """Testes do módulo de dados históricos do INMET (dadoshistoricosinmet)."""
+import sqlite3
 import unittest
-from dadoshistoricosinmet.processar import _to_num, parse_csv_estacao
+
+from dadoshistoricosinmet.processar import _to_num, parse_csv_estacao, sanitizar_extremos
 
 
 class TestDadosHistoricosINMET(unittest.TestCase):
@@ -60,6 +62,49 @@ class TestDadosHistoricosINMET(unittest.TestCase):
         self.assertEqual(d2["data"], "2023-01-02")
         self.assertIsNone(d2["tmed"])
         self.assertIsNone(d2["chuva"])
+
+
+class TestSanitizarExtremos(unittest.TestCase):
+    """O filtro de extremos tira o pico do sensor sem apagar frio real."""
+
+    def _banco(self, linhas):
+        conn = sqlite3.connect(":memory:")
+        conn.execute(
+            "CREATE TABLE inmet_mensal "
+            "(codigo TEXT, mes TEXT, chuva REAL, tmed REAL, tmax REAL, tmin REAL)"
+        )
+        conn.executemany(
+            "INSERT INTO inmet_mensal VALUES (?, ?, 100.0, 22.0, ?, ?)", linhas
+        )
+        return conn
+
+    def test_pico_fora_da_serie_do_mes_vira_null(self):
+        """Um 45,0 °C isolado em dezembro não sobrevive como máxima do mês."""
+        conn = self._banco(
+            [("A201", f"{ano}-12", 34.0, 22.0) for ano in range(2000, 2006)]
+            + [("A201", "2005-12", 45.0, 0.0)]
+        )
+        self.assertEqual(sanitizar_extremos(conn), 2)
+        linha = conn.execute(
+            "SELECT tmax, tmin, tmed, chuva FROM inmet_mensal "
+            "WHERE mes = '2005-12'"
+        ).fetchone()
+        self.assertEqual(linha, (None, None, 22.0, 100.0))
+
+    def test_frio_real_abaixo_de_menos_cinco_fica(self):
+        """Mínima de −5 °C dentro da variabilidade da estação é clima, não lixo."""
+        conn = self._banco(
+            [("A850", f"{ano}-07", 18.0, valor)
+             for ano, valor in zip(range(2000, 2006), (-4.0, -5.0, -6.0, -7.0, -5.5))]
+            + [("A850", "2006-07", 17.0, -5.0)]
+        )
+        self.assertEqual(sanitizar_extremos(conn), 0)
+        self.assertEqual(
+            conn.execute(
+                "SELECT tmin FROM inmet_mensal WHERE mes = '2006-07'"
+            ).fetchone()[0],
+            -5.0,
+        )
 
 
 if __name__ == "__main__":
