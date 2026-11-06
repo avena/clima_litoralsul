@@ -12,3 +12,7 @@ cd "$(dirname "$0")"
 
 python3 coletor.py atualizar
 ./deploy.sh
+# O deploy só acontece em push para `main`; o push acima foi do branch atual
+# (`dev`). Fast-forward explícito: se `main` divergiu, o git recusa em vez de
+# publicar outra coisa.
+git push origin HEAD:main
