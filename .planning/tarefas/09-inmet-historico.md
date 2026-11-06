@@ -79,6 +79,30 @@ latitude/longitude (`gerarPerfilBrasil`) e não podia ser publicado como dado do
 INMET. Com ele saíram `site/src/inmet_main.jsx`, `site/src/InmetApp.jsx` e
 `site/public/inmet_regional.json`, que só existiam para alimentá-lo.
 
+## Agro (`site/inmetagro.html`)
+
+O `inmettodas.html` tinha dois blocos agronômicos — **Janela de Operações
+Agrícolas** e **Hidroponia & Cultivo Protegido** — que sumiram com a página.
+Foram recuperados numa página própria, ligada pelo botão "Agro & Hidroponia"
+do painel (o link carrega a estação aberta em `?e=`).
+
+O conteúdo antigo não foi copiado: ele vinha de `gerarPerfilBrasil`, que
+**inventava** vento (2,1 m/s) e radiação (18,4 MJ/m²) a partir de lat/lon. A
+versão nova usa só o que a série consolidada tem:
+
+| Bloco | Cálculo |
+|---|---|
+| ET₀ | Hargreaves-Samani: T máx/mín/média + latitude, sem radiação nem vento |
+| DPV | Tetens/FAO-56 sobre a normal de `tmed` e `ur` |
+| Operações | 6 cartões por chuva, temperatura e UR do mês |
+| Calendário | 4 linhas; as de chuva comparam os meses **entre si** naquele ano |
+| Alertas | fungos, calor, frio/geada e veranico, com gatilhos explícitos |
+| Hidroponia | presets alface/tomate/morango; CE e pH são **meta**, não medição |
+
+Vento e radiação ficam de fora com aviso no rodapé — o CSV horário tem os dois,
+mas a agregação mensal não os guarda. DLI aparece como "não consolidado" em vez
+de virar número.
+
 ## Aceite
 
 - [x] 27/27 ZIPs em cache e processados.
@@ -89,6 +113,8 @@ INMET. Com ele saíram `site/src/inmet_main.jsx`, `site/src/InmetApp.jsx` e
       usados pelo JS existem no HTML.
 - [x] `site/inmettodas.html` removido e `vite.config.js` sem o input.
 - [x] `start.sh` sem o `cp` de `inmet_regional.json`.
+- [x] `site/inmetagro.html` recupera janela de operações e hidroponia com dados
+      reais (ET₀ Hargreaves, DPV Tetens) e é ligado pelo painel com `?e=`.
 - [x] 43 testes passando; T08 registrado em `.planning/testes.md`.
 
 ## Nota

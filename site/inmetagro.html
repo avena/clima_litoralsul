@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="INMET Agro — janela de operações agrícolas e hidroponia a partir das normais mensais da estação">
+  <meta name="theme-color" content="#eef3f7">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23eef3f7'/><path d='M16 6c4.2 5.2 7.4 8.6 7.4 12a7.4 7.4 0 1 1-14.8 0C8.6 14.6 11.8 11.2 16 6z' fill='%2300687a'/></svg>">
+  <title>INMET Agro · Operações agrícolas e hidroponia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // Mesma chave do painel INMET: quem escolheu escuro lá continua escuro aqui.
+    (function () {
+      try {
+        var salvo = localStorage.getItem('inmet_tema_v2');
+        document.documentElement.classList.toggle('dark', salvo === 'dark');
+        document.documentElement.classList.toggle('light', salvo !== 'dark');
+      } catch (e) {
+        document.documentElement.classList.add('light');
+      }
+    })();
+  </script>
+  <style>
+    :root, html.light {
+      --bg: #eef3f7;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --card-2: #f4f7fa;
+      --line: #cbd5dc;
+      --text: #0c1b2a;
+      --muted: #3f505c;
+      --dim: #6b7a86;
+      --accent: #00687a;
+      --accent-weak: rgba(0, 104, 122, .12);
+      --ok: #006c49;
+      --ok-weak: rgba(0, 108, 73, .14);
+      --warn: #8a5300;
+      --warn-weak: rgba(138, 83, 0, .14);
+      --stop: #b3261e;
+      --stop-weak: rgba(179, 38, 30, .12);
+      --shadow: 0 1px 3px rgba(12, 27, 42, .08);
+    }
+    html.dark {
+      --bg: #101d2c;
+      --surface: #17283a;
+      --card: #1b2e42;
+      --card-2: #21374e;
+      --line: #3a5063;
+      --text: #d7e5f5;
+      --muted: #b3c2cf;
+      --dim: #8ea0ae;
+      --accent: #4cd7f6;
+      --accent-weak: rgba(76, 215, 246, .14);
+      --ok: #4edea3;
+      --ok-weak: rgba(78, 222, 163, .14);
+      --warn: #ffb95f;
+      --warn-weak: rgba(255, 185, 95, .14);
+      --stop: #ff9d92;
+      --stop-weak: rgba(255, 157, 146, .14);
+      --shadow: none;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      transition: background-color .2s ease, color .2s ease;
+    }
+    h1, h2, h3, p { margin: 0; }
+    button, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, select:focus-visible, a:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 2px;
+    }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    header { background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
+    .topbar {
+      max-width: 1280px; margin: 0 auto; padding: 14px 24px;
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+      background: var(--ok-weak); color: var(--ok); font-size: 19px;
+    }
+    .brand-title { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--ok); }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--card-2); color: var(--text);
+      font-size: 11px; font-weight: 600; text-decoration: none;
+    }
+    .btn:hover { background: var(--card); border-color: var(--dim); }
+
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    @media (max-width: 700px) { .wrap { padding: 16px; } .topbar { padding: 14px 16px; } }
+
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+      padding: 16px; box-shadow: var(--shadow); min-width: 0;
+    }
+    .card > h2 { font-size: 13px; margin-bottom: 12px; }
+    .card > h2 span { font-weight: 400; color: var(--dim); font-size: 11px; margin-left: 6px; }
+
+    .controles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 800px) { .controles { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 10.5px; color: var(--dim); }
+    .field select {
+      width: 100%; padding: 8px 10px; border-radius: 8px;
+      border: 1px solid var(--line); background: var(--card-2); font-size: 12px;
+    }
+
+    .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+    .hero h1 { font-size: 21px; line-height: 1.15; }
+    .hero .cod { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-left: 8px; }
+    .hero .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+    .hero .meta b { color: var(--text); font-weight: 600; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+    }
+    .badge.ok { background: var(--ok-weak); color: var(--ok); }
+    .badge.warn { background: var(--warn-weak); color: var(--warn); }
+    .badge.stop { background: var(--stop-weak); color: var(--stop); }
+    .badge.dim { background: var(--card-2); color: var(--dim); }
+
+    .grid { display: grid; gap: 12px; }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 1040px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 620px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+    .tile {
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+      padding: 13px 14px; box-shadow: var(--shadow); display: flex;
+      flex-direction: column; justify-content: space-between; gap: 10px; min-width: 0;
+    }
+    .tile-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .tile-titulo { font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--dim); font-weight: 700; }
+    .tile .valor { font-family: 'JetBrains Mono', monospace; font-size: 19px; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; }
+    .tile .sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+    .tile .desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+    .tile .rodape {
+      border-top: 1px solid var(--line); padding-top: 6px; margin-top: 2px;
+      font-size: 10px; color: var(--dim); display: flex; justify-content: space-between; gap: 8px;
+    }
+    .tile.ok .valor { color: var(--ok); }
+    .tile.warn .valor { color: var(--warn); }
+    .tile.stop .valor { color: var(--stop); }
+
+    .tabela-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 7px 8px; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; }
+    th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--card); }
+    tbody tr:hover td { background: var(--card-2); }
+    td .marca { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9.5px; font-weight: 700; }
+    td .marca.ok { background: var(--ok-weak); color: var(--ok); }
+    td .marca.warn { background: var(--warn-weak); color: var(--warn); }
+    td .marca.stop { background: var(--stop-weak); color: var(--stop); }
+
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .preset {
+      padding: 6px 11px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--line); background: var(--card-2); color: var(--muted);
+    }
+    .preset[aria-pressed="true"] { background: var(--accent-weak); color: var(--accent); border-color: var(--accent); }
+
+    footer {
+      max-width: 1280px; margin: 0 auto; padding: 4px 24px 36px;
+      font-size: 11px; color: var(--dim); line-height: 1.7;
+    }
+    footer a { color: var(--accent); }
+    @media (max-width: 700px) { footer { padding: 4px 16px 28px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark mono">AG</div>
+        <div>
+          <div class="brand-title">INMET · AGRO</div>
+          <div class="brand-sub">Operações agrícolas e hidroponia sobre as normais da estação</div>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="btn" id="link-painel" href="inmet.html">Painel INMET</a>
+        <button class="btn" id="btn-tema" type="button" aria-label="Alternar modo claro / escuro">
+          <span id="tema-icone">☀</span><span id="tema-label">Modo claro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="controles">
+        <div class="field">
+          <label for="sel-estacao">Estação INMET</label>
+          <select id="sel-estacao"></select>
+        </div>
+        <div class="field">
+          <label for="sel-mes">Mês de referência</label>
+          <select id="sel-mes"></select>
+        </div>
+        <div class="field">
+          <label for="sel-cultura">Cultura</label>
+          <select id="sel-cultura"></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hero">
+      <div>
+        <h1 id="hero-nome">—</h1>
+        <div class="meta" id="hero-meta"></div>
+      </div>
+      <div id="hero-status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Janela de Operações Agrícolas <span>normais mensais da estação, não previsão</span></h2>
+      <div class="grid grid-3" id="operacoes"></div>
+    </section>
+
+    <section class="card">
+      <h2>Calendário Agroclimático Anual <span>as três primeiras linhas comparam os meses entre si dentro do ano da estação; plantio usa faixa térmica absoluta</span></h2>
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr id="calendario-cabecalho"><th>Dimensão</th></tr>
+          </thead>
+          <tbody id="calendario-corpo"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Alertas do mês</h2>
+      <div class="grid grid-4" id="alertas"></div>
+    </section>
+
+    <section class="card">
+      <div class="tile-top" style="margin-bottom:12px">
+        <h2 style="margin:0">Hidroponia &amp; Cultivo Protegido <span>DPV por Tetens e metas por cultura</span></h2>
+        <div class="presets" id="presets"></div>
+      </div>
+      <div class="grid grid-3" id="hidroponia"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div><b>Fonte:</b> INMET — Dados Históricos, <a href="https://portal.inmet.gov.br/dadoshistoricos" target="_blank" rel="noopener">portal.inmet.gov.br/dadoshistoricos</a>. Normais mensais calculadas sobre os anos válidos da estação.</div>
+    <div><b>Cálculos:</b> ET₀ por Hargreaves-Samani (T máx/mín/média + latitude); DPV por Tetens (FAO-56). <b>Vento e radiação não entram</b>: a série consolidada guarda chuva, temperatura e umidade, e o painel não inventa o que não mede.</div>
+    <div><b>Ressalva do ET₀:</b> Hargreaves estima a demanda a partir da amplitude térmica; no litoral, onde a amplitude diária é grande, ele tende a <b>superestimar</b>. Trate o déficit como teto de irrigação, não como medida de lisímetro.</div>
+    <div><b>Leitura:</b> são médias de longo período — indicam a janela provável do mês, não substituem a previsão de 7 dias nem a leitura do solo.</div>
+  </footer>
+
+  <script>
+    const MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    const DIAS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const DIA_JULIANO = [15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349];
+
+    const CULTURAS = {
+      banana: { nome: 'Banana (Prata / Nanica)', temp: [20, 30], chuva: [80, 220], etapas: 'Crescimento vegetativo' },
+      pupunha: { nome: 'Palmito Pupunha', temp: [18, 28], chuva: [100, 260], etapas: 'Crescimento vegetativo' },
+      olericolas: { nome: 'Olerícolas de campo / folhosas', temp: [15, 25], chuva: [60, 160], etapas: 'Ciclo curto' },
+      frutiferas: { nome: 'Frutíferas (maracujá / citros)', temp: [20, 30], chuva: [80, 200], etapas: 'Frutificação' },
+      mandioca: { nome: 'Mandioca / raízes', temp: [20, 30], chuva: [60, 200], etapas: 'Enchimento de raiz' },
+      cha: { nome: 'Chá preto / pastagem', temp: [15, 26], chuva: [80, 200], etapas: 'Crescimento' },
+    };
+
+    const PRESETS = {
+      alface: {
+        nome: 'Alface (NFT)', ce: [1.2, 1.8], ph: [5.8, 6.3], dpv: [0.5, 0.8], sol: [18, 22],
+        nota: 'Hortaliça de ciclo curto: DPV baixo evita tipburn por fechamento estomático.',
+      },
+      tomate: {
+        nome: 'Tomate', ce: [2.0, 3.5], ph: [5.8, 6.2], dpv: [0.8, 1.2], sol: [18, 24],
+        nota: 'Fruto: DPV entre 0.8 e 1.2 kPa sustenta o transporte de cálcio e reduz podridão apical.',
+      },
+      morango: {
+        nome: 'Morango', ce: [1.2, 1.6], ph: [5.8, 6.2], dpv: [0.8, 1.0], sol: [16, 20],
+        nota: 'Solução mais fria e DPV moderado seguram a floração e a firmeza do fruto.',
+      },
+    };
+
+    const nf = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    let CAT = null;
+    let SERIES = {};
+    let est = null;
+    let mes = new Date().getMonth() + 1;
+    let cultura = 'banana';
+    let preset = 'alface';
+
+    const el = (id) => document.getElementById(id);
+    const num = (v, c = 0) => v == null ? '—' : (c >= 2 ? nf2 : c === 1 ? nf1 : nf).format(v);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    /** Radiação extraterrestre em mm/dia equivalente (FAO-56). */
+    function radiacaoExtraterrestre(lat, diaJuliano) {
+      const phi = (lat || -24.5) * Math.PI / 180;
+      const dr = 1 + 0.033 * Math.cos(2 * Math.PI * diaJuliano / 365);
+      const dec = 0.409 * Math.sin(2 * Math.PI * diaJuliano / 365 - 1.39);
+      const ws = Math.acos(Math.max(-1, Math.min(1, -Math.tan(phi) * Math.tan(dec))));
+      const ra = (24 * 60 / Math.PI) * 0.0820 * dr *
+        (ws * Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.sin(ws));
+      return { mm: 0.408 * ra, horas: 24 / Math.PI * ws };
+    }
+
+    /** ET₀ de Hargreaves-Samani: só precisa de T máx/mín/média e latitude. */
+    function et0(tmed, tmax, tmin, lat, diaJuliano) {
+      const ra = radiacaoExtraterrestre(lat, diaJuliano);
+      const amplitude = Math.max(0.1, tmax - tmin);
+      return { valor: 0.0023 * ra.mm * (tmed + 17.8) * Math.sqrt(amplitude), horas: ra.horas, ra: ra.mm };
+    }
+
+    /** Déficit de pressão de vapor (kPa) por Tetens. */
+    function dpv(temp, ur) {
+      const es = 0.6108 * Math.exp(17.27 * temp / (temp + 237.3));
+      return es * (1 - ur / 100);
+    }
+
+    function normalDoMes(m) {
+      const n = (SERIES[est.cod]?.normal || []).find((x) => x.m === m);
+      if (!n || n.tmed == null) return null;
+      const e = et0(n.tmed, n.tmax, n.tmin, est.lat, DIA_JULIANO[m - 1]);
+      return { ...n, dias: DIAS[m - 1], et0: e.valor, et0Mes: e.valor * DIAS[m - 1], horasDia: e.horas, ra: e.ra };
+    }
+
+    const dentro = (v, faixa) => v != null && v >= faixa[0] && v <= faixa[1];
+
+    /* ---------- operações ---------- */
+
+    function operacoes(d) {
+      const c = CULTURAS[cultura];
+      const pb = dpv(d.tmed, d.ur);
+      const deficit = Math.max(0, d.et0Mes - d.chuva);
+
+      const pulv = d.chuva <= 130 && d.ur <= 92
+        ? { nivel: 'ok', texto: 'Janela aberta', desc: `Chuva de ${num(d.chuva)} mm no mês: mês de menor lavagem de calda. Aplicar nas horas de UR alta.` }
+        : d.chuva <= 200
+          ? { nivel: 'warn', texto: 'Janelas entre pancadas', desc: `Chuva de ${num(d.chuva)} mm no mês: aplicar nos intervalos secos e reaplicar o que a chuva lavar.` }
+          : { nivel: 'stop', texto: 'Janela restrita', desc: `Chuva de ${num(d.chuva)} mm no mês: produto lavado antes de agir. Evitar aplicação aérea.` };
+
+      const plant = !dentro(d.tmed, c.temp)
+        ? { nivel: 'warn', texto: `Fora da faixa (${num(d.tmed, 1)} °C)`, desc: `A cultura pede ${c.temp[0]}–${c.temp[1]} °C. Fora disso o pegamento e o enraizamento caem.` }
+        : d.chuva < 40
+          ? { nivel: 'warn', texto: 'Plantar com irrigação', desc: `Temperatura adequada, mas o mês tem só ${num(d.chuva)} mm: sem irrigação a muda não pega.` }
+          : { nivel: 'ok', texto: 'Condição favorável', desc: `${num(d.tmed, 1)} °C e ${num(d.chuva)} mm no mês: faixa térmica da cultura com água no perfil.` };
+
+      const colh = d.chuva <= 140
+        ? { nivel: 'ok', texto: 'Colheita segura', desc: `Chuva de ${num(d.chuva)} mm: produto sai mais seco, com menos podridão e menor custo de secagem.` }
+        : d.chuva <= 220
+          ? { nivel: 'warn', texto: 'Atenção com umidade', desc: `Chuva de ${num(d.chuva)} mm: colher na janela do dia e cuidar de fruto molhado no transporte.` }
+          : { nivel: 'stop', texto: 'Risco de perda', desc: `Chuva de ${num(d.chuva)} mm: fruto rachado, doença de pós-colheita e piso intrafegável.` };
+
+      const adub = d.chuva < 60
+        ? { nivel: 'warn', texto: 'Precisa de água', desc: `Só ${num(d.chuva)} mm no mês: adubo aplicado a seco não dissolve. Irrigar ou esperar a chuva.` }
+        : d.chuva <= 200
+          ? { nivel: 'ok', texto: 'Faixa de absorção', desc: `${num(d.chuva)} mm distribuídos no mês: umidade suficiente para o corretivo e o fertilizante reagirem.` }
+          : { nivel: 'stop', texto: 'Risco de lixiviação', desc: `Chuva de ${num(d.chuva)} mm: nitrogênio e potássio lavam antes da absorção. Parcelar.` };
+
+      const mec = d.chuva <= 150
+        ? { nivel: 'ok', texto: 'Solo trafegável', desc: `Chuva de ${num(d.chuva)} mm: janela para preparo, roçada e transporte sem compactar.` }
+        : d.chuva <= 220
+          ? { nivel: 'warn', texto: 'Tráfego restrito', desc: `Chuva de ${num(d.chuva)} mm: entrar só com solo drenado; máquina pesada compacta a camada arável.` }
+          : { nivel: 'stop', texto: 'Não entrar', desc: `Chuva de ${num(d.chuva)} mm: risco de atolamento e de Compactação profunda que dura anos.` };
+
+      const irrig = deficit <= 20
+        ? { nivel: 'ok', texto: 'Sem déficit', desc: `ET₀ de ${num(d.et0Mes)} mm contra ${num(d.chuva)} mm de chuva: o mês fecha no positivo.` }
+        : deficit <= 60
+          ? { nivel: 'warn', texto: `Déficit de ${num(deficit)} mm`, desc: `ET₀ de ${num(d.et0Mes)} mm e chuva de ${num(d.chuva)} mm: repor ${num(deficit / d.dias, 1)} mm/dia.` }
+          : { nivel: 'stop', texto: `Déficit de ${num(deficit)} mm`, desc: `ET₀ de ${num(d.et0Mes)} mm contra ${num(d.chuva)} mm: irrigação é obrigatória para não perder safra.` };
+
+      return [
+        ['1. Pulverização Fitossanitária', pulv, `DPV ${num(pb, 2)} kPa`, 'Sem dados de vento: decisão só por chuva e UR.'],
+        ['2. Plantio / Transplante', plant, `${num(d.tmed, 1)} °C`, c.nome],
+        ['3. Colheita', colh, `${num(d.chuva)} mm`, 'Chuva do mês'],
+        ['4. Adubação e Correção', adub, `${num(d.chuva)} mm`, 'Umidade para dissolver'],
+        ['5. Mecanização e Tráfego', mec, `${num(d.chuva)} mm`, 'Umidade do solo'],
+        ['6. Irrigação', irrig, `${num(deficit)} mm`, `ET₀ Hargreaves ${num(d.et0Mes)} mm`],
+      ];
+    }
+
+    function card(titulo, op, valor, rodape) {
+      return `<div class="tile ${op.nivel}">
+        <div>
+          <div class="tile-top">
+            <span class="tile-titulo">${titulo}</span>
+            <span class="badge ${op.nivel}">${op.texto}</span>
+          </div>
+          <div class="valor" style="margin-top:8px">${valor}</div>
+          <p class="desc">${op.desc}</p>
+        </div>
+        <div class="rodape"><span>${rodape}</span><span>${mes === 0 ? '' : MESES[mes - 1]}</span></div>
+      </div>`;
+    }
+
+    /* ---------- calendário ---------- */
+
+    /** Posição de cada mês dentro do próprio ano da estação: 0 = melhor terço. */
+    function tercos(valores) {
+      const ordem = valores.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
+      const nota = new Array(valores.length);
+      ordem.forEach(([, i], pos) => {
+        nota[i] = pos < ordem.length / 3 ? 0 : pos < 2 * ordem.length / 3 ? 1 : 2;
+      });
+      return nota;
+    }
+
+    function calendario() {
+      const c = CULTURAS[cultura];
+      const normais = MESES.map((_, i) => normalDoMes(i + 1));
+      const notaChuva = tercos(normais.map((d) => d ? d.chuva : Infinity));
+      const notaPulv = tercos(normais.map((d) => d ? d.chuva + Math.max(0, d.ur - 80) * 4 : Infinity));
+
+      const linhas = [
+        ['Regime hídrico', (d, i) => [
+          { nivel: 'ok', texto: 'Mais seco' },
+          { nivel: 'ok', texto: 'Transição' },
+          { nivel: 'warn', texto: 'Chuvoso' },
+        ][notaChuva[i]]],
+        ['Janela de pulverização', (d, i) => [
+          { nivel: 'ok', texto: 'Ampla' },
+          { nivel: 'warn', texto: 'Parcial' },
+          { nivel: 'stop', texto: 'Restrita' },
+        ][notaPulv[i]]],
+        ['Plantio / transplante', (d) => !dentro(d.tmed, c.temp)
+          ? { nivel: 'warn', texto: 'Recuo' }
+          : d.chuva < 40 ? { nivel: 'warn', texto: 'Irrigar' } : { nivel: 'ok', texto: 'Ótimo' }],
+        ['Colheita segura', (d, i) => [
+          { nivel: 'ok', texto: 'Excelente' },
+          { nivel: 'warn', texto: 'Atenção' },
+          { nivel: 'stop', texto: 'Risco' },
+        ][notaChuva[i]]],
+      ];
+
+      el('calendario-cabecalho').innerHTML = '<th>Dimensão</th>' + MESES.map((m) => `<th>${m}</th>`).join('');
+      el('calendario-corpo').innerHTML = linhas.map(([rotulo, fn]) => `<tr>
+        <td>${rotulo}</td>
+        ${normais.map((d, i) => d
+          ? (() => { const r = fn(d, i); return `<td title="${MESES[d.m - 1]}: ${r.texto} — ${num(d.chuva)} mm, UR ${num(d.ur)}%"><span class="marca ${r.nivel}">${r.texto}</span></td>`; })()
+          : '<td><span class="marca">—</span></td>').join('')}
+      </tr>`).join('');
+    }
+
+    /* ---------- alertas ---------- */
+
+    function alertas(d) {
+      const fungos = d.tmed >= 20 && d.tmed <= 30 && d.ur >= 80 && d.chuva >= 100;
+      const calor = d.tmax >= 35;
+      const frio = d.tmin <= 5;
+      const seca = d.chuva < 50;
+      const lista = [
+        ['Risco de fungos', fungos, fungos ? 'Alto' : 'Baixo',
+          fungos ? `${num(d.ur)}% de UR com ${num(d.chuva)} mm e ${num(d.tmed, 1)} °C: molhamento foliar prolongado.` : 'Combinação de UR, chuva e temperatura abaixo do gatilho de molhamento.'],
+        ['Estresse térmico', calor, calor ? 'Calor' : 'Normal',
+          calor ? `Máxima normal de ${num(d.tmax, 1)} °C: sombreamento e irrigação nas horas quentes.` : `Máxima normal de ${num(d.tmax, 1)} °C, sem gatilho de calor.`],
+        ['Frio / geada', frio, frio ? 'Atenção' : 'Sem risco',
+          frio ? `Mínima normal de ${num(d.tmin, 1)} °C: proteção de muda e de pastagem.` : `Mínima normal de ${num(d.tmin, 1)} °C, acima do gatilho de 5 °C.`],
+        ['Veranico / seca', seca, seca ? 'Atenção' : 'Sem risco',
+          seca ? `Chuva de ${num(d.chuva)} mm no mês: reservar água e priorizar irrigação.` : `Chuva de ${num(d.chuva)} mm no mês sustenta a janela.`],
+      ];
+      el('alertas').innerHTML = lista.map(([titulo, ruim, texto, desc]) => `<div class="tile ${ruim ? 'warn' : 'ok'}">
+        <div class="tile-top"><span class="tile-titulo">${titulo}</span><span class="badge ${ruim ? 'warn' : 'ok'}">${texto}</span></div>
+        <p class="desc">${desc}</p>
+      </div>`).join('');
+    }
+
+    /* ---------- hidroponia ---------- */
+
+    function hidroponia(d) {
+      const p = PRESETS[preset];
+      const estufaTemp = d.tmed + 2.5;
+      const estufaUr = Math.min(95, d.ur + 5);
+      const vpdAr = dpv(d.tmed, d.ur);
+      const vpdEstufa = dpv(estufaTemp, estufaUr);
+      const classe = (v, f) => dentro(v, f) ? 'ok' : 'warn';
+      const ra = radiacaoExtraterrestre(est.lat, DIA_JULIANO[d.m - 1]);
+
+      const solucao = `<div class="tile">
+        <div>
+          <div class="tile-top"><span class="tile-titulo">Solução Nutritiva</span>
+            <span class="badge ${classe(d.tmed, p.sol)}">${dentro(d.tmed, p.sol) ? 'Faixa da cultura' : 'Fora da faixa'}</span></div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+            <div><div class="sub">CE meta</div><div class="valor" style="font-size:15px">${nf1.format(p.ce[0])}–${nf1.format(p.ce[1])}</div><div class="sub">mS/cm</div></div>
+            <div><div class="sub">pH meta</div><div class="valor" style="font-size:15px">${nf1.format(p.ph[0])}–${nf1.format(p.ph[1])}</div><div class="sub">faixa de absorção</div></div>
+            <div><div class="sub">Temp. solução</div><div class="valor" style="font-size:15px">${num(d.tmed, 1)} °C</div><div class="sub">ar como proxy</div></div>
+            <div><div class="sub">Meta da cultura</div><div class="valor" style="font-size:15px">${p.sol[0]}–${p.sol[1]} °C</div><div class="sub">${p.nome}</div></div>
+          </div>
+          <p class="desc">${p.nota} A temperatura da solução usa o ar como proxy: o sensor de água não está na série do INMET.</p>
+        </div>
+        <div class="rodape"><span>${p.nome}</span><span>CE/pH são meta, não medição</span></div>
+      </div>`;
+
+      const estufa = `<div class="tile ${classe(vpdEstufa, p.dpv)}">
+        <div>
+          <div class="tile-top"><span class="tile-titulo">Ambiente Estufa (DPV / VPD)</span>
+            <span class="badge ${classe(vpdEstufa, p.dpv)}">${num(vpdEstufa, 2)} kPa</span></div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+            <div><div class="sub">DPV ar livre</div><div class="valor" style="font-size:15px">${num(vpdAr, 2)} kPa</div></div>
+            <div><div class="sub">Meta</div><div class="valor" style="font-size:15px">${nf1.format(p.dpv[0])}–${nf1.format(p.dpv[1])}</div></div>
+            <div><div class="sub">Temp. estufa</div><div class="valor" style="font-size:15px">${num(estufaTemp, 1)} °C</div><div class="sub">+2,5 °C</div></div>
+            <div><div class="sub">UR interna</div><div class="valor" style="font-size:15px">${num(estufaUr)}%</div><div class="sub">+5 p.p.</div></div>
+          </div>
+          <p class="desc">Estufa é estimativa de microclima (+2,5 °C e +5 p.p. de UR sobre a normal); ar livre é medido. DPV alto fecha estômato; baixo demais não puxa cálcio.</p>
+        </div>
+        <div class="rodape"><span>Tetens / FAO-56</span><span>${dentro(vpdEstufa, p.dpv) ? 'Transpiração ótima' : 'Ajustar ventilação'}</span></div>
+      </div>`;
+
+      const luz = `<div class="tile">
+        <div>
+          <div class="tile-top"><span class="tile-titulo">Radiação &amp; DLI</span>
+            <span class="badge dim">Não consolidado</span></div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+            <div><div class="sub">DLI medido</div><div class="valor" style="font-size:15px">—</div><div class="sub">sem sensor na série</div></div>
+            <div><div class="sub">Horas de dia</div><div class="valor" style="font-size:15px">${num(ra.horas, 1)} h</div><div class="sub">latitude ${num(est.lat, 2)}°</div></div>
+            <div><div class="sub">Ra astronômico</div><div class="valor" style="font-size:15px">${num(ra.mm, 1)} mm</div><div class="sub">teto, não medido</div></div>
+            <div><div class="sub">Sombra sugerida</div><div class="valor" style="font-size:15px">${ra.mm >= 12 ? '30–50%' : '15–30%'}</div><div class="sub">sob telado</div></div>
+          </div>
+          <p class="desc">A série consolidada guarda chuva, temperatura e umidade; radiação e vento ficam no CSV horário e não foram agregados. O Ra é o teto astronômico do mês, não luz medida na estufa.</p>
+        </div>
+        <div class="rodape"><span>FAO-56</span><span>DLI exige sensor PAR</span></div>
+      </div>`;
+
+      el('hidroponia').innerHTML = solucao + estufa + luz;
+      [...el('presets').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === preset)));
+    }
+
+    /* ---------- render ---------- */
+
+    function renderizar() {
+      const d = normalDoMes(mes);
+      const c = CULTURAS[cultura];
+      el('hero-nome').innerHTML = `${esc(est.nome)}<span class="cod">${esc(est.cod)}</span>`;
+      el('hero-meta').innerHTML = [
+        `<span>UF <b>${esc(est.uf || '—')}</b></span>`,
+        `<span>Cultura <b>${esc(c.nome)}</b></span>`,
+        `<span>Mês <b>${MESES[mes - 1]}</b></span>`,
+        d ? `<span>Normal <b>${num(d.chuva)} mm · ${num(d.tmed, 1)} °C · UR ${num(d.ur)}%</b></span>` : '<span>Estação sem normal mensal</span>',
+      ].join('');
+      el('hero-status').innerHTML = d
+        ? `<span class="badge ${est.status === 'medido' ? 'ok' : 'warn'}">${esc(est.status)}</span>`
+        : '<span class="badge stop">sem série</span>';
+
+      if (!d) {
+        el('operacoes').innerHTML = '<p class="desc">Sem normal mensal para esta estação: sem operações a estimar.</p>';
+        el('calendario-corpo').innerHTML = '';
+        el('alertas').innerHTML = '';
+        el('hidroponia').innerHTML = '<p class="desc">Sem série de temperatura e umidade para calcular DPV.</p>';
+        return;
+      }
+
+      el('operacoes').innerHTML = operacoes(d)
+        .map(([titulo, op, valor, rodape]) => card(titulo, op, valor, rodape)).join('');
+      calendario();
+      alertas(d);
+      hidroponia(d);
+      el('link-painel').href = `inmet.html?e=${encodeURIComponent(est.cod)}`;
+    }
+
+    function preencherEstacoes() {
+      const ufs = [...new Set(CAT.estacoes.map((e) => e.uf).filter(Boolean))].sort();
+      const grupos = ufs.map((uf) => {
+        const itens = CAT.estacoes
+          .filter((e) => e.uf === uf && e.status !== 'sem_dado')
+          .map((e) => `<option value="${e.cod}">${esc(e.nome)} (${e.cod})</option>`)
+          .join('');
+        return itens ? `<optgroup label="${uf}">${itens}</optgroup>` : '';
+      }).join('');
+      el('sel-estacao').innerHTML = grupos;
+    }
+
+    function alternarTema() {
+      const escuro = document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light', !escuro);
+      try { localStorage.setItem('inmet_tema_v2', escuro ? 'dark' : 'light'); } catch (e) {}
+      el('tema-icone').textContent = escuro ? '☾' : '☀';
+      el('tema-label').textContent = escuro ? 'Modo escuro' : 'Modo claro';
+    }
+
+    async function carregar() {
+      try {
+        const [cat, ser] = await Promise.all([
+          fetch('inmet_catalogo.json').then((r) => r.json()),
+          fetch('inmet_series.json').then((r) => r.json()),
+        ]);
+        CAT = cat;
+        SERIES = ser.series || {};
+
+        el('sel-mes').innerHTML = MESES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+        el('sel-mes').value = String(mes);
+        el('sel-cultura').innerHTML = Object.entries(CULTURAS)
+          .map(([k, v]) => `<option value="${k}">${esc(v.nome)}</option>`).join('');
+        el('presets').innerHTML = Object.entries(PRESETS)
+          .map(([k, v]) => `<button type="button" class="preset" data-preset="${k}" aria-pressed="${k === preset}">${esc(v.nome)}</button>`).join('');
+        [...el('presets').children].forEach((b) => b.addEventListener('click', () => {
+          preset = b.dataset.preset;
+          const atual = normalDoMes(mes);
+          if (atual) hidroponia(atual);
+        }));
+
+        preencherEstacoes();
+        const pedido = new URLSearchParams(location.search).get('e');
+        const inicial = CAT.estacoes.find((e) => e.cod === pedido)
+          || CAT.estacoes.find((e) => e.cod === 'A712')
+          || CAT.estacoes[0];
+        el('sel-estacao').value = inicial.cod;
+        est = inicial;
+        el('sel-estacao').addEventListener('change', () => {
+          est = CAT.estacoes.find((e) => e.cod === el('sel-estacao').value) || est;
+          renderizar();
+        });
+        el('sel-mes').addEventListener('change', () => { mes = Number(el('sel-mes').value); renderizar(); });
+        el('sel-cultura').addEventListener('change', () => { cultura = el('sel-cultura').value; renderizar(); });
+        el('btn-tema').addEventListener('click', alternarTema);
+        el('tema-icone').textContent = document.documentElement.classList.contains('dark') ? '☾' : '☀';
+        el('tema-label').textContent = document.documentElement.classList.contains('dark') ? 'Modo escuro' : 'Modo claro';
+        renderizar();
+      } catch (erro) {
+        el('hero-nome').textContent = 'Falha ao carregar os dados';
+        el('hero-meta').textContent = String(erro.message || erro);
+      }
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

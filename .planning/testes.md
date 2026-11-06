@@ -103,3 +103,8 @@ SQLite em memória e um CSV sintético: não dependem dos ZIPs nem de rede.
 - **Aparência do painel.** O `check.jsx` garante que o HTML é gerado com os
   números certos; se ficou bonito, só abrindo `./start.sh`. Comparar markup byte
   a byte quebraria a cada ajuste de classe Tailwind sem proteger dado.
+- **ET₀ e DPV do `site/inmetagro.html`.** São fórmulas FAO-56 dentro de uma
+  página estática, sem módulo importável: um teste unitário exigiria extrair o
+  cálculo só para o teste. Foram conferidos à mão e no navegador — Iguape em
+  novembro dá ET₀ ≈ 7,4 mm/dia contra 174 mm de chuva, déficit de 47 mm, que é o
+  que a página mostra. O rodapé avisa que Hargreaves superestima no litoral.

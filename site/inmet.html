@@ -291,6 +291,7 @@
         </div>
       </div>
       <div class="actions">
+        <a class="btn" id="btn-agro" href="inmetagro.html">Agro &amp; Hidroponia</a>
         <button class="btn" id="btn-tema" type="button" aria-label="Alternar modo claro / escuro">
           <span id="tema-icone">☀</span><span id="tema-label">Modo claro</span>
         </button>
@@ -402,7 +403,8 @@
         el('resumo-rede').textContent =
           `${cat.resumo.total} estações · ${cat.resumo.medido} com série validada`;
         popularUF();
-        const inicial = CAT.estacoes.find((e) => e.cod === 'A712')
+        const inicial = CAT.estacoes.find((e) => e.cod === new URLSearchParams(location.search).get('e'))
+          || CAT.estacoes.find((e) => e.cod === 'A712')
           || CAT.estacoes.find((e) => e.regional)
           || CAT.estacoes[0];
         selecionar(inicial.cod, true);
@@ -469,6 +471,7 @@
       ].join('');
       el('hero-status').innerHTML =
         `<span class="badge ${cor}"><span class="dot ${cor}"></span>${rotulo}</span>`;
+      el('btn-agro').href = 'inmetagro.html?e=' + encodeURIComponent(cod);
 
       renderizarCobertura(est);
       renderizarTiles(est, serie);
